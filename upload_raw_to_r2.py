@@ -99,7 +99,15 @@ def collect_target_files():
     base_dir = Path(".").resolve()
     targets = []
 
-    # 1. 02_BACKUP_AND_RAW_DATA Directory (all files)
+    # 1. Partitioned AI-Ready Data (khatians, voters, manifest)
+    data_dir = base_dir / "data"
+    if data_dir.exists():
+        for file_path in data_dir.rglob("*"):
+            if file_path.is_file():
+                rel_key = str(file_path.relative_to(base_dir)).replace("\\", "/")
+                targets.append((file_path, rel_key))
+
+    # 2. 02_BACKUP_AND_RAW_DATA Directory (all files)
     raw_dir = base_dir / "02_BACKUP_AND_RAW_DATA"
     if raw_dir.exists():
         for file_path in raw_dir.rglob("*"):
@@ -207,3 +215,4 @@ if __name__ == "__main__":
     client = get_r2_client()
     if client:
         upload_files(client, BUCKET_NAME)
+

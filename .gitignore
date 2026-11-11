@@ -1,52 +1,86 @@
-# ==========================================
-# Raipur Land Intelligence Hub - .gitignore
-# ==========================================
+# ==============================================================================
+# SupremeAI Land Cadastre & Citizen Intelligence Hub
+# STRICT GIT ALLOWLIST / WHITELIST CONFIGURATION
+# ==============================================================================
+# Strategy: Ignore everything by default (to prevent AI agent scratchpad files,
+# temporary scripts, and monolithic dumps from being tracked).
+# Only explicitly whitelisted directories and production files are tracked.
+# ==============================================================================
 
-# Environment & Secrets (Cloudflare API Keys, credentials)
+# ------------------------------------------------------------------------------
+# STEP 1: Ignore EVERYTHING in the repository root by default
+# ------------------------------------------------------------------------------
+/*
+
+# ------------------------------------------------------------------------------
+# STEP 2: Whitelist Essential Production Directories
+# ------------------------------------------------------------------------------
+!/.github/
+!/.githooks/
+!/frontend/
+!/backend/
+!/data/
+!/scripts/
+!/docs/
+
+# Backward compatibility (while files are being organized into clean folders)
+!/01_LIVE_SMART_PORTAL_APP/
+!/raipur_cloudflare_backend/
+!/raipur_pages_deploy/
+
+# ------------------------------------------------------------------------------
+# STEP 3: Whitelist Essential Root Configuration & Tool Files
+# ------------------------------------------------------------------------------
+!/.gitignore
+!/.env.example
+!/README.md
+!/CREATE_BRANCH_AND_PR.bat
+!/DEPLOY_TO_CLOUD.bat
+!/RUN_LOCAL_PORTAL.bat
+!/auto_pr.py
+!/deploy_to_cloudflare.py
+!/upload_raw_to_r2.py
+!/Land_Intelligence_Hub.html
+!/raipur_registry_rates_2025_2026.json
+!/PROJECT_DOCUMENTATION.md
+!/AI_CADASTRAL_MAPPING_ARCHITECTURE.md
+!/RAIPUR_VOTER_SEARCH_INTEGRATION_PLAN.md
+
+# ------------------------------------------------------------------------------
+# STEP 4: Strict Security Rules (NEVER track these, even inside allowed folders)
+# ------------------------------------------------------------------------------
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
 *.pem
 *.key
+*.cert
+*.id_rsa
+*.id_ed25519
 
-# Large Raw & Backup Data (PDFs, EC voter scans, extraction dumps)
-02_BACKUP_AND_RAW_DATA/
-*.pdf
-*.PDF
-
-# Heavy Client-Side JS Databases (>10MB - 170MB files)
-# Data is served from Cloudflare D1 Serverless DB
-raipur_voters_database.js
-raipur_full_database.js
-core_7_database.js
-01_LIVE_SMART_PORTAL_APP/raipur_voters_database.js
-01_LIVE_SMART_PORTAL_APP/raipur_full_database.js
-01_LIVE_SMART_PORTAL_APP/core_7_database.js
-
-# Local SQLite & Cache Databases
+# SQLite, Raw PDF and Monolithic Dumps (Always blocked)
 *.db
 *.sqlite
 *.sqlite3
-raipur_cadastre_voters.db
-
-# Large Extracted JSON Datasets (>40MB - 250MB)
+*.pdf
+*.PDF
+raipur_voters_database.js
+raipur_full_database.js
+core_7_database.js
 raipur_all_voters.json
 raipur_master_khatians.json
 raipur_master_dag_index.json
+02_BACKUP_AND_RAW_DATA/
 
-# Dependencies & Build Artefacts
+# Cache, Build & OS junk
 node_modules/
 .wrangler/
 dist/
 .cache/
-
-# OS & Editor specific files
 .DS_Store
-Thumbs.db
 desktop.ini
-.vscode/
-.idea/
+Thumbs.db
 .kilo/
-*.log
 __pycache__/
 *.py[cod]
+*.log

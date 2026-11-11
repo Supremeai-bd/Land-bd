@@ -2067,7 +2067,7 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
             document.getElementById('unified-results-container').innerHTML = '';
         }
 
-        function executeUnifiedSearch() {
+        async function executeUnifiedSearch() {
             const mouza = document.getElementById('u-mouza').value;
             const surveyFilter = document.getElementById('u-survey').value;
             let dag = document.getElementById('u-dag').value.trim();
@@ -2101,11 +2101,74 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
                     <p class="text-xs text-slate-500 mt-1">খতিয়ান ও ভোটার রেকর্ড মিলিয়ে দেখা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন।</p>
                 </div>`;
 
+            // Cloud Serverless D1 API Search Bridge
+            const isCloud = window.location.hostname.includes('workers.dev') || window.location.port !== '8080';
+            if (isCloud) {
+                try {
+                    let apiParams = new URLSearchParams();
+                    if (mouza && mouza !== 'ALL') apiParams.append('mouza', mouza);
+                    if (surveyFilter && surveyFilter !== 'ALL') apiParams.append('survey', surveyFilter);
+                    if (dag) apiParams.append('dag', dag);
+                    if (khatian) apiParams.append('khatian', khatian);
+                    if (name) apiParams.append('name', name);
+                    if (father) apiParams.append('father', father);
+
+                    const res = await fetch('/api/search?' + apiParams.toString());
+                    const data = await res.json();
+                    if (data && data.success && ((data.sabekRecords && data.sabekRecords.length > 0) || (data.haalRecords && data.haalRecords.length > 0))) {
+                        let sabekMatches = data.sabekRecords || [];
+                        let haalMatches = data.haalRecords || [];
+
+                        // Voter Cross-Matching from in-memory voter database if available
+                        let voterMatches = [];
+                        let candidateOwnerNames = [];
+                        [...sabekMatches, ...haalMatches].forEach(k => {
+                            (k.owners || []).forEach(o => {
+                                const clean = normalizeBengaliName(o);
+                                if (clean.length > 2) candidateOwnerNames.push(clean);
+                            });
+                        });
+
+                        if (DATABASE && DATABASE.voters && DATABASE.voters.length > 0) {
+                            const targetQueryName = name || '';
+                            const targetQueryFather = father || '';
+
+                            DATABASE.voters.forEach(v => {
+                                let vScore = 0;
+                                if (targetQueryName) vScore = calculateNameSimilarity(v.name, targetQueryName);
+                                let vfScore = 0;
+                                if (targetQueryFather) vfScore = calculateNameSimilarity(v.father, targetQueryFather);
+
+                                for (let co of candidateOwnerNames) {
+                                    const sim = calculateNameSimilarity(v.father, co);
+                                    if (sim > vfScore) vfScore = sim;
+                                }
+
+                                let totalVScore = Math.max(vScore, vfScore);
+                                if (totalVScore >= 0.45) {
+                                    voterMatches.push({
+                                        ...v,
+                                        matchPercent: Math.round(totalVScore * 100),
+                                        isHeirLink: vfScore > vScore
+                                    });
+                                }
+                            });
+                            voterMatches.sort((a, b) => b.matchPercent - a.matchPercent);
+                        }
+
+                        renderUnifiedMasterResults(mouza, dag, khatian, name, father, sabekMatches, haalMatches, [], voterMatches, container);
+                        return;
+                    }
+                } catch (apiErr) {
+                    console.warn('Cloud API search fallback to local scan:', apiErr);
+                }
+            }
+
             setTimeout(() => {
                 performMultiParamScan(mouza, surveyFilter, dag, khatian, name, father, container);
             }, 50);
         }
-
+        
         function performMultiParamScan(mouza, surveyFilter, dag, khatian, name, father, container) {
             let sabekMatches = [];
             let haalMatches = [];
@@ -2459,7 +2522,7 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
         }
         
         // ================= DEDICATED VOTER SEARCH CONTROLLER =================
-        function executeDedicatedVoterSearch() {
+        async function executeDedicatedVoterSearch() {
             const voterNo = (document.getElementById('v-voter-no') ? document.getElementById('v-voter-no').value : '').trim();
             const name = (document.getElementById('v-name') ? document.getElementById('v-name').value : '').trim();
             const father = (document.getElementById('v-father') ? document.getElementById('v-father').value : '').trim();
@@ -2470,20 +2533,53 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
 
             if (!container) return;
 
+            const bnDigits = {'০':'0','১':'1','২':'2','৩':'3','৪':'4','৫':'5','৬':'6','৭':'7','৮':'8','৯':'9'};
+            const normNum = (s) => (s || '').split('').map(c => bnDigits[c] || c).join('');
+            const searchVoterNo = normNum(voterNo);
+
             if (!voterNo && !name && !father && !mother && !ward && !address) {
-                container.innerHTML = `<div class="bg-amber-50 border border-amber-200 text-amber-800 p-6 rounded-2xl text-center text-sm font-semibold">দয়া করে ভোটার নং, নাম, পিতা, মাতা বা ওয়ার্ডের যেকোনো অন্তত একটি তথ্য লিখুন।</div>`;
+                container.innerHTML = `<div class="bg-amber-50 border border-amber-200 text-amber-800 p-6 rounded-2xl text-center text-sm font-semibold">দয়া করে ভোটার নং, নাম, পিতা, মাতা, ওয়ার্ড বা ঠিকানার যেকোনো অন্তত একটি তথ্য লিখুন।</div>`;
                 return;
             }
 
             container.innerHTML = `<div class="text-center py-12 text-slate-500 font-bold"><div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-emerald-500 border-t-transparent mb-2"></div><p>ভোটার ডাটাবেজ অনুসন্ধান করা হচ্ছে...</p></div>`;
 
+            const isCloud = window.location.hostname.includes('workers.dev') || (window.location.protocol === 'https:' && !/^(localhost|127\.0\.0\.1)$/i.test(window.location.hostname));
+            if (isCloud) {
+                try {
+                    const p = new URLSearchParams();
+                    if (searchVoterNo) p.append('voter_no', searchVoterNo);
+                    if (name) p.append('name', name);
+                    if (father) p.append('father', father);
+                    if (mother) p.append('mother', mother);
+                    if (ward) p.append('ward', ward);
+                    if (address) p.append('address', address);
+                    const resp = await fetch('/api/voters?' + p.toString());
+                    if (resp.ok) {
+                        const json = await resp.json();
+                        if (json && json.success && Array.isArray(json.voters)) {
+                            const mapped = json.voters.map(v => ({
+                                voterNo: v.voterNo || v.voter_no || '',
+                                name: v.name || '',
+                                father: v.father || '',
+                                mother: v.mother || '',
+                                gender: v.gender || '',
+                                ward: v.ward || '',
+                                address: v.address || '',
+                                matchScore: 100
+                            }));
+                            renderDedicatedVoterResults(mapped, container);
+                            return;
+                        }
+                    }
+                } catch (e) { /* fallback to local search */ }
+            }
+
             setTimeout(() => {
                 let list = (DATABASE && DATABASE.voters) ? DATABASE.voters : [];
                 let results = [];
 
-                const bnDigits = {'০':'0', '১':'1', '২':'2', '৩':'3', '৪':'4', '৫':'5', '৬':'6', '৭':'7', '৮':'8', '৯':'9'};
-                const normNum = (s) => (s || '').split('').map(c => bnDigits[c] || c).join('');
-                const searchVoterNo = normNum(voterNo);
+                // searchVoterNo, normNum defined above (supports cloud + local fallback)
 
                 for (let i = 0; i < list.length; i++) {
                     const v = list[i];
@@ -2564,18 +2660,44 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
                                 </div>
                             </div>
                             <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2">
-                                <button onclick="saveVoterToVault('${v.voterNo}', '${(v.name||'').replace(/'/g, "\\'")}', '${(v.father||'').replace(/'/g, "\\'")}', '${(v.mother||'').replace(/'/g, "\\'")}', '${(v.ward||'').replace(/'/g, "\\'")}', '${(v.address||'').replace(/'/g, "\\'")}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs py-2 px-3 rounded-xl border border-indigo-200 transition flex items-center justify-center gap-1.5">
+                                <button onclick="saveVoterToVault('${v.voterNo}', '${(v.name||'').replace(/'/g, "\\'")}', '${(v.father||'').replace(/'/g, "\\'")}', '${(v.mother||'').replace(/'/g, "\\'")}', '${(v.ward||'').replace(/'/g, "\\'")}', '${(v.address||'').replace(/'/g, "\\'")}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs py-2 px-2.5 rounded-xl border border-indigo-200 transition flex items-center justify-center gap-1">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
-                                    <span>লকারে সেভ করুন</span>
+                                    <span>সেভ</span>
                                 </button>
-                                <button onclick="searchLandForPerson('${(v.name||'').replace(/'/g, "\\'")}', '${(v.father||'').replace(/'/g, "\\'")}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs py-2 px-3 rounded-xl border border-emerald-200 transition" title="এই ব্যক্তির জমির রেকর্ড খুঁজুন">
-                                    জমির রেকর্ড ➔
+                                <button onclick="printCitizenSlip('${v.voterNo}', '${(v.name||'').replace(/'/g, "\\'")}', '${(v.father||'').replace(/'/g, "\\'")}', '${(v.mother||'').replace(/'/g, "\\'")}', '${(v.gender||'').replace(/'/g, "\\'")}', '${(v.ward||'').replace(/'/g, "\\'")}', '${(v.address||'').replace(/'/g, "\\'")}')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs py-2 px-2.5 rounded-xl border border-slate-300 transition flex items-center gap-1" title="নাগরিক পরিচিতি স্লিপ প্রিন্ট">
+                                    <span>🖨️ স্লিপ</span>
+                                </button>
+                                <button onclick="searchLandForPerson('${(v.name||'').replace(/'/g, "\\'")}', '${(v.father||'').replace(/'/g, "\\'")}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs py-2 px-2.5 rounded-xl border border-emerald-200 transition flex items-center gap-1" title="এই ব্যক্তির জমির রেকর্ড খুঁজুন">
+                                    <span>জমি ➔</span>
                                 </button>
                             </div>
                         </div>
                     `).join('')}
                 </div>
             `;
+        }
+
+        
+        function printCitizenSlip(voterNo, name, father, mother, gender, ward, address) {
+            document.getElementById('slip-voter-no').textContent = voterNo || '—';
+            document.getElementById('slip-name').textContent = name || '—';
+            document.getElementById('slip-father').textContent = father || '—';
+            document.getElementById('slip-mother').textContent = mother || '—';
+            document.getElementById('slip-gender').textContent = gender || 'নাগরিক';
+            document.getElementById('slip-ward').textContent = ward || 'রায়পুর উপজেলা';
+            document.getElementById('slip-address').textContent = address || 'রায়পুর, লক্ষ্মীপুর';
+
+            const now = new Date();
+            const timeStr = now.toLocaleDateString('bn-BD') + ' সময়: ' + now.toLocaleTimeString('bn-BD');
+            document.getElementById('slip-timestamp').textContent = timeStr;
+
+            const modal = document.getElementById('modal-citizen-slip');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeCitizenSlipModal() {
+            const modal = document.getElementById('modal-citizen-slip');
+            if (modal) modal.classList.add('hidden');
         }
 
         function searchLandForPerson(name, father) {
@@ -3057,7 +3179,7 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
             }
         }
 
-        // Vault: Save Khatian
+        // Vault: Save Khatian (Dual Online Cloud + Local Storage Fallback)
         async function saveKhatianToVault(mouza, survey, khatianNo, dags, owners) {
             if (!currentUser) {
                 alert('রেকর্ডটি আপনার লকারে সংরক্ষণ করতে প্রথমে লগইন করুন।');
@@ -3065,8 +3187,15 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
                 return;
             }
 
+            const item = { id: Date.now(), mouza, survey, khatian_no: khatianNo, dag_summary: dags, owners_summary: owners, saved_at: new Date().toISOString() };
+            let localKhatians = JSON.parse(localStorage.getItem('raipur_vault_khatians_' + currentUser.id) || '[]');
+            if (!localKhatians.some(k => k.mouza === mouza && k.khatian_no === khatianNo && k.survey === survey)) {
+                localKhatians.push(item);
+                localStorage.setItem('raipur_vault_khatians_' + currentUser.id, JSON.stringify(localKhatians));
+            }
+
             try {
-                const res = await fetch('/api/user/save-khatian', {
+                await fetch('/api/user/save-khatian', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -3077,16 +3206,13 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
                         owners_summary: owners
                     })
                 });
-                const data = await res.json();
-                if (data.success) {
-                    alert('খতিয়ানটি সফলভাবে আপনার লকারে সংরক্ষিত হয়েছে!');
-                }
             } catch (err) {
-                alert('সংরক্ষণ ব্যর্থ: ' + err.message);
+                console.log('Saved to local vault (offline fallback)');
             }
+            alert('খতিয়ানটি সফলভাবে আপনার পারসোনাল লকারে সংরক্ষিত হয়েছে!');
         }
 
-        // Vault: Save Voter Card
+        // Vault: Save Voter Card (Dual Online Cloud + Local Storage Fallback)
         async function saveVoterToVault(voterNo, name, father, mother, ward, address) {
             if (!currentUser) {
                 alert('ভোটার কার্ডটি আপনার লকারে সংরক্ষণ করতে প্রথমে লগইন করুন।');
@@ -3094,8 +3220,15 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
                 return;
             }
 
+            const item = { id: Date.now(), voter_no: voterNo, name, father, mother, ward, address, saved_at: new Date().toISOString() };
+            let localVoters = JSON.parse(localStorage.getItem('raipur_vault_voters_' + currentUser.id) || '[]');
+            if (!localVoters.some(v => v.voter_no === voterNo)) {
+                localVoters.push(item);
+                localStorage.setItem('raipur_vault_voters_' + currentUser.id, JSON.stringify(localVoters));
+            }
+
             try {
-                const res = await fetch('/api/user/save-voter', {
+                await fetch('/api/user/save-voter', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -3104,13 +3237,10 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
                         name, father, mother, ward, address
                     })
                 });
-                const data = await res.json();
-                if (data.success) {
-                    alert('ভোটার কার্ডটি সফলভাবে আপনার লকারে সংরক্ষিত হয়েছে!');
-                }
             } catch (err) {
-                alert('সংরক্ষণ ব্যর্থ: ' + err.message);
+                console.log('Saved to local vault (offline fallback)');
             }
+            alert('ভোটার কার্ডটি সফলভাবে আপনার পারসোনাল লকারে সংরক্ষিত হয়েছে!');
         }
 
         // Vault: Load user records
@@ -3129,54 +3259,105 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
             unauthBox.classList.add('hidden');
             recordsBox.classList.remove('hidden');
 
+            let savedKhatians = JSON.parse(localStorage.getItem('raipur_vault_khatians_' + currentUser.id) || '[]');
+            let savedVoters = JSON.parse(localStorage.getItem('raipur_vault_voters_' + currentUser.id) || '[]');
+
             try {
                 const res = await fetch('/api/user/saved-items?userId=' + encodeURIComponent(currentUser.id));
                 const data = await res.json();
-
-                if (!data.success) return;
-
-                document.getElementById('badge-saved-khatian-count').textContent = (data.savedKhatians?.length || 0) + 'টি';
-                document.getElementById('badge-saved-voter-count').textContent = (data.savedVoters?.length || 0) + 'জন';
-
-                if (!data.savedKhatians || data.savedKhatians.length === 0) {
-                    khatianList.innerHTML = '<p class="text-[11px] text-slate-400 py-2">কোনো সংরক্ষিত খতিয়ান নেই।</p>';
-                } else {
-                    khatianList.innerHTML = data.savedKhatians.map(k => `
-                        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
-                            <div class="flex justify-between items-center font-bold text-slate-800">
-                                <span>${k.mouza} (${k.survey} - ${k.khatian_no})</span>
-                                <button onclick="setQueryPreset('${k.mouza}', '', '${k.khatian_no}', '', ''); toggleSavedVault();" class="text-emerald-700 text-[10px] hover:underline">সার্চ করুন ➔</button>
-                            </div>
-                            <div class="text-[10px] text-slate-500 truncate">মালিক: ${k.owners_summary || '—'}</div>
-                        </div>
-                    `).join('');
+                if (data.success) {
+                    if (data.savedKhatians && data.savedKhatians.length > 0) {
+                        data.savedKhatians.forEach(dk => {
+                            if (!savedKhatians.some(sk => sk.mouza === dk.mouza && sk.khatian_no === dk.khatian_no && sk.survey === dk.survey)) {
+                                savedKhatians.push(dk);
+                            }
+                        });
+                    }
+                    if (data.savedVoters && data.savedVoters.length > 0) {
+                        data.savedVoters.forEach(dv => {
+                            if (!savedVoters.some(sv => sv.voter_no === dv.voter_no)) {
+                                savedVoters.push(dv);
+                            }
+                        });
+                    }
                 }
-
-                if (!data.savedVoters || data.savedVoters.length === 0) {
-                    voterList.innerHTML = '<p class="text-[11px] text-slate-400 py-2">কোনো সংরক্ষিত ভোটার কার্ড নেই।</p>';
-                } else {
-                    voterList.innerHTML = data.savedVoters.map(v => `
-                        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
-                            <div class="flex justify-between items-center font-bold text-slate-800">
-                                <span>${v.name}</span>
-                                <span class="font-mono text-[10px] bg-slate-200 px-1.5 py-0.5 rounded">${v.voter_no}</span>
-                            </div>
-                            <div class="text-[10px] text-slate-500">পিতা: ${v.father || '—'} | ${v.ward || ''}</div>
-                        </div>
-                    `).join('');
-                }
-
             } catch (err) {
-                console.error('Vault load error:', err);
+                console.log('Loading from local vault...');
+            }
+
+            document.getElementById('badge-saved-khatian-count').textContent = savedKhatians.length + 'টি';
+            document.getElementById('badge-saved-voter-count').textContent = savedVoters.length + 'জন';
+
+            if (savedKhatians.length === 0) {
+                khatianList.innerHTML = '<p class="text-[11px] text-slate-400 py-2">কোনো সংরক্ষিত খতিয়ান নেই।</p>';
+            } else {
+                khatianList.innerHTML = savedKhatians.map(k => `
+                    <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                        <div class="flex justify-between items-center font-bold text-slate-800">
+                            <span>${k.mouza} (${k.survey} - #${k.khatian_no})</span>
+                            <button onclick="switchMainPortalView('cadastre'); setQueryPreset('${k.mouza}', '', '${k.khatian_no}', '', ''); toggleSavedVault();" class="text-emerald-700 text-[10px] font-bold hover:underline">সার্চ ➔</button>
+                        </div>
+                        <div class="text-[10px] text-slate-500 truncate">মালিক: ${k.owners_summary || '—'}</div>
+                    </div>
+                `).join('');
+            }
+
+            if (savedVoters.length === 0) {
+                voterList.innerHTML = '<p class="text-[11px] text-slate-400 py-2">কোনো সংরক্ষিত ভোটার কার্ড নেই।</p>';
+            } else {
+                voterList.innerHTML = savedVoters.map(v => `
+                    <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                        <div class="flex justify-between items-center font-bold text-slate-800">
+                            <span>${v.name}</span>
+                            <button onclick="printCitizenSlip('${v.voter_no}', '${(v.name||'').replace(/'/g, "\\'")}', '${(v.father||'').replace(/'/g, "\\'")}', '${(v.mother||'').replace(/'/g, "\\'")}', 'নাগরিক', '${(v.ward||'').replace(/'/g, "\\'")}', '${(v.address||'').replace(/'/g, "\\'")}')" class="text-xs text-slate-600 hover:text-slate-900" title="স্লিপ প্রিন্ট">🖨️</button>
+                        </div>
+                        <div class="text-[10px] text-slate-500 flex justify-between">
+                            <span>পিতা: ${v.father || '—'}</span>
+                            <span class="font-mono text-emerald-800 font-bold">${v.voter_no}</span>
+                        </div>
+                    </div>
+                `).join('');
             }
         }
 
-        // Initialize session on window load
-        window.addEventListener('DOMContentLoaded', () => {
-            initUserSession();
-        });
-    </script>
-
-
+    <!-- Citizen Slip Modal -->
+    <div id="modal-citizen-slip" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-xl w-full shadow-2xl border border-slate-200 overflow-hidden" id="citizen-slip-card">
+            <div class="bg-gradient-to-r from-emerald-700 to-teal-700 text-white p-5 flex items-start justify-between gap-3">
+                <div>
+                    <h3 class="text-lg font-extrabold">নাগরিক পরিচিতি স্লিপ</h3>
+                    <p class="text-xs text-emerald-100">রায়পুর স্মার্ট ভোটার ও নাগরিক তথ্য অনুসন্ধান মডিউল</p>
+                </div>
+                <button onclick="closeCitizenSlipModal()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-white text-sm">✕</button>
+            </div>
+            <div class="p-5 space-y-3 text-sm text-slate-800">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="bg-slate-50 rounded-xl p-3 border border-slate-200"><p class="text-[11px] text-slate-500">ভোটার নম্বর</p><p id="slip-voter-no" class="font-mono font-extrabold text-emerald-800">—</p></div>
+                    <div class="bg-slate-50 rounded-xl p-3 border border-slate-200"><p class="text-[11px] text-slate-500">লিঙ্গ</p><p id="slip-gender" class="font-bold">—</p></div>
+                    <div class="bg-slate-50 rounded-xl p-3 border border-slate-200 sm:col-span-2"><p class="text-[11px] text-slate-500">নাম</p><p id="slip-name" class="font-extrabold text-base">—</p></div>
+                    <div class="bg-slate-50 rounded-xl p-3 border border-slate-200"><p class="text-[11px] text-slate-500">পিতা / স্বামী</p><p id="slip-father" class="font-semibold">—</p></div>
+                    <div class="bg-slate-50 rounded-xl p-3 border border-slate-200"><p class="text-[11px] text-slate-500">মাতা</p><p id="slip-mother" class="font-semibold">—</p></div>
+                    <div class="bg-slate-50 rounded-xl p-3 border border-slate-200"><p class="text-[11px] text-slate-500">ওয়ার্ড / এলাকা</p><p id="slip-ward" class="font-semibold">—</p></div>
+                    <div class="bg-slate-50 rounded-xl p-3 border border-slate-200 sm:col-span-2"><p class="text-[11px] text-slate-500">ঠিকানা</p><p id="slip-address" class="font-semibold">—</p></div>
+                </div>
+                <div class="flex items-center justify-between pt-2 border-t border-slate-200 text-xs text-slate-500">
+                    <span id="slip-timestamp">—</span>
+                    <span>Raipur Smart Portal</span>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2">
+                <button onclick="closeCitizenSlipModal()" class="px-4 py-2 rounded-xl bg-white border border-slate-300 text-slate-700 font-bold text-xs hover:bg-slate-100">বন্ধ করুন</button>
+                <button onclick="window.print()" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs">প্রিন্ট / এক্সপোর্ট</button>
+            </div>
+        </div>
+    </div>
+    <style>
+        @media print {
+            body * { visibility: hidden; }
+            #modal-citizen-slip, #modal-citizen-slip * { visibility: visible; }
+            #modal-citizen-slip { position: fixed; inset: 0; background: white !important; display: flex !important; }
+            #modal-citizen-slip button { display: none !important; }
+        }
+    </style>
 </body>
 </html>
