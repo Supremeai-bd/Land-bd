@@ -528,7 +528,7 @@
                         </div>
 
                         <!-- Itemized Fee List -->
-                        <div class="space-y-2.5 text-xs">
+                        <div id="itemized-fee-list" class="space-y-2.5 text-xs" style="display: none;">
                             <div class="flex items-center justify-between py-1 border-b border-slate-100">
                                 <div>
                                     <span class="font-bold text-slate-800">১. রেজিস্ট্রেশন ফি (Registration Fee):</span>
@@ -661,7 +661,7 @@
                         </div>
 
                         <!-- Secondary Info: Official Treasury Challan Part -->
-                        <div class="bg-slate-100 p-3.5 rounded-2xl border border-slate-200 flex items-center justify-between text-xs mt-3">
+                        <div id="treasury-challan-box" class="bg-slate-100 p-3.5 rounded-2xl border border-slate-200 flex items-center justify-between text-xs mt-3" style="display: none;">
                             <div>
                                 <span class="font-bold text-slate-700 block">ব্যাংক ট্রেজারি চালানের নির্দিষ্ট অংশ:</span>
                                 <span class="text-[11px] text-slate-500">মূল সরকারি চালান কোডে ব্যাংকে জমা হবে</span>
@@ -1885,7 +1885,8 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
                 unitRate = RAIPUR_REGISTRY_RATES[areaType][mouza][landClass] || RAIPUR_REGISTRY_RATES[areaType][mouza]['nal'] || 0;
             }
 
-            const autoTotal = Math.round(unitRate * quantity);
+            const rawAutoTotal = unitRate * quantity;
+            const autoTotal = (rawAutoTotal > 0) ? Math.ceil(rawAutoTotal / 1000) * 1000 : 0;
             document.getElementById('label-unit-rate').textContent = '৳ ' + unitRate.toLocaleString('en-IN') + (matchedCommercialRate !== null ? ' (বাণিজ্যিক বাজার রেট)' : '');
             document.getElementById('label-auto-total').textContent = '৳ ' + autoTotal.toLocaleString('en-IN');
 
@@ -3095,13 +3096,17 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
             const triggerBtn = document.getElementById('btn-auth-trigger');
             const proBadge = document.getElementById('badge-pro-writer');
             const detailsBox = document.getElementById('breakdown-details');
+            const treasuryBox = document.getElementById('treasury-challan-box');
+            const itemizedList = document.getElementById('itemized-fee-list');
 
             if (!currentUser) {
                 labelUser.textContent = "লগইন / সাইন-আপ";
                 triggerBtn.onclick = toggleAuthModal;
                 if (proBadge) proBadge.classList.add('hidden');
-                // Mask hidden fees for guests & common users
+                // Mask detailed breakdowns for guests & common users (only show estimated total)
                 if (detailsBox) detailsBox.style.display = 'none';
+                if (treasuryBox) treasuryBox.style.display = 'none';
+                if (itemizedList) itemizedList.style.display = 'none';
                 return;
             }
 
@@ -3119,13 +3124,17 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
                 }
             };
 
-            // Unmask costs only for Deed Writers and Admins
+            // Unmask detailed breakdown and treasury challan only for Deed Writers and Admins
             if (isWriter || isAdmin) {
                 if (proBadge) proBadge.classList.remove('hidden');
                 if (detailsBox) detailsBox.style.display = 'block';
+                if (treasuryBox) treasuryBox.style.display = 'flex';
+                if (itemizedList) itemizedList.style.display = 'block';
             } else {
                 if (proBadge) proBadge.classList.add('hidden');
                 if (detailsBox) detailsBox.style.display = 'none';
+                if (treasuryBox) treasuryBox.style.display = 'none';
+                if (itemizedList) itemizedList.style.display = 'none';
             }
         }
 
