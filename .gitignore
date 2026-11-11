@@ -1,0 +1,52 @@
+# ==========================================
+# Raipur Land Intelligence Hub - .gitignore
+# ==========================================
+
+# Environment & Secrets (Cloudflare API Keys, credentials)
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Large Raw & Backup Data (PDFs, EC voter scans, extraction dumps)
+02_BACKUP_AND_RAW_DATA/
+*.pdf
+*.PDF
+
+# Heavy Client-Side JS Databases (>10MB - 170MB files)
+# Data is served from Cloudflare D1 Serverless DB
+raipur_voters_database.js
+raipur_full_database.js
+core_7_database.js
+01_LIVE_SMART_PORTAL_APP/raipur_voters_database.js
+01_LIVE_SMART_PORTAL_APP/raipur_full_database.js
+01_LIVE_SMART_PORTAL_APP/core_7_database.js
+
+# Local SQLite & Cache Databases
+*.db
+*.sqlite
+*.sqlite3
+raipur_cadastre_voters.db
+
+# Large Extracted JSON Datasets (>40MB - 250MB)
+raipur_all_voters.json
+raipur_master_khatians.json
+raipur_master_dag_index.json
+
+# Dependencies & Build Artefacts
+node_modules/
+.wrangler/
+dist/
+.cache/
+
+# OS & Editor specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+.kilo/
+*.log
+__pycache__/
+*.py[cod]

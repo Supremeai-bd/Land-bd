@@ -1,0 +1,8 @@
+name = "raipur-land-api"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "raipur-land-cadastre"
+database_id = "1f14abc2-4c81-467a-9c68-69ec0a94459f"
