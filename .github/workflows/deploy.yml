@@ -26,6 +26,15 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: 📦 Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: 🔍 Verify Python Code Syntax
+        run: |
+          python -m py_compile deploy_to_cloudflare.py check_live_d1.py check_deploy_syntax.py
+
       - name: 🚀 Deploy Standalone Portal & Worker to Cloudflare
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

@@ -9,7 +9,11 @@
  *  - Unified Cadastre Search Helpers
  */
 
-const TOKEN_SECRET = "RAIPUR_CADASTRE_INTERNAL_SESSION_SECRET_2026_V1";
+const DEFAULT_TOKEN_SECRET = "RAIPUR_CADASTRE_INTERNAL_SESSION_SECRET_2026_V1";
+
+function getTokenSecret(env) {
+  return (env && env.TOKEN_SECRET) ? env.TOKEN_SECRET : DEFAULT_TOKEN_SECRET;
+}
 
 // 1. Password Hashing: PBKDF2 with Salt (Zero Unsalted Hashes)
 async function hashPassword(password, saltHex = null) {
@@ -56,7 +60,7 @@ async function verifyPassword(password, storedHash) {
 }
 
 // 2. Cryptographic Session Token (HMAC SHA-256)
-async function generateSessionToken(userId, role) {
+async function generateSessionToken(userId, role, secret) {
   const enc = new TextEncoder();
   const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
   const exp = Date.now() + (30 * 24 * 60 * 60 * 1000); // 30 days
@@ -65,7 +69,7 @@ async function generateSessionToken(userId, role) {
 
   const key = await crypto.subtle.importKey(
     "raw",
-    enc.encode(TOKEN_SECRET),
+    enc.encode(secret),
     { name: "HMAC", hash: "SHA-256" },
     false,
     ["sign"]
@@ -75,7 +79,7 @@ async function generateSessionToken(userId, role) {
   return `${dataToSign}.${sig}`;
 }
 
-async function verifySessionToken(authHeader) {
+async function verifySessionToken(authHeader, secret) {
   if (!authHeader || !authHeader.startsWith("Bearer ")) return null;
   const token = authHeader.substring(7).trim();
   const parts = token.split(".");
@@ -86,7 +90,7 @@ async function verifySessionToken(authHeader) {
   const enc = new TextEncoder();
   const key = await crypto.subtle.importKey(
     "raw",
-    enc.encode(TOKEN_SECRET),
+    enc.encode(secret),
     { name: "HMAC", hash: "SHA-256" },
     false,
     ["verify"]
@@ -147,11 +151,21 @@ function mapKhatianRow(r) {
 
 export default {
   async fetch(request, env) {
+    const tokenSecret = getTokenSecret(env);
     const url = new URL(request.url);
+    const origin = request.headers.get("Origin") || "";
+    const allowedOrigins = [
+      "https://raipur-land-portal.raipur-land.workers.dev",
+      "https://data.supremeai.bd"
+    ];
+    const isAllowedOrigin = allowedOrigins.includes(origin) || origin.startsWith("http://localhost:") || origin.startsWith("http://127.0.0.1:");
+    const allowOriginHeader = isAllowedOrigin ? origin : (origin ? allowedOrigins[0] : "*");
+
     const headers = {
-      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Origin": allowOriginHeader,
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS, DELETE",
       "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Vary": "Origin",
       "Content-Type": "application/json; charset=utf-8"
     };
 
@@ -191,7 +205,16 @@ export default {
 
         if (query) {
           if (mouza !== "ALL") { query += " AND mouza = ?"; params.push(mouza); }
-          if (survey !== "ALL") { query += " AND survey = ?"; params.push(survey); }
+          if (survey !== "ALL") {
+            if (survey === "SABEK") {
+              query += " AND survey IN ('CS', 'SA', 'RS', 'সাবেক')";
+            } else if (survey === "HAAL") {
+              query += " AND survey IN ('BRS', 'Mutation', 'নামজারি', 'হাল')";
+            } else {
+              query += " AND survey = ?";
+              params.push(survey);
+            }
+          }
           query += " LIMIT 100";
 
           const { results } = await env.DB.prepare(query).bind(...params).all();
@@ -249,7 +272,7 @@ export default {
           "INSERT INTO users (id, phone, name, role, status, association_license_no, password_hash) VALUES (?, ?, ?, ?, ?, ?, ?)"
         ).bind(userId, cleanPhone, name.trim(), userRole, status, association_license_no || null, pHash).run();
 
-        const token = await generateSessionToken(userId, userRole);
+        const token = await generateSessionToken(userId, userRole, tokenSecret);
 
         return new Response(JSON.stringify({
           success: true,
@@ -286,7 +309,7 @@ export default {
           return new Response(JSON.stringify({ success: false, error: "ভুল মোবাইল নম্বর অথবা পাসওয়ার্ড!" }), { status: 401, headers });
         }
 
-        const token = await generateSessionToken(user.id, user.role);
+        const token = await generateSessionToken(user.id, user.role, tokenSecret);
 
         return new Response(JSON.stringify({
           success: true,
@@ -304,7 +327,7 @@ export default {
 
       // 4. Admin Management: Pending deed writers (AUTHENTICATED ADMIN ONLY)
       if (url.pathname === "/api/admin/writers/pending") {
-        const auth = await verifySessionToken(request.headers.get("Authorization"));
+        const auth = await verifySessionToken(request.headers.get("Authorization"), tokenSecret);
         if (!auth || (auth.role !== "admin" && auth.role !== "superadmin")) {
           return new Response(JSON.stringify({ success: false, error: "অননুমোদিত অ্যাক্সেস! শুধুমাত্র এডমিন প্রবেশাধিকার।" }), { status: 403, headers });
         }
@@ -317,7 +340,7 @@ export default {
 
       // 5. Admin Management: Approve / Reject writer (AUTHENTICATED ADMIN ONLY)
       if (url.pathname === "/api/admin/writers/action" && request.method === "POST") {
-        const auth = await verifySessionToken(request.headers.get("Authorization"));
+        const auth = await verifySessionToken(request.headers.get("Authorization"), tokenSecret);
         if (!auth || (auth.role !== "admin" && auth.role !== "superadmin")) {
           return new Response(JSON.stringify({ success: false, error: "অননুমোদিত অ্যাক্সেস! শুধুমাত্র এডমিন অনুমোদন দিতে পারেন।" }), { status: 403, headers });
         }
@@ -374,7 +397,7 @@ export default {
 
       // 7. User Vault: Save / List items (USER AUTHENTICATED)
       if (url.pathname === "/api/user/saved-items") {
-        const auth = await verifySessionToken(request.headers.get("Authorization"));
+        const auth = await verifySessionToken(request.headers.get("Authorization"), tokenSecret);
         if (!auth) {
           return new Response(JSON.stringify({ success: false, error: "লগইন আবশ্যক" }), { status: 401, headers });
         }
@@ -390,7 +413,7 @@ export default {
       }
 
       if (url.pathname === "/api/user/save-khatian" && request.method === "POST") {
-        const auth = await verifySessionToken(request.headers.get("Authorization"));
+        const auth = await verifySessionToken(request.headers.get("Authorization"), tokenSecret);
         if (!auth) {
           return new Response(JSON.stringify({ success: false, error: "লগইন আবশ্যক" }), { status: 401, headers });
         }
@@ -407,7 +430,7 @@ export default {
       }
 
       if (url.pathname === "/api/user/save-voter" && request.method === "POST") {
-        const auth = await verifySessionToken(request.headers.get("Authorization"));
+        const auth = await verifySessionToken(request.headers.get("Authorization"), tokenSecret);
         if (!auth) {
           return new Response(JSON.stringify({ success: false, error: "লগইন আবশ্যক" }), { status: 401, headers });
         }

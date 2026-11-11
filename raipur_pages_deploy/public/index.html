@@ -3086,14 +3086,6 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
                 toggleAuthModal();
 
             } catch (err) {
-                // If offline or local test fallback
-                if (currentAuthMode === 'login' && phone === '01700000000') {
-                    currentUser = { id: 'admin-01', phone: '01700000000', name: 'সুপার এডমিন', role: 'admin', status: 'active' };
-                    localStorage.setItem('raipur_portal_user', JSON.stringify(currentUser));
-                    applyUserPermissions();
-                    toggleAuthModal();
-                    return;
-                }
                 errorBox.textContent = 'সার্ভারে সংযোগ ব্যর্থ: ' + err.message;
                 errorBox.classList.remove('hidden');
             }
@@ -3102,6 +3094,7 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
         function logoutUser() {
             currentUser = null;
             localStorage.removeItem('raipur_portal_user');
+            localStorage.removeItem('auth_token');
             applyUserPermissions();
         }
 
@@ -3157,7 +3150,10 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
         async function loadPendingWriters() {
             const listContainer = document.getElementById('admin-pending-list');
             try {
-                const res = await fetch('/api/admin/writers/pending');
+                const token = localStorage.getItem('auth_token') || '';
+                const res = await fetch('/api/admin/writers/pending', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
                 const data = await res.json();
                 if (!data.success || !data.pendingWriters || data.pendingWriters.length === 0) {
                     listContainer.innerHTML = '<p class="text-xs text-slate-500 py-6 text-center">বর্তমানে কোনো অপেক্ষমান দলিল লেখক আবেদন নেই।</p>';
