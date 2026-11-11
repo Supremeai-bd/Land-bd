@@ -38,28 +38,27 @@ with open(deploy_html, "w", encoding="utf-8") as f:
 
 print(f"   Compiled standalone cloud index.html ({len(cloud_content)} bytes)")
 
-print("2. Reading credentials from .env...")
-if not os.path.exists(env_file):
-    print(f"Error: .env file not found at {env_file}")
-    sys.exit(1)
-
+print("2. Reading credentials from environment or .env...")
 creds = {}
-with open(env_file, "r", encoding="utf-8") as f:
-    for line in f:
-        line = line.strip()
-        if "=" in line and not line.startswith("#"):
-            k, v = line.split("=", 1)
-            creds[k.strip()] = v.strip().strip('"').strip("'")
+if os.path.exists(env_file):
+    with open(env_file, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if "=" in line and not line.startswith("#"):
+                k, v = line.split("=", 1)
+                creds[k.strip()] = v.strip().strip('"').strip("'")
 
-acc_id = creds.get("CLOUDFLARE_ACCOUNT_ID")
-email = creds.get("CLOUDFLARE_EMAIL")
-key = creds.get("CLOUDFLARE_GLOBAL_API_KEY")
-db_id = creds.get("CLOUDFLARE_D1_DATABASE_ID")
-worker_name = creds.get("CLOUDFLARE_WORKER_NAME", "raipur-land-portal")
-live_url = creds.get("LIVE_PORTAL_URL", "https://raipur-land-portal.raipur-land.workers.dev")
+# Read from OS environment first (for GitHub Actions CI/CD), fallback to .env
+acc_id = os.environ.get("CLOUDFLARE_ACCOUNT_ID") or creds.get("CLOUDFLARE_ACCOUNT_ID")
+email = os.environ.get("CLOUDFLARE_EMAIL") or creds.get("CLOUDFLARE_EMAIL")
+key = os.environ.get("CLOUDFLARE_GLOBAL_API_KEY") or creds.get("CLOUDFLARE_GLOBAL_API_KEY")
+api_token = os.environ.get("CLOUDFLARE_API_TOKEN") or creds.get("CLOUDFLARE_API_TOKEN")
+db_id = os.environ.get("CLOUDFLARE_D1_DATABASE_ID") or creds.get("CLOUDFLARE_D1_DATABASE_ID")
+worker_name = os.environ.get("CLOUDFLARE_WORKER_NAME") or creds.get("CLOUDFLARE_WORKER_NAME", "raipur-land-portal")
+live_url = os.environ.get("LIVE_PORTAL_URL") or creds.get("LIVE_PORTAL_URL", "https://raipur-land-portal.raipur-land.workers.dev")
 
-if not (acc_id and email and key and db_id):
-    print("Error: Missing Cloudflare credentials in .env!")
+if not (acc_id and db_id and ((email and key) or api_token)):
+    print("Error: Missing Cloudflare credentials! Provide either (CLOUDFLARE_EMAIL + CLOUDFLARE_GLOBAL_API_KEY) or CLOUDFLARE_API_TOKEN.")
     sys.exit(1)
 
 print(f"   Target Worker: {worker_name} (Account: {acc_id[:8]}...)")
@@ -117,11 +116,16 @@ body.append(b"")
 payload = b"\r\n".join(body)
 
 upload_url = f"https://api.cloudflare.com/client/v4/accounts/{acc_id}/workers/scripts/{worker_name}"
-req = urllib.request.Request(upload_url, data=payload, method="PUT", headers={
-    "X-Auth-Email": email,
-    "X-Auth-Key": key,
+req_headers = {
     "Content-Type": f"multipart/form-data; boundary={boundary}"
-})
+}
+if api_token:
+    req_headers["Authorization"] = f"Bearer {api_token}"
+else:
+    req_headers["X-Auth-Email"] = email
+    req_headers["X-Auth-Key"] = key
+
+req = urllib.request.Request(upload_url, data=payload, method="PUT", headers=req_headers)
 
 try:
     with urllib.request.urlopen(req) as resp:

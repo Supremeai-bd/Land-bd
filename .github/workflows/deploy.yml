@@ -1,0 +1,39 @@
+name: Cloudflare Edge Auto CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '01_LIVE_SMART_PORTAL_APP/**'
+      - 'raipur_cloudflare_backend/**'
+      - 'raipur_registry_rates_2025_2026.json'
+      - 'deploy_to_cloudflare.py'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy-to-cloudflare:
+    name: Deploy Raipur Land Hub to Cloudflare Edge
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 🚀 Deploy Standalone Portal & Worker to Cloudflare
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
+          CLOUDFLARE_GLOBAL_API_KEY: ${{ secrets.CLOUDFLARE_GLOBAL_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_D1_DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID }}
+          CLOUDFLARE_WORKER_NAME: ${{ secrets.CLOUDFLARE_WORKER_NAME || 'raipur-land-portal' }}
+          LIVE_PORTAL_URL: ${{ secrets.LIVE_PORTAL_URL || 'https://raipur-land-portal.raipur-land.workers.dev' }}
+        run: |
+          python deploy_to_cloudflare.py

@@ -298,61 +298,83 @@
             </div>
         </div>
 
-        <!-- Dedicated Voter & Citizen Search View (Tab 3) -->
+        <!-- Dedicated Voter & Citizen Search View (Tab 3 - Unified Theme) -->
         <div id="view-voter" class="hidden space-y-6">
-            <div class="bg-gradient-to-br from-indigo-900 via-slate-900 to-emerald-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-indigo-500/20">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-white/10">
-                    <div>
-                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold border border-indigo-500/30 mb-2">
-                            <span>👥</span> রায়পুর উপজেলা ভোটার তালিকা ও ওয়ারিশান ডাটাবেজ
-                        </div>
-                        <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight">নাগরিক ও ভোটার অনুসন্ধান পোর্টাল</h2>
-                        <p class="text-xs sm:text-sm text-slate-300 mt-1">যেকোনো এক বা একাধিক তথ্য (ভোটার নং, নাম, পিতা, মাতা, ওয়ার্ড, গ্রাম/ঠিকানা) দিয়ে সরাসরি নাগরিক প্রোফাইল খুঁজুন</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="px-3 py-1.5 rounded-xl bg-white/10 border border-white/10 text-xs font-bold text-indigo-200">
-                            মোট ভোটার কভারেজ: ৪৯২,০৭৪+
+            <div class="bg-gradient-to-br from-slate-900 via-teal-950 to-emerald-950 rounded-3xl shadow-2xl p-6 md:p-8 mb-8 text-white border border-emerald-800/40 relative overflow-hidden">
+                <!-- Background Glow Decor -->
+                <div class="absolute -right-20 -top-20 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-20 -bottom-20 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10 max-w-4xl mb-6">
+                    <div class="flex flex-wrap items-center gap-2 mb-2">
+                        <span class="px-3 py-1 bg-emerald-500/20 border border-emerald-400/40 rounded-full text-xs font-bold text-emerald-300 uppercase tracking-wider inline-flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            রায়পুর উপজেলা মাস্টার ভোটার ও নাগরিক ডাটাবেজ
+                        </span>
+                        <span class="px-3 py-1 bg-white/10 rounded-full text-xs text-slate-300">
+                            মোট নিবন্ধিত নাগরিক: ৪৯২,০৭৪+ জন
                         </span>
                     </div>
+                    <h2 class="text-2xl md:text-3xl font-extrabold text-white mb-2 leading-tight">
+                        নাগরিক ও ভোটার তথ্য স্মার্ট অনুসন্ধান পোর্টাল
+                    </h2>
+                    <p class="text-xs md:text-sm text-emerald-50/90 leading-relaxed">
+                        যেকোনো এক বা একাধিক তথ্য (ভোটার নম্বর, নাম, পিতা, মাতা, ওয়ার্ড, গ্রাম বা ঠিকানা) দিয়ে পলকের মধ্যে নাগরিক প্রোফাইল, ভোটকেন্দ্র ও সম্পৃক্ত ওয়ারিশান তথ্য অনুসন্ধান করুন।
+                    </p>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-indigo-200 mb-1.5">🔢 ভোটার নম্বর (Voter No)</label>
-                        <input type="text" id="v-voter-no" inputmode="numeric" placeholder="যেমন: ৫১০৩৬২৫৮০০০৪..." class="w-full bg-white text-slate-900 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-bold placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-sm">
+                <!-- Multi-Parameter Flexible Search Grid (Unified Frosted Glass Styling) -->
+                <div class="relative z-10 bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20 shadow-2xl space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-emerald-200 mb-1.5 flex items-center gap-1">
+                                <span>🔢 ভোটার নম্বর (Voter No)</span>
+                            </label>
+                            <input type="text" id="v-voter-no" inputmode="numeric" placeholder="যেমন: ৫১০৩৬২৫৮০০০৪..." class="w-full bg-white text-slate-900 border border-slate-200 rounded-xl px-3.5 py-2.5 min-h-[44px] text-sm font-bold placeholder-slate-400 focus:outline-none shadow-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-emerald-200 mb-1.5 flex items-center gap-1">
+                                <span>👤 নাগরিক / ভোটারের নাম (Citizen Name)</span>
+                            </label>
+                            <input type="text" id="v-name" placeholder="যেমন: নাজমা বেগম, মোঃ বাবুল..." class="w-full bg-white text-slate-900 border border-slate-200 rounded-xl px-3.5 py-2.5 min-h-[44px] text-sm font-bold placeholder-slate-400 focus:outline-none shadow-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-emerald-200 mb-1.5 flex items-center gap-1">
+                                <span>🧔 পিতা / স্বামীর নাম (Father / Guardian)</span>
+                            </label>
+                            <input type="text" id="v-father" placeholder="যেমন: মাহাম্মদ আলী, আমির হোসেন..." class="w-full bg-white text-slate-900 border border-slate-200 rounded-xl px-3.5 py-2.5 min-h-[44px] text-sm font-semibold placeholder-slate-400 focus:outline-none shadow-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-emerald-200 mb-1.5 flex items-center gap-1">
+                                <span>🧕 মাতার নাম (Mother's Name)</span>
+                            </label>
+                            <input type="text" id="v-mother" placeholder="যেমন: আনোয়ারা বেগম, হালিমা..." class="w-full bg-white text-slate-900 border border-slate-200 rounded-xl px-3.5 py-2.5 min-h-[44px] text-sm font-semibold placeholder-slate-400 focus:outline-none shadow-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-emerald-200 mb-1.5 flex items-center gap-1">
+                                <span>📍 ওয়ার্ড / কেন্দ্র (Ward / Area)</span>
+                            </label>
+                            <input type="text" id="v-ward" placeholder="যেমন: ১ নং ওয়ার্ড, চর আবাবিল, কেরোয়া..." class="w-full bg-white text-slate-900 border border-slate-200 rounded-xl px-3.5 py-2.5 min-h-[44px] text-sm font-semibold placeholder-slate-400 focus:outline-none shadow-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-emerald-200 mb-1.5 flex items-center gap-1">
+                                <span>🏡 গ্রাম / বাড়ির ঠিকানা (Village / Address)</span>
+                            </label>
+                            <input type="text" id="v-address" placeholder="যেমন: পাঠারী বাড়ী, শিকদার বাড়ি..." class="w-full bg-white text-slate-900 border border-slate-200 rounded-xl px-3.5 py-2.5 min-h-[44px] text-sm font-semibold placeholder-slate-400 focus:outline-none shadow-sm">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-indigo-200 mb-1.5">👤 নাগরিক / ভোটারের নাম (Name)</label>
-                        <input type="text" id="v-name" placeholder="যেমন: নাজমা বেগম, মোঃ বাবুল..." class="w-full bg-white text-slate-900 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-bold placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-sm">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-indigo-200 mb-1.5">🧔 পিতা / স্বামীর নাম (Father / Guardian)</label>
-                        <input type="text" id="v-father" placeholder="যেমন: মাহাম্মদ আলী, আমির হোসেন..." class="w-full bg-white text-slate-900 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-semibold placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-sm">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-indigo-200 mb-1.5">🧕 মাতার নাম (Mother's Name)</label>
-                        <input type="text" id="v-mother" placeholder="যেমন: আনোয়ারা বেগম, হালিমা..." class="w-full bg-white text-slate-900 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-semibold placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-sm">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-indigo-200 mb-1.5">📍 ওয়ার্ড / কেন্দ্র (Ward / Area)</label>
-                        <input type="text" id="v-ward" placeholder="যেমন: ১ নং ওয়ার্ড, চর আবাবিল, কেরোয়া..." class="w-full bg-white text-slate-900 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-semibold placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-sm">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-indigo-200 mb-1.5">🏡 গ্রাম / বাড়ির ঠিকানা (Village / Address)</label>
-                        <input type="text" id="v-address" placeholder="যেমন: পাঠারী বাড়ী, শিকদার বাড়ি..." class="w-full bg-white text-slate-900 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-semibold placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-sm">
-                    </div>
-                </div>
 
-                <div class="flex flex-wrap items-center justify-between gap-3 mt-6 pt-5 border-t border-white/10">
-                    <p class="text-xs text-indigo-200/80">টিপস: যেকোনো ১টি ফিল্ড পূরণ করলেই স্বয়ংক্রিয় অনুসন্ধান হবে। একাধিক ফিল্ড দিলে ফলাফল আরও সুনির্দিষ্ট হবে।</p>
-                    <div class="flex items-center gap-2">
-                        <button type="button" onclick="resetDedicatedVoterFields()" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition">
-                            রিসেট
-                        </button>
-                        <button type="button" onclick="executeDedicatedVoterSearch()" class="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black px-6 py-2.5 rounded-xl text-sm transition shadow-lg shadow-emerald-950/40 flex items-center gap-2 active:scale-95">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                            <span>ভোটার খুঁজুন</span>
-                        </button>
+                    <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/10">
+                        <p class="text-[11px] text-emerald-50/90 leading-snug">যেকোনো ১টি ফিল্ড পূরণ করলেই অনুসন্ধান হবে। একাধিক ফিল্ড পূরণ করলে আরও নিখুঁত রেজাল্ট পাওয়া যাবে।</p>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="resetDedicatedVoterFields()" class="px-4 py-2.5 min-h-[44px] rounded-xl text-sm font-bold bg-white/15 hover:bg-white/25 border border-white/25 text-white transition whitespace-nowrap">
+                                রিসেট
+                            </button>
+                            <button type="button" onclick="executeDedicatedVoterSearch()" class="bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-extrabold px-6 py-2.5 min-h-[44px] rounded-xl text-sm transition-all shadow-lg shadow-emerald-950/40 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                <span>ভোটার অনুসন্ধান করুন</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
