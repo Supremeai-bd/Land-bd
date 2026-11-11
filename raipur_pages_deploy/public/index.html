@@ -2131,44 +2131,8 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
                         let sabekMatches = data.sabekRecords || [];
                         let haalMatches = data.haalRecords || [];
 
-                        // Voter Cross-Matching from in-memory voter database if available
-                        let voterMatches = [];
-                        let candidateOwnerNames = [];
-                        [...sabekMatches, ...haalMatches].forEach(k => {
-                            (k.owners || []).forEach(o => {
-                                const clean = normalizeBengaliName(o);
-                                if (clean.length > 2) candidateOwnerNames.push(clean);
-                            });
-                        });
-
-                        if (DATABASE && DATABASE.voters && DATABASE.voters.length > 0) {
-                            const targetQueryName = name || '';
-                            const targetQueryFather = father || '';
-
-                            DATABASE.voters.forEach(v => {
-                                let vScore = 0;
-                                if (targetQueryName) vScore = calculateNameSimilarity(v.name, targetQueryName);
-                                let vfScore = 0;
-                                if (targetQueryFather) vfScore = calculateNameSimilarity(v.father, targetQueryFather);
-
-                                for (let co of candidateOwnerNames) {
-                                    const sim = calculateNameSimilarity(v.father, co);
-                                    if (sim > vfScore) vfScore = sim;
-                                }
-
-                                let totalVScore = Math.max(vScore, vfScore);
-                                if (totalVScore >= 0.45) {
-                                    voterMatches.push({
-                                        ...v,
-                                        matchPercent: Math.round(totalVScore * 100),
-                                        isHeirLink: vfScore > vScore
-                                    });
-                                }
-                            });
-                            voterMatches.sort((a, b) => b.matchPercent - a.matchPercent);
-                        }
-
-                        renderUnifiedMasterResults(mouza, dag, khatian, name, father, sabekMatches, haalMatches, [], voterMatches, container);
+                        // Default unified land search: Focused on Cadastre records (no unrequested voter dumping)
+                        renderUnifiedMasterResults(mouza, dag, khatian, name, father, sabekMatches, haalMatches, [], [], container);
                         return;
                     }
                 } catch (apiErr) {
@@ -2287,36 +2251,8 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
                 });
             }
 
-            // Voter Cross-Matching
+            // Voter Cross-Matching (Off by default for search clarity; invoked on-demand per khatian)
             let voterMatches = [];
-            if (DATABASE.voters && DATABASE.voters.length > 0) {
-                const targetQueryName = name || '';
-                const targetQueryFather = father || '';
-
-                DATABASE.voters.forEach(v => {
-                    let vScore = 0;
-                    if (targetQueryName) vScore = calculateNameSimilarity(v.name, targetQueryName);
-                    let vfScore = 0;
-                    if (targetQueryFather) vfScore = calculateNameSimilarity(v.father, targetQueryFather);
-
-                    // Cross-check with candidate landowners if land was searched
-                    for (let co of candidateOwnerNames) {
-                        const sim = calculateNameSimilarity(v.father, co);
-                        if (sim > vfScore) vfScore = sim;
-                    }
-
-                    let totalVScore = Math.max(vScore, vfScore);
-                    if (totalVScore >= 0.45) {
-                        voterMatches.push({
-                            ...v,
-                            matchPercent: Math.round(totalVScore * 100),
-                            isHeirLink: vfScore > vScore
-                        });
-                    }
-                });
-            }
-            voterMatches.sort((a, b) => b.matchPercent - a.matchPercent);
-
             renderUnifiedMasterResults(mouza, dag, khatian, name, father, sabekMatches, haalMatches, transformedHaalKhatians, voterMatches, container);
         }
 
@@ -2443,6 +2379,12 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
                                         <p class="text-slate-600">পিতা: <span class="text-slate-800 font-medium">${sanitizeBengaliText(k.guardian)}</span></p>
                                         <p class="text-slate-500 pt-1">সাবেক দাগ: <span class="font-mono font-bold text-slate-800">${k.dags && k.dags.length > 0 ? k.dags.join(', ') : '—'}</span></p>
                                     </div>
+                                    <div class="pt-2.5 mt-2 border-t border-amber-100 flex items-center justify-between">
+                                        <button onclick="inspectSpecificKhatianHeirs('${k.mouza}', '${k.survey}', '${k.khatianNo}', '${(k.owners||[]).join(', ').replace(/'/g, "\\'")}', '${(k.guardian||'').replace(/'/g, "\\'")}')" class="px-2.5 py-1.5 rounded-lg bg-amber-100/80 hover:bg-amber-200 text-amber-900 font-bold text-[11px] transition flex items-center gap-1.5">
+                                            <span>🔍 এই খতিয়ানের ওয়ারিশান খুঁজুন</span>
+                                        </button>
+                                        <span class="text-[10px] text-slate-400 font-medium">নির্দিষ্ট যাচাই</span>
+                                    </div>
                                 </div>
                             `).join('')}
                         </div>
@@ -2480,49 +2422,39 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
                                         <p class="text-slate-600">পিতা (পূর্বপুরুষ): <span class="text-indigo-900 font-semibold">${sanitizeBengaliText(k.guardian)}</span></p>
                                         <p class="text-slate-600 pt-1">হাল দাগসমূহ: <span class="font-mono font-bold text-emerald-800">${k.dags && k.dags.length > 0 ? k.dags.slice(0, 15).join(', ') + (k.dags.length > 15 ? '...' : '') : '—'}</span></p>
                                     </div>
+                                    <div class="pt-2.5 mt-2 border-t border-emerald-100 flex items-center justify-between">
+                                        <button onclick="inspectSpecificKhatianHeirs('${k.mouza}', '${k.survey}', '${k.khatianNo}', '${(k.owners||[]).join(', ').replace(/'/g, "\\'")}', '${(k.guardian||'').replace(/'/g, "\\'")}')" class="px-2.5 py-1.5 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-bold text-[11px] transition flex items-center gap-1.5">
+                                            <span>🔍 এই খতিয়ানের ওয়ারিশান খুঁজুন</span>
+                                        </button>
+                                        <span class="text-[10px] text-slate-400 font-medium">নির্দিষ্ট যাচাই</span>
+                                    </div>
                                 </div>
                             `).join('')}
                         </div>
 
-                        <!-- Pillar 3: Voter & Heir Cross-Match (EC Database 2026) -->
+                        <!-- Pillar 3: Voter & Heir Cross-Match (Contextual / On-Demand) -->
                         <div id="col-voter" class="lg:col-span-4 space-y-4 scroll-mt-24">
                             <div class="flex items-center justify-between border-b-2 border-indigo-500 pb-2">
                                 <div>
                                     <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
                                         <span class="w-3 h-3 rounded-full bg-indigo-500"></span>
-                                        🗳️ ৩. ভোটার তালিকা ও সম্ভাব্য ওয়ারিশান
+                                        🗳️ ৩. নির্দিষ্ট ওয়ারিশান অনুসন্ধান
                                     </h3>
-                                    <p class="text-[10px] text-slate-500 mt-0.5">নাম ও পিতার নামের সম্ভাব্য মিল (চূড়ান্ত ওয়ারিশ সনদ নয়)</p>
+                                    <p class="text-[10px] text-slate-500 mt-0.5">খতিয়ান সিলেক্ট করে সুনির্দিষ্ট মিল যাচাই</p>
                                 </div>
-                                <span class="badge bg-indigo-100 text-indigo-900 font-bold">${voters.length} জন ভোটার</span>
+                                <span id="voter-badge-count" class="badge bg-indigo-100 text-indigo-900 font-bold">${voters.length > 0 ? voters.length + ' জন' : 'প্রস্তুত'}</span>
                             </div>
 
-                            ${voters.length === 0 ? `
-                                <div class="bg-slate-50 border border-dashed border-slate-200 rounded-2xl p-6 text-center text-xs text-slate-400">
-                                    ভোটার তালিকায় সংশ্লিষ্ট কোনো ম্যাচ পাওয়া যায়নি।
-                                </div>
-                            ` : voters.slice(0, 30).map(v => `
-                                <div class="bg-white rounded-2xl border border-indigo-100 shadow-sm p-4 hover:border-indigo-300 transition">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <span class="badge ${v.matchPercent >= 80 ? 'bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-800'} font-bold font-mono">
-                                            ${v.matchPercent}% Match
-                                        </span>
-                                        <div class="flex items-center gap-1.5">
-                                            <span class="text-[11px] text-slate-400 font-semibold">${v.gender} · ${v.ward}</span>
-                                            <button onclick="saveVoterToVault('${v.voterNo}', '${v.name}', '${v.father||''}', '${v.mother||''}', '${v.ward||''}', '${v.address||''}')" title="লকারে সেভ করুন" class="p-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
-                                            </button>
-                                        </div>
+                            <div id="heir-inspector-panel">
+                                ${voters.length === 0 ? `
+                                    <div class="bg-indigo-50/70 border border-dashed border-indigo-200 rounded-2xl p-5 text-center text-xs text-slate-600 space-y-2">
+                                        <div class="w-10 h-10 mx-auto rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 text-lg">🧬</div>
+                                        <p class="font-bold text-slate-800 text-xs">সুনির্দিষ্ট খতিয়ানের ওয়ারিশান খুঁজুন</p>
+                                        <p class="text-[11px] text-slate-500 leading-relaxed">যেকোনো সাবেক বা হাল খতিয়ানের নিচে থাকা <span class="inline-block px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-900 font-bold">"🔍 এই খতিয়ানের ওয়ারিশান খুঁজুন"</span> বাটনে ক্লিক করুন।</p>
+                                        <p class="text-[10px] text-amber-700 bg-amber-50 p-2 rounded-xl border border-amber-200">অযথা হাজার হাজার নাম না দেখিয়ে শুধুমাত্র ওই খতিয়ানের মালিক/পিতার সাথে মিলিয়ে সম্ভাব্য ৩-৫ জন ফিল্টার করে দেখানো হবে।</p>
                                     </div>
-                                    <div class="text-xs space-y-1">
-                                        <h4 class="font-bold text-slate-900 text-sm">${v.name}</h4>
-                                        <p class="text-slate-600">পিতা/স্বামী: <span class="font-bold text-indigo-950">${v.father || '—'}</span></p>
-                                        <p class="text-slate-500">মাতা: <span class="text-slate-700">${v.mother || '—'}</span></p>
-                                        <p class="text-[11px] text-slate-400 pt-1 font-mono">${v.address || 'রায়পুর, লক্ষ্মীপুর'}</p>
-                                    </div>
-                                </div>
-                            `).join('')}
-                            ${voters.length > 30 ? `<div class="text-center text-xs text-slate-500 py-2">+ আরও ${voters.length - 30} জন ভোটারের ম্যাচ বিদ্যমান</div>` : ''}
+                                ` : renderHeirCards(voters)}
+                            </div>
                         </div>
 
                     </div>
@@ -2531,6 +2463,163 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
             container.innerHTML = html;
             setSearchLoading(false);
             container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ================= SPECIFIC KHATIAN-LINKED HEIR INSPECTOR =================
+        async function inspectSpecificKhatianHeirs(mouza, survey, khatianNo, ownersStr, guardianStr) {
+            const panel = document.getElementById('heir-inspector-panel');
+            const badge = document.getElementById('voter-badge-count');
+            const voterCol = document.getElementById('col-voter');
+
+            if (voterCol) {
+                voterCol.style.display = 'block';
+                voterCol.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            if (!panel) return;
+
+            const ownersList = (ownersStr || '').split(',').map(s => s.trim()).filter(Boolean);
+            const guardian = (guardianStr || '').trim();
+
+            panel.innerHTML = `
+                <div class="p-4 bg-indigo-50/90 border border-indigo-200 rounded-2xl text-center space-y-2">
+                    <div class="inline-block animate-spin rounded-full h-6 w-6 border-2 border-indigo-600 border-t-transparent"></div>
+                    <p class="text-xs font-bold text-indigo-950">খতিয়ান #${khatianNo} (${mouza}) এর ওয়ারিশান বিশ্লেষণ হচ্ছে...</p>
+                    <p class="text-[10px] text-indigo-700">মালিক: ${ownersStr.substring(0, 50)} | পিতা: ${guardian || '—'}</p>
+                </div>
+            `;
+
+            // Candidate search keys: strictly primary owners as fathers of current voters
+            let candidateFathers = [];
+            ownersList.forEach(o => {
+                const clean = normalizeBengaliName(o);
+                if (clean.length >= 3) candidateFathers.push(clean);
+            });
+            const cleanGuardian = normalizeBengaliName(guardian);
+            if (cleanGuardian.length >= 3) candidateFathers.push(cleanGuardian);
+
+            let matchedVoters = [];
+
+            // 1. Try Cloud API first
+            const isCloud = window.location.hostname.includes('workers.dev') || (window.location.protocol === 'https:' && !/^(localhost|127\.0\.0\.1)$/i.test(window.location.hostname));
+            if (isCloud && candidateFathers.length > 0) {
+                try {
+                    for (let fatherName of candidateFathers.slice(0, 3)) {
+                        const p = new URLSearchParams();
+                        p.append('father', fatherName);
+                        const resp = await fetch('/api/voters?' + p.toString());
+                        if (resp.ok) {
+                            const resJson = await resp.json();
+                            if (resJson && resJson.success && Array.isArray(resJson.voters)) {
+                                resJson.voters.forEach(v => {
+                                    if (!matchedVoters.some(mv => mv.voterNo === (v.voterNo || v.voter_no))) {
+                                        matchedVoters.push({
+                                            voterNo: v.voterNo || v.voter_no || '',
+                                            name: v.name || '',
+                                            father: v.father || '',
+                                            mother: v.mother || '',
+                                            gender: v.gender || '',
+                                            ward: v.ward || '',
+                                            address: v.address || '',
+                                            matchedFather: fatherName,
+                                            confidenceLevel: 'উচ্চ মিল (পিতার নাম সরাসরি সাদৃশ্য)'
+                                        });
+                                    }
+                                });
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Online heir lookup failed, falling back to local memory if available:', e);
+                }
+            }
+
+            // 2. Local Fallback if in memory
+            if (matchedVoters.length === 0 && DATABASE && DATABASE.voters && DATABASE.voters.length > 0) {
+                DATABASE.voters.forEach(v => {
+                    if (!v.father) return;
+                    for (let cf of candidateFathers) {
+                        const sim = calculateNameSimilarity(v.father, cf);
+                        if (sim >= 0.70) { // Strict matching requirement (no 40% noise)
+                            if (!matchedVoters.some(mv => mv.voterNo === v.voterNo)) {
+                                matchedVoters.push({
+                                    ...v,
+                                    matchedFather: cf,
+                                    confidenceLevel: sim >= 0.85 ? 'উচ্চ মিল (পিতার নাম সরাসরি সাদৃশ্য)' : 'সম্ভাব্য মিল (পিতার নামের আংশিক সাদৃশ্য)'
+                                });
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Limit to top 5 verified contextual heirs
+            matchedVoters = matchedVoters.slice(0, 5);
+
+            if (badge) badge.textContent = matchedVoters.length + ' জন';
+
+            panel.innerHTML = `
+                <div class="space-y-3">
+                    <div class="p-3 bg-white border border-indigo-200 rounded-xl flex items-center justify-between text-xs">
+                        <div>
+                            <span class="font-bold text-indigo-950">যাচাইকৃত খতিয়ান: #${khatianNo} (${mouza} - ${survey})</span>
+                            <p class="text-[10px] text-slate-500">পূর্বপুরুষ সূত্র: ${candidateFathers.slice(0, 2).join(', ')}</p>
+                        </div>
+                        <span class="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">ফিল্টার্ড</span>
+                    </div>
+
+                    ${matchedVoters.length === 0 ? `
+                        <div class="p-6 bg-slate-50 border border-dashed border-slate-300 rounded-2xl text-center space-y-1">
+                            <p class="text-xs font-bold text-slate-700">কোনো সুনির্দিষ্ট ওয়ারিশান মিল পাওয়া যায়নি</p>
+                            <p class="text-[11px] text-slate-500">এই খতিয়ানের মালিক/পিতার নামের সাথে সংশ্লিষ্ট এলাকায় ভোটার তালিকায় উচ্চ-সাদৃশ্যপূর্ণ কোনো রেকর্ড মেলেনি।</p>
+                        </div>
+                    ` : matchedVoters.map(v => `
+                        <div class="bg-white rounded-2xl border-2 border-indigo-200/90 shadow-sm p-4 space-y-2 hover:border-indigo-400 transition">
+                            <div class="flex items-center justify-between">
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-indigo-50 text-indigo-900 border border-indigo-200">
+                                    ${v.confidenceLevel}
+                                </span>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] text-slate-500">${v.gender} · ${v.ward}</span>
+                                    <button onclick="saveVoterToVault('${v.voterNo}', '${v.name}', '${v.father||''}', '${v.mother||''}', '${v.ward||''}', '${v.address||''}')" title="লকারে সেভ করুন" class="p-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="text-xs space-y-1">
+                                <h4 class="font-extrabold text-slate-900 text-sm">${v.name}</h4>
+                                <p class="text-slate-600">পিতা/স্বামী: <span class="font-bold text-indigo-950">${v.father || '—'}</span> <span class="text-[10px] text-emerald-700 font-semibold">(ম্যাচ: ${v.matchedFather})</span></p>
+                                <p class="text-slate-500">মাতা: <span class="text-slate-700">${v.mother || '—'}</span></p>
+                                <p class="text-[10px] text-slate-400 font-mono">${v.address || 'রায়পুর, লক্ষ্মীপুর'}</p>
+                            </div>
+                        </div>
+                    `).join('')}
+
+                    <div class="p-2.5 bg-amber-50 rounded-xl border border-amber-200 text-[10px] text-amber-900 leading-snug">
+                        ⚠️ <b>সতর্কতা:</b> এই মিল শুধুমাত্র ভোটার তালিকার নাম ও পিতার নামের গাণিতিক সূত্রভিত্তিক। এটি কোনো আদালত বা ইউনিয়ন পরিষদ কর্তৃক ইস্যুকৃত আইনগত ওয়ারিশান সনদ নয়।
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderHeirCards(voters) {
+            return voters.map(v => `
+                <div class="bg-white rounded-2xl border border-indigo-100 shadow-sm p-4 hover:border-indigo-300 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="badge ${v.matchPercent >= 80 ? 'bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-800'} font-bold font-mono">
+                            ${v.matchPercent}% Match
+                        </span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[11px] text-slate-400 font-semibold">${v.gender} · ${v.ward}</span>
+                        </div>
+                    </div>
+                    <div class="text-xs space-y-1">
+                        <h4 class="font-bold text-slate-900 text-sm">${v.name}</h4>
+                        <p class="text-slate-600">পিতা: <span class="font-bold text-indigo-950">${v.father || '—'}</span></p>
+                        <p class="text-slate-500">মাতা: <span class="text-slate-700">${v.mother || '—'}</span></p>
+                    </div>
+                </div>
+            `).join('');
         }
         
         // ================= DEDICATED VOTER SEARCH CONTROLLER =================
