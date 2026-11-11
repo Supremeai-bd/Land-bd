@@ -22,6 +22,7 @@ SECRET_PATTERNS = [
 BLOCKED_FILES = [
     ".env",
     ".env.local",
+    "02_BACKUP_AND_RAW_DATA",
     "raipur_cadastre_voters.db",
     "raipur_all_voters.json",
     "raipur_voters_database.js"
@@ -58,7 +59,10 @@ def check_security():
             if size > MAX_FILE_SIZE:
                 violations.append(f"[OVERSIZED FILE] '{file_path}' is {size / (1024*1024):.2f} MB (Limit: 50 MB). Use R2 storage instead!")
 
-        # 3. Check staged content for secret leaks
+        # 3. Check staged content for secret leaks (skip example/template files)
+        if base_name in [".env.example", "wrangler.toml.example"]:
+            continue
+
         diff_content = get_staged_diff(file_path)
         for line in diff_content.splitlines():
             # Only examine added lines in git diff

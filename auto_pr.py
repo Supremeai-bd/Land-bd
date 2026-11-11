@@ -35,24 +35,26 @@ def main():
     print()
 
     # 3. Prompt user
-    try:
-        user_input = input("Enter Task / Feature Name (e.g. khatian search speed optimization): ").strip()
-    except (EOFError, KeyboardInterrupt):
-        sys.exit(0)
+    def prompt_noninteractive(prompt=""):
+        try:
+            return input(prompt).strip()
+        except (EOFError, KeyboardInterrupt):
+            return ""
 
-    if not user_input:
+    task_name = prompt_noninteractive("Enter Task / Feature Name (e.g. khatian search speed optimization): ")
+
+    if not task_name:
         print("[ERROR] Task name cannot be empty!")
-        input("\nPress Enter to exit...")
         sys.exit(1)
 
     # Convert to clean branch slug
-    slug = re.sub(r'[^a-zA-Z0-9]+', '-', user_input).strip('-').lower()
+    slug = re.sub(r'[^a-zA-Z0-9]+', '-', task_name).strip('-').lower()
     if not slug:
         slug = "feature-patch"
 
     print("\n" + "=" * 70)
     print(f"  Branch Name : {slug}")
-    print(f"  Commit / PR : {user_input}")
+    print(f"  Commit / PR : {task_name}")
     print("=" * 70 + "\n")
 
     # 4. Git checkout -b

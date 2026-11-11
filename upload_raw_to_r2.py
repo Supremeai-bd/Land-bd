@@ -161,6 +161,11 @@ def upload_files(client, bucket_name):
         file_size = path.stat().st_size
         size_mb = file_size / (1024 * 1024)
 
+        if file_size > 50 * 1024 * 1024:
+            print(f"[SKIP] {key} ({size_mb:.2f} MB) exceeds 50MB limit; skipping upload.")
+            skipped_count += 1
+            continue
+
         # Check if already uploaded with same size
         if key in existing and existing[key] == file_size:
             print(f"[{idx}/{total_files}] ⏩ Skipped (Already in R2): {key}")
