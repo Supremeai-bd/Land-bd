@@ -3,10 +3,12 @@ import json
 import os
 import time
 import hashlib
+from pathlib import Path
 
-DB_PATH = r"F:\khotiyan book\raipur_cadastre_voters.db"
-KHATIANS_JSON = r"F:\khotiyan book\02_BACKUP_AND_RAW_DATA\Raipur_Land_Mapping_Data\raipur_master_khatians.json"
-VOTERS_JSON = r"F:\khotiyan book\02_BACKUP_AND_RAW_DATA\Raipur_Land_Mapping_Data\raipur_all_voters.json"
+BASE_DIR = Path(__file__).resolve().parent
+DB_PATH = str(BASE_DIR / "raipur_cadastre_voters.db")
+KHATIANS_JSON = str(BASE_DIR / "02_BACKUP_AND_RAW_DATA" / "Raipur_Land_Mapping_Data" / "raipur_master_khatians.json")
+VOTERS_JSON = str(BASE_DIR / "02_BACKUP_AND_RAW_DATA" / "Raipur_Land_Mapping_Data" / "raipur_all_voters.json")
 
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
@@ -106,7 +108,7 @@ CREATE TABLE saved_voters (
 );
 """)
 
-cursor.executemany("INSERT INTO khatians (mouza, survey, khatianNo, owners, guardian, dags, totalLand) VALUES (?, ?, ?, ?, ?, ?, ?)", [])
+cursor.executemany("INSERT INTO khatians (mouza, survey, khatian_no, owners, guardian, dags, total_land) VALUES (?, ?, ?, ?, ?, ?, ?)", [])
 cursor.executemany("INSERT INTO dag_khatian_map (mouza, survey, dag_no, khatian_no) VALUES (?, ?, ?, ?)", list())
 conn.commit()
 print("2. Created tables: users, saved_khatians, saved_voters, khatians, dag_khatian_map, voters.")

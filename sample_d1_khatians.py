@@ -1,12 +1,16 @@
-import json, urllib.request
+import json, urllib.request, os
+
+base_dir = os.path.dirname(os.path.abspath(__file__))
+env_path = os.path.join(base_dir, '.env')
 
 creds = {}
-with open('F:/khotiyan book/.env', 'r', encoding='utf-8') as f:
-    for line in f:
-        line = line.strip()
-        if '=' in line and not line.startswith('#'):
-            k, v = line.split('=', 1)
-            creds[k.strip()] = v.strip().strip('"').strip("'")
+if os.path.exists(env_path):
+    with open(env_path, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if '=' in line and not line.startswith('#'):
+                k, v = line.split('=', 1)
+                creds[k.strip()] = v.strip().strip('"').strip("'")
 
 acc_id = creds['CLOUDFLARE_ACCOUNT_ID']
 email = creds['CLOUDFLARE_EMAIL']

@@ -87,15 +87,25 @@ print("3. Packaging and uploading Worker script to Cloudflare Edge...")
 boundary = "---------------------------974767299852498929531610575"
 body = []
 
+bindings = [
+    {
+        "type": "d1",
+        "name": "DB",
+        "id": db_id
+    }
+]
+
+token_secret = os.environ.get("TOKEN_SECRET") or creds.get("TOKEN_SECRET")
+if token_secret:
+    bindings.append({
+        "type": "secret_text",
+        "name": "TOKEN_SECRET",
+        "text": token_secret
+    })
+
 metadata = {
     "main_module": "index.js",
-    "bindings": [
-        {
-            "type": "d1",
-            "name": "DB",
-            "id": db_id
-        }
-    ]
+    "bindings": bindings
 }
 
 body.append(f"--{boundary}".encode())
