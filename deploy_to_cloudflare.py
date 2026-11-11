@@ -2,6 +2,7 @@ import os
 import sys
 import urllib.request
 import json
+import re
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 deploy_html = os.path.join(base_dir, "raipur_pages_deploy", "public", "index.html")
@@ -32,11 +33,76 @@ if target_str in local_content:
 else:
     cloud_content = local_content.replace("</head>", f"{replacement_str}\n</head>")
 
+# Large citizen/land datasets are local-only assets and are deliberately not
+# committed or bundled into the Worker. Production reads from the D1 API.
+for asset in ("raipur_full_database.js", "core_7_database.js", "raipur_voters_database.js"):
+    pattern = re.compile(r'<script\s+src=["\']' + re.escape(asset) + r'["\']\s*>\s*</script>', re.IGNORECASE)
+    cloud_content, removed = pattern.subn("", cloud_content)
+    if removed != 1:
+        raise SystemExit(f"Expected one {asset} script reference in the portal HTML; found {removed}.")
+
+# Replace the local-global initializer so an API-only Worker never evaluates
+# undefined globals after the local data assets have been removed.
+database_pattern = re.compile(r"(?ms)^[ \t]*const DATABASE = \{.*?^[ \t]{8}\};")
+cloud_content, database_replacements = database_pattern.subn(
+    "        const DATABASE = { khatians: [], dagIndex: {}, voters: [] };",
+    cloud_content,
+    count=1,
+)
+if database_replacements != 1:
+    raise SystemExit("Could not safely replace the local DATABASE initializer for the API-only Worker build.")
+
+# Voter API access is authenticated; use the browser's session token.
+voter_fetch_old = "const resp = await fetch('/api/voters?' + p.toString());"
+voter_fetch_new = "const resp = await fetch('/api/voters?' + p.toString(), { headers: { 'Authorization': 'Bearer ' + getPortalAuthToken() } });"
+if local_content.count(voter_fetch_old) < 1:
+    raise SystemExit("Could not identify the online voter lookup call; refusing to deploy.")
+cloud_content = cloud_content.replace(voter_fetch_old, voter_fetch_new)
+token_helper = """<script>
+function getPortalAuthToken() {
+  const stores = [localStorage, sessionStorage];
+  const knownKeys = ['auth_token', 'raipur_token', 'raipur_auth_token', 'access_token', 'token'];
+  for (const store of stores) {
+    for (const key of knownKeys) {
+      const raw = store.getItem(key);
+      if (raw) {
+        const value = raw.replace(/^Bearer\\s+/i, '');
+        if (value.split('.').length === 3) return value;
+        try {
+          const parsed = JSON.parse(value);
+          const nested = parsed && (parsed.token || parsed.auth_token || parsed.accessToken);
+          if (typeof nested === 'string' && nested.split('.').length === 3) return nested;
+        } catch (_) {}
+      }
+    }
+    for (const key of Object.keys(store)) {
+      const raw = store.getItem(key);
+      if (raw && raw.split('.').length === 3) return raw;
+      if (raw && raw.startsWith('{')) {
+        try {
+          const parsed = JSON.parse(raw);
+          const nested = parsed && (parsed.token || parsed.auth_token || parsed.accessToken);
+          if (typeof nested === 'string' && nested.split('.').length === 3) return nested;
+        } catch (_) {}
+      }
+    }
+  }
+  return '';
+}
+</script>"""
+if "</head>" not in cloud_content:
+    raise SystemExit("Portal HTML has no closing head tag; refusing to inject the auth-token helper.")
+cloud_content = cloud_content.replace("</head>", token_helper + "\n</head>", 1)
+
 os.makedirs(os.path.dirname(deploy_html), exist_ok=True)
 with open(deploy_html, "w", encoding="utf-8") as f:
     f.write(cloud_content)
 
 print(f"   Compiled standalone cloud index.html ({len(cloud_content)} bytes)")
+
+if "--apply" not in sys.argv:
+    print("Dry run only: no Cloudflare API request was made. Pass --apply to deploy the Worker.")
+    sys.exit(0)
 
 print("2. Reading credentials from environment or .env...")
 creds = {}
@@ -60,6 +126,46 @@ live_url = os.environ.get("LIVE_PORTAL_URL") or creds.get("LIVE_PORTAL_URL", "ht
 if not (acc_id and db_id and ((email and key) or api_token)):
     print("Error: Missing Cloudflare credentials! Provide either (CLOUDFLARE_EMAIL + CLOUDFLARE_GLOBAL_API_KEY) or CLOUDFLARE_API_TOKEN.")
     sys.exit(1)
+
+def d1_query(sql):
+    url = f"https://api.cloudflare.com/client/v4/accounts/{acc_id}/d1/database/{db_id}/query"
+    headers = {"Content-Type": "application/json"}
+    if api_token:
+        headers["Authorization"] = f"Bearer {api_token}"
+    else:
+        headers["X-Auth-Email"] = email
+        headers["X-Auth-Key"] = key
+    payload = json.dumps({"sql": sql}).encode("utf-8")
+    request = urllib.request.Request(url, data=payload, method="POST", headers=headers)
+    with urllib.request.urlopen(request, timeout=30) as response:
+        result = json.loads(response.read().decode("utf-8"))
+    if not result.get("success"):
+        raise RuntimeError("D1 schema preflight query failed")
+    return result.get("result", [{}])[0].get("results", [])
+
+def require_migrated_d1_schema():
+    # Read-only checks; migrations must be applied separately and reviewed.
+    for sql in (
+        "SELECT notes FROM saved_khatians LIMIT 0",
+        "SELECT notes FROM saved_voters LIMIT 0",
+        "SELECT source_pdf FROM voters LIMIT 0",
+    ):
+        d1_query(sql)
+    for table in ("saved_khatians", "saved_voters"):
+        rows = d1_query(f"SELECT sql FROM sqlite_master WHERE type='table' AND name='{table}'")
+        ddl = " ".join(str(row.get("sql") or "") for row in rows).lower()
+        if "id text primary key" not in " ".join(ddl.split()):
+            raise RuntimeError(f"D1 migration required before Worker deploy: {table}.id must be TEXT PRIMARY KEY")
+    expected_counts = {
+        "khatians": int(os.environ.get("D1_EXPECTED_KHATIANS") or creds.get("D1_EXPECTED_KHATIANS", "157657")),
+        "voters": int(os.environ.get("D1_EXPECTED_VOTERS") or creds.get("D1_EXPECTED_VOTERS", "492074")),
+        "dag_khatian_map": int(os.environ.get("D1_EXPECTED_DAG_RELATIONS") or creds.get("D1_EXPECTED_DAG_RELATIONS", "418967")),
+    }
+    for table, expected in expected_counts.items():
+        rows = d1_query(f"SELECT COUNT(*) AS total FROM {table}")
+        if not rows or int(rows[0].get("total", -1)) != expected:
+            actual = int(rows[0].get("total", -1)) if rows else -1
+            raise RuntimeError(f"D1 completeness check failed for {table}: {actual:,} rows; expected exactly {expected:,}")
 
 print(f"   Target Worker: {worker_name} (Account: {acc_id[:8]}...)")
 
@@ -96,12 +202,20 @@ bindings = [
 ]
 
 token_secret = os.environ.get("TOKEN_SECRET") or creds.get("TOKEN_SECRET")
-if token_secret:
-    bindings.append({
-        "type": "secret_text",
-        "name": "TOKEN_SECRET",
-        "text": token_secret
-    })
+if not token_secret or len(token_secret.encode("utf-8")) < 32:
+    print("Error: TOKEN_SECRET must be configured as a random value of at least 32 bytes; refusing insecure deployment.")
+    sys.exit(1)
+try:
+    require_migrated_d1_schema()
+except Exception as exc:
+    print(f"Error: D1 is not ready for this Worker release: {exc}")
+    print("Apply and verify the reviewed migrations in raipur_cloudflare_backend/migrations/ first.")
+    sys.exit(1)
+bindings.append({
+    "type": "secret_text",
+    "name": "TOKEN_SECRET",
+    "text": token_secret
+})
 
 metadata = {
     "main_module": "index.js",

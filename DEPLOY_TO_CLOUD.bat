@@ -16,7 +16,7 @@ cd /d "%SCRIPT_DIR%"
 echo [INFO] ক্লাউড ডিপ্লয়মেন্ট শুরু হচ্ছে...
 echo.
 
-python "%SCRIPT_DIR%deploy_to_cloudflare.py"
+python "%SCRIPT_DIR%deploy_to_cloudflare.py" --apply
 
 if %errorlevel% neq 0 (
     echo.

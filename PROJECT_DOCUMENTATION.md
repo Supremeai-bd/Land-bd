@@ -4,7 +4,9 @@
 > **প্রজেক্টের নাম:** রায়পুর স্মার্ট ভূমি ও নাগরিক অনুসন্ধান পোর্টাল (Raipur Smart Land Cadastre & Citizen Intelligence Hub)  
 > **কভারেজ এলাকা:** রায়পুর উপজেলা, লক্ষ্মীপুর জেলা, চট্টগ্রাম বিভাগ (পৌরসভা ও সকল ইউনিয়ন)  
 > **লাইভ ক্লাউড ইউআরএল:** https://raipur-land-portal.raipur-land.workers.dev  
-> **প্রস্তুত তারিখ:** ১১ নভেম্বর, ২০২৬  
+> **প্রস্তুত তারিখ:** ১১ নভেম্বর, ২০২৬
+
+> **বর্তমান যাচাই-সীমা (১২ নভেম্বর ২০২৬):** এই নথির কিছু অংশ প্রস্তাবিত architecture/পুরোনো দাবি, production completion-এর প্রমাণ নয়। Canonical JSON-এ ১৫৭,৬৫৭ খতিয়ান ও ৪৯২,০৭৪ voter row আছে; তবু PDF/page-by-page extraction audit হয়নি। Local SQLite-তে আগে row ছিল না এবং D1 source-এর তুলনায় অসম্পূর্ণ ছিল। বর্তমান derived lookup কেবল একই `(mouza, survey)`-এর dag→khatian; evidence-backed CS/SA/RS↔BRS parcel lineage নেই। নাম/পিতার নামের similarity legal ownership বা inheritance প্রমাণ করে না।
 
 ---
 
@@ -15,7 +17,7 @@
 2. **ওয়ারিশ যাচাইয়ের জটিলতা:** খতিয়ানের আদি মালিকদের জীবিত বংশধর বা ওয়ারিশদের পরিচয় যাচাইয়ের জন্য নির্বাচন কমিশনের ভোটার তালিকার সাথে মিলানো।
 3. **দলিল খরচের অস্বচ্ছতা:** সরকারি বিধিবদ্ধ চালানের খরচ এবং স্থানীয় সাব-রেজিস্ট্রি অফিসের অন-গ্রাউন্ড দলিল লেখক সমিতি ও সেরেস্তা খরচের পার্থক্য জানা না থাকা।
 
-এই প্রজেক্টের মাধ্যমে রায়পুর উপজেলার শতভাগ ভূমি রেকর্ড (১৫৭,৬৫৭টি খতিয়ান), ১২০টি দাগ বইয়ের মিলান ডেটা, ৪৯২,০৭৪ জন ভোটারের তালিকা এবং ২০২৫–২০২৬ অর্থ-বছরের সরকারি বাজারমূল্য গেজেট ও দলিল লেখক সমিতির বাস্তব রেট চার্টকে একটি সম্পূর্ণ সার্ভারলেস ও হালকা আর্কিটেকচারে একীভূত করা হয়েছে।
+প্রজেক্টের canonical extracted JSON-এ ১৫৭,৬৫৭টি খতিয়ান ও ৪৯২,০৭৪টি voter row আছে এবং আলাদা registry-rate assets রয়েছে। এই row count নিজে শতভাগ সরকারি coverage, PDF-সঠিকতা, পূর্ণ D1 ingestion, বা cross-survey matching প্রমাণ করে না; production D1 completeness ও PDF provenance আলাদাভাবে যাচাই করতে হবে।
 
 ---
 
@@ -34,6 +36,8 @@
 
 ## ৩. র-ফাইল প্রসেসিং, এক্সট্রাকশন ও নরমালাইজেশন পাইপলাইন
 
+নিচের flow একটি ঐতিহাসিক/লক্ষ্য-architecture; inventory-তে source-PDF থেকে JSON পর্যন্ত পূর্ণ reproducible ETL ও page-level validation প্রমাণিত হয়নি।
+
 ```mermaid
 flowchart TD
     subgraph RawData["১. র ফাইলসমূহ (Raw Source Files)"]
@@ -51,7 +55,7 @@ flowchart TD
     subgraph Intermediate["৩. মধ্যবর্তী স্ট্রাকচার্ড JSON ডেটাসেট"]
         J1["raipur_master_khatians.json<br/>(১৫৭,৬৫৭টি খতিয়ান ও মালিকানার তালিকা)"]
         J2["raipur_all_voters.json<br/>(৪৯২,০৭৪ জন ভোটারের ডেটাবেস)"]
-        J3["raipur_master_dag_index.json<br/>(৭৭,৮২৫টি দাগ রূপান্তর রিলেশন)"]
+        J3["raipur_master_dag_index.json<br/>(৪১৮,৯৬৭টি same-survey dag→khatian relation)"]
     end
 
     subgraph DBEngine["৪. ইনভার্টেড ইনডেক্সিং ও ডেটাবেস স্টোরেজ"]
@@ -64,8 +68,8 @@ flowchart TD
     Intermediate --> DBEngine
 ```
 
-### ক. নির্বাচন কমিশনের বাংলা ফন্ট গ্লিফ মেরামত ইঞ্জিন (EC Font Glyph Repair)
-নির্বাচন কমিশনের ভোটার তালিকা PDF-এ ইউনিকোড ফন্ট এনকোডিং ভেঙে গিয়ে বিশেষ ক্যারেক্টার প্রদর্শিত হতো। পাইথন স্ক্রিপ্টের মাধ্যমে নিচের ম্যাপিং অ্যালগরিদম প্রয়োগ করে শতভাগ বিশুদ্ধ বাংলা পাঠোদ্ধার করা হয়েছে:
+### ক. বাংলা ফন্ট গ্লিফ মেরামত — যাচাই-অপেক্ষমাণ দাবি
+নিচের glyph substitutions পূর্ববর্তী নথিতে প্রস্তাবিত/দাবিকৃত উদাহরণ; বর্তমান inventory-তে পুনরুৎপাদনযোগ্য PDF extraction ও page-level validation প্রমাণিত হয়নি। এগুলোকে শতভাগ বিশুদ্ধ পাঠোদ্ধার ধরে নেওয়া যাবে না:
 - `ƃ` $\longrightarrow$ `্দু` (যেমন: আƃল ➔ আব্দুল)
 - `Ɓ` $\longrightarrow$ `রু` (যেমন: হারিƁন ➔ হারুন)
 - `Ō` $\longrightarrow$ `মি` (যেমন: ƎহাŌদ ➔ মোহাম্মদ)
@@ -75,27 +79,23 @@ flowchart TD
 
 ## ৪. সাবেক-হাল দাগ ম্যাপিং ও ইনভার্টেড ইনডেক্সিং লজিক (The Mapping Engine)
 
-ভূমি জরিপের সবচেয়ে বড় চ্যালেঞ্জ হলো—একটি সাবেক দাগ (CS/SA) হাল জরিপে (BRS) গিয়ে একাধিক দাগে বিভক্ত হয়ে যায়, অথবা একাধিক সাবেক দাগ মিলে একটি নতুন হাল দাগ গঠিত হয়। 
+সাবেক-হাল parcel lineage নির্ণয়ে split/merge ও source-page evidence দরকার। বর্তমান project data model-এ সেই lineage যাচাইয়ের relation table পাওয়া যায়নি; তাই নিচের সাবেক-হাল workflow-টি বাস্তবায়িত feature নয়, প্রয়োজনীয় future design হিসেবে ধরতে হবে।
 
 ### ১. ইনভার্টেড দাগ ইনডেক্স (Inverted Dag-to-Khatian Index):
-প্রতিটি খতিয়ান রেকর্ডে থাকা দাগ নম্বরগুলোকে ফ্ল্যাট করে একটি টু-ওয়ে ইনভার্টেড ইনডেক্স টেবিল তৈরি করা হয়েছে:
+প্রতিটি খতিয়ান রেকর্ডের dags থেকে একই survey-এর inverted lookup তৈরি করা হয়/করা যেতে পারে:
 $$\text{Mapping Function: } f(\text{mouza}, \text{survey}, \text{dag\_no}) \longrightarrow \{\text{khatian\_no}_1, \text{khatian\_no}_2, \dots\}$$
 
-### ২. সাবেক ➔ হাল দাগ রূপান্তর চেইনিং অ্যালগরিদম (Cross-Survey Chain Link):
-1. ব্যবহারকারী যখন একটি **সাবেক দাগ (CS বা SA)** ইনপুট দেন:
-   - সিস্টেম প্রথমে `dag_khatian_map` টেবিলে কুয়েরি করে ওই দাগের সাবেক খতিয়ান ও মালিকদের তালিকা উদ্ধার করে।
-   - এরপর ওই সাবেক জমির দাগ বইয়ের সীমানা ও অংশীদারদের রেফারেন্স দিয়ে সংশ্লিষ্ট **হাল জরিপের (BRS)** ম্যাপ করা হাল দাগগুলো স্বয়ংক্রিয়ভাবে রিলেশন ফিল্টারে তুলে আনে।
-2. একইভাবে ব্যবহারকারী **হাল দাগ (BRS)** দিলে তার মূল **সাবেক আদি দাগ ও খতিয়ান নম্বর** তাৎক্ষণিক রিভার্স-ট্র্যাকিং করে বের করে দেয়।
+### ২. Cross-survey lineage — এখনো অনুপস্থিত
+বর্তমান map key হলো `(mouza, survey, dag_no) → khatian_no[]`; এটি এক survey-এর ভেতরে lookup। CS/SA/RS থেকে BRS/Mutation parcel lineage, split/merge, share, source PDF/page, match confidence ও human-review status সংরক্ষণের evidence-backed crosswalk নেই। আলাদা provenance-সহ relation schema ও official-record review না হওয়া পর্যন্ত সাবেক-হাল conversion হিসেবে প্রকাশ করা যাবে না.
 
-### ৩. মালিকানা ও ভোটার ওয়ারিশ লিংকার (Citizen Inheritance Correlation):
-- খতিয়ানের রেকর্ডীয় মালিকদের নাম ও পিতার নামকে স্বাভাবিকীকরণ (String Normalization) করে নির্বাচন কমিশনের ৪৯২,০৭৪ জন ভোটারের ডেটাসেটের সাথে লিঙ্ক করা হয়।
-- ফলে খতিয়ানের আদি মালিকদের ওয়ারিশ হিসেবে বর্তমানে জীবিত কোন কোন বংশধর ওই গ্রামে বা ওয়ার্ডে বসবাস করছেন, তা এক ক্লিকেই উন্মোচিত হয়।
+### ৩. Owner↔voter similarity — কেবল সম্ভাব্য lead
+নাম/পিতার নামের similarity search একই ব্যক্তি, বংশধর বা আইনি ওয়ারিশ নিশ্চিত করে না। Common name, OCR/spelling variation, মৃত্যু/ওয়ারিশ ও একাধিক ward-এর কারণে false positive হতে পারে। কোনো result-কে verified inheritance/ownership বলা যাবে না; official documents ও authorized human review আবশ্যক।
 
 ---
 
 ## ৫. ক্লাউড ডেটাবেস স্কিমা ও অপ্টিমাইজেশন (D1 Distributed SQLite)
 
-মিলিসেকেন্ড পারফরম্যান্স এবং জিরো মেমোরি বটলনেক নিশ্চিত করতে Cloudflare D1-এ নিচের ইনডেক্সড স্কিমা কার্যকর:
+নিচেরটি একটি reference schema sketch; এটি current D1-তে সব table/index/data উপস্থিত থাকার প্রমাণ নয়। Audit-এ production D1 row count অসম্পূর্ণ ছিল এবং expected full-source count না মেলা পর্যন্ত Worker deployment block থাকে:
 
 ```sql
 -- ১. খতিয়ান ও মালিকানা মাস্টার টেবিল

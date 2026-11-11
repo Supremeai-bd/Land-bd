@@ -68,3 +68,4 @@ jobs:
           echo "🚀 All conditions satisfied. Executing squash merge on PR #$PR_NUMBER..."
           gh pr merge "$PR_NUMBER" --squash --delete-branch --admin || gh pr merge "$PR_NUMBER" --squash --delete-branch
           echo "✅ PR #$PR_NUMBER merged successfully into main."
+

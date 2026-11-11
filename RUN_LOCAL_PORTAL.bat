@@ -36,6 +36,6 @@ echo [INFO] সার্ভার বন্ধ করতে এই উইন্�
 echo ----------------------------------------------------------------------
 echo.
 
-python -m http.server 8080
+python -m http.server 8080 --bind 127.0.0.1
 
 pause
