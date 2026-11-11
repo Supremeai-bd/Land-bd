@@ -2425,15 +2425,14 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
                                     </div>
                                     <div class="text-xs space-y-1">
                                         <p class="font-bold text-slate-900">মালিক: <span class="text-amber-950 font-semibold">${formatOwners(k.owners)}</span></p>
-                                        <button onclick="openHeirAnalysis(encodeURIComponent('${k.mouza}'), '${k.survey}', encodeURIComponent('${k.khatianNo}'))" class="mt-2 px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold">🔍 এই খতিয়ানের সম্ভাব্য উত্তরাধিকারী খুঁজুন</button>
                                         <p class="text-slate-600">পিতা: <span class="text-slate-800 font-medium">${sanitizeBengaliText(k.guardian)}</span></p>
                                         <p class="text-slate-500 pt-1">সাবেক দাগ: <span class="font-mono font-bold text-slate-800">${k.dags && k.dags.length > 0 ? k.dags.join(', ') : '—'}</span></p>
                                     </div>
                                     <div class="pt-2.5 mt-2 border-t border-amber-100 flex items-center justify-between">
-                                        <button onclick="inspectSpecificKhatianHeirs('${k.mouza}', '${k.survey}', '${k.khatianNo}', '${(k.owners||[]).join(', ').replace(/'/g, "\\'")}', '${(k.guardian||'').replace(/'/g, "\\'")}')" class="px-2.5 py-1.5 rounded-lg bg-amber-100/80 hover:bg-amber-200 text-amber-900 font-bold text-[11px] transition flex items-center gap-1.5">
-                                            <span>🔍 এই খতিয়ানের ওয়ারিশান খুঁজুন</span>
+                                        <button onclick="openHeirAnalysis(encodeURIComponent('${k.mouza}'), '${k.survey}', encodeURIComponent('${k.khatianNo}'))" class="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] transition flex items-center gap-1.5 shadow-sm">
+                                            <span>🔍 এই খতিয়ানের সম্ভাব্য উত্তরাধিকারী খুঁজুন</span>
                                         </button>
-                                        <span class="text-[10px] text-slate-400 font-medium">নির্দিষ্ট যাচাই</span>
+                                        <span class="text-[10px] text-slate-400 font-medium">এভিডেন্স বিশ্লেষণ</span>
                                     </div>
                                 </div>
                             `).join('')}
@@ -2469,15 +2468,14 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
                                     </div>
                                     <div class="text-xs space-y-1">
                                         <p class="font-bold text-slate-900">বর্তমান মালিক: <span class="text-emerald-950 font-semibold">${formatOwners(k.owners)}</span></p>
-                                        <button onclick="openHeirAnalysis(encodeURIComponent('${k.mouza}'), '${k.survey}', encodeURIComponent('${k.khatianNo}'))" class="mt-2 px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold">🔍 এই খতিয়ানের সম্ভাব্য উত্তরাধিকারী খুঁজুন</button>
                                         <p class="text-slate-600">পিতা (পূর্বপুরুষ): <span class="text-indigo-900 font-semibold">${sanitizeBengaliText(k.guardian)}</span></p>
                                         <p class="text-slate-600 pt-1">হাল দাগসমূহ: <span class="font-mono font-bold text-emerald-800">${k.dags && k.dags.length > 0 ? k.dags.slice(0, 15).join(', ') + (k.dags.length > 15 ? '...' : '') : '—'}</span></p>
                                     </div>
                                     <div class="pt-2.5 mt-2 border-t border-emerald-100 flex items-center justify-between">
-                                        <button onclick="inspectSpecificKhatianHeirs('${k.mouza}', '${k.survey}', '${k.khatianNo}', '${(k.owners||[]).join(', ').replace(/'/g, "\\'")}', '${(k.guardian||'').replace(/'/g, "\\'")}')" class="px-2.5 py-1.5 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-bold text-[11px] transition flex items-center gap-1.5">
-                                            <span>🔍 এই খতিয়ানের ওয়ারিশান খুঁজুন</span>
+                                        <button onclick="openHeirAnalysis(encodeURIComponent('${k.mouza}'), '${k.survey}', encodeURIComponent('${k.khatianNo}'))" class="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] transition flex items-center gap-1.5 shadow-sm">
+                                            <span>🔍 এই খতিয়ানের সম্ভাব্য উত্তরাধিকারী খুঁজুন</span>
                                         </button>
-                                        <span class="text-[10px] text-slate-400 font-medium">নির্দিষ্ট যাচাই</span>
+                                        <span class="text-[10px] text-slate-400 font-medium">এভিডেন্স বিশ্লেষণ</span>
                                     </div>
                                 </div>
                             `).join('')}
