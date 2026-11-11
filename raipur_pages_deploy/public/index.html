@@ -948,27 +948,9 @@ const CORE_DAGS = {"মধুপুর": {"BRS": {"1": ["82", "2026-100006"], "2
                     }
                 });
             }
-
-            // 4. Cross-match Voters
+            // 4. Voter/heir analysis is intentionally on-demand.
+            // Ordinary land search must never scan the entire voter database.
             let voterMatches = [];
-            if (DATABASE.voters && DATABASE.voters.length > 0) {
-                DATABASE.voters.forEach(v => {
-                    let vScore = calculateNameSimilarity(v.name, query);
-                    let fScore = calculateNameSimilarity(v.father, query);
-
-                    // Also check if voter's father matches any of the land owners!
-                    for (let co of candidateOwnerNames) {
-                        const vfSim = calculateNameSimilarity(v.father, co);
-                        if (vfSim > fScore) fScore = vfSim;
-                    }
-
-                    const topVScore = Math.max(vScore, fScore);
-                    if (topVScore >= 0.45) {
-                        voterMatches.push({ ...v, vScore: Math.round(topVScore * 100) });
-                    }
-                });
-            }
-            voterMatches.sort((a, b) => b.vScore - a.vScore);
 
             // Render Combined Output
             let htmlOut = `
@@ -982,7 +964,7 @@ const CORE_DAGS = {"মধুপুর": {"BRS": {"1": ["82", "2026-100006"], "2
                         <div class="flex flex-wrap items-center gap-2 text-xs">
                             <span class="badge bg-amber-100 text-amber-900 font-bold">সাবেক CS/SA: ${sabekRecords.length} টি</span>
                             <span class="badge bg-emerald-100 text-emerald-900 font-bold">হাল BRS/নামজারি: ${haalRecords.length + transformedHaalKhatians.length} টি</span>
-                            <span class="badge bg-indigo-100 text-indigo-900 font-bold">ভোটার/ওয়ারিশ মিল: ${voterMatches.length} জন</span>
+                            <span class="badge bg-indigo-100 text-indigo-900 font-bold">ওয়ারিশ বিশ্লেষণ: অন-ডিমান্ড</span>
                         </div>
                     </div>
 
@@ -1005,6 +987,7 @@ const CORE_DAGS = {"মধুপুর": {"BRS": {"1": ["82", "2026-100006"], "2
                                             <span class="text-slate-600 font-bold">${k.totalLand} একর</span>
                                         </div>
                                         <p class="font-bold text-slate-900 text-sm mt-1">মালিক: <span class="text-teal-900">${formatOwners(k.owners)}</span></p>
+                                        <button onclick="openHeirAnalysis(encodeURIComponent('${k.mouza}'), '${k.survey}', encodeURIComponent('${k.khatianNo}'))" class="mt-2 px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold">🔍 এই খতিয়ানের সম্ভাব্য উত্তরাধিকারী খুঁজুন</button>
                                         <p class="text-slate-600">পিতা: <span class="font-semibold text-indigo-900">${sanitizeBengaliText(k.guardian)}</span></p>
                                         <p class="text-slate-500 pt-1">সাবেক দাগ: <span class="font-mono font-bold text-slate-800">${k.dags.join(', ') || queryEn}</span></p>
                                     </div>
@@ -1033,6 +1016,7 @@ const CORE_DAGS = {"মধুপুর": {"BRS": {"1": ["82", "2026-100006"], "2
                                             <span class="text-emerald-800 font-bold">${k.totalLand} একর</span>
                                         </div>
                                         <p class="font-bold text-slate-900 text-sm mt-1">বর্তমান মালিক: <span class="text-emerald-950">${formatOwners(k.owners)}</span></p>
+                                        <button onclick="openHeirAnalysis(encodeURIComponent('${k.mouza}'), '${k.survey}', encodeURIComponent('${k.khatianNo}'))" class="mt-2 px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold">🔍 এই খতিয়ানের সম্ভাব্য উত্তরাধিকারী খুঁজুন</button>
                                         <p class="text-slate-600">পিতা (পূর্বপুরুষ): <span class="font-semibold text-indigo-900">${sanitizeBengaliText(k.guardian)}</span></p>
                                         <p class="text-slate-600 pt-1">হাল দাগসমূহ: <span class="font-mono font-bold text-emerald-800">${k.dags.join(', ') || '—'}</span></p>
                                     </div>
@@ -1048,7 +1032,7 @@ const CORE_DAGS = {"মধুপুর": {"BRS": {"1": ["82", "2026-100006"], "2
                         <div class="bg-white rounded-2xl border border-indigo-200 shadow-sm overflow-hidden flex flex-col">
                             <div class="bg-indigo-600 text-white px-4 py-3 flex items-center justify-between">
                                 <div class="flex items-center gap-2">
-                                    <span class="text-base font-bold">৩. বর্তমান ভোটার ও সম্ভাব্য ওয়ারিশান</span>
+                                    <span class="text-base font-bold">৩. সম্ভাব্য উত্তরাধিকারী (নির্বাচিত খতিয়ান)</span>
                                     <span class="text-[10px] text-indigo-200 ml-1">(সম্ভাব্য মিল)</span>
                                 </div>
                                 <span class="badge bg-white/20 text-white text-[11px] font-mono">${voterMatches.length} জন</span>
@@ -1067,7 +1051,7 @@ const CORE_DAGS = {"মধুপুর": {"BRS": {"1": ["82", "2026-100006"], "2
                                     </div>
                                 `).join('') : `
                                     <div class="p-6 text-center text-slate-400 text-xs">
-                                        এই নামে বা পিতার নামে ভোটার তালিকায় প্রত্যক্ষ মিল পাওয়া যায়নি।
+                                        প্রথমে একটি নির্দিষ্ট খতিয়ান নির্বাচন করে “সম্ভাব্য উত্তরাধিকারী খুঁজুন” চাপুন। সাধারণ search-এ voter data দেখানো হয় না।
                                     </div>
                                 `}
                             </div>
@@ -1242,6 +1226,75 @@ const CORE_DAGS = {"মধুপুর": {"BRS": {"1": ["82", "2026-100006"], "2
                 if (tTokens.some(t => t.includes(q) || q.includes(t))) matches++;
             }
             return matches / Math.max(tTokens.length, qTokens.length);
+        }
+
+        // ================= EVIDENCE-BASED HEIR ANALYSIS =================
+        // Heir analysis is deliberately separate from ordinary land search.
+        const HEIR_MIN_SCORE = 55;
+        const DUPLICATE_VOTER_NOS = (() => {
+            const counts = new Map();
+            (DATABASE.voters || []).forEach(v => { const id = String(v.voterNo || '').trim(); if (id) counts.set(id, (counts.get(id) || 0) + 1); });
+            return new Set([...counts.entries()].filter(([, count]) => count > 1).map(([id]) => id));
+        })();
+        function evidenceText(value) {
+            const d = document.createElement('div');
+            d.textContent = value == null ? '' : String(value);
+            return d.innerHTML;
+        }
+        function maxFieldSimilarity(values, target) {
+            if (!target) return 0;
+            return Math.max(0, ...(values || []).map(v => calculateNameSimilarity(v, target)));
+        }
+        function evidenceLocality(record, voter) {
+            const variants = getMouzaVariants(record.mouza) || [record.mouza];
+            const text = normalizeBengaliName([voter.ward, voter.address].filter(Boolean).join(' '));
+            return variants.some(m => text.includes(normalizeBengaliName(m))) ? 10 : 0;
+        }
+        function scoreHeirCandidate(record, voter) {
+            if (DUPLICATE_VOTER_NOS.has(String(voter.voterNo || '').trim())) return null;
+            const ownerNameSim = maxFieldSimilarity(record.owners, voter.name);
+            const voterFatherOwnerSim = maxFieldSimilarity(record.owners, voter.father);
+            const recordGuardianVoterFatherSim = calculateNameSimilarity(record.guardian, voter.father);
+            const localityPoints = evidenceLocality(record, voter);
+            let score = 0;
+            const evidence = [];
+            if (ownerNameSim >= 0.88) { score += 35; evidence.push('ভোটারের নাম ও মালিকের নামের শক্তিশালী মিল'); }
+            else if (ownerNameSim >= 0.65) { score += 22; evidence.push('ভোটারের নাম ও মালিকের নামের আংশিক মিল'); }
+            if (voterFatherOwnerSim >= 0.88) { score += 25; evidence.push('ভোটারের পিতা ও খতিয়ানের মালিকের নামের শক্তিশালী মিল'); }
+            else if (voterFatherOwnerSim >= 0.65) { score += 15; evidence.push('ভোটারের পিতা ও খতিয়ানের মালিকের নামের আংশিক মিল'); }
+            if (recordGuardianVoterFatherSim >= 0.88) { score += 20; evidence.push('খতিয়ানের অভিভাবক ও ভোটারের পিতার নামের শক্তিশালী মিল'); }
+            else if (recordGuardianVoterFatherSim >= 0.65) { score += 10; evidence.push('খতিয়ানের অভিভাবক ও ভোটারের পিতার নামের আংশিক মিল'); }
+            if (localityPoints) { score += localityPoints; evidence.push('ভোটার ward/address-এ মৌজার নামের পাঠ্য-উপস্থিতি'); }
+            const independentEvidence = [ownerNameSim >= 0.65, voterFatherOwnerSim >= 0.65 || recordGuardianVoterFatherSim >= 0.65, localityPoints > 0].filter(Boolean).length;
+            if (independentEvidence < 2 || score < HEIR_MIN_SCORE) return null;
+            const label = score >= 80 ? 'উচ্চ সাদৃশ্যের candidate — heir হিসেবে নিশ্চিত নয়' : 'যাচাইযোগ্য সম্ভাব্য মিল';
+            return { ...voter, evidenceScore: Math.min(95, score), evidence, label };
+        }
+        function openHeirAnalysis(mouza, survey, khatianNo) {
+            mouza = decodeURIComponent(mouza);
+            khatianNo = decodeURIComponent(khatianNo);
+            const records = DATABASE.khatians.filter(k => k.mouza === mouza && k.survey === survey && String(k.khatianNo) === String(khatianNo));
+            const record = records[0];
+            if (!record) return;
+            const ranked = (DATABASE.voters || []).map(v => scoreHeirCandidate(record, v)).filter(Boolean).sort((a, b) => b.evidenceScore - a.evidenceScore).slice(0, 5);
+            const rows = ranked.length ? ranked.map(v => `
+                <div class="bg-indigo-50/70 border border-indigo-200 rounded-xl p-3 text-xs space-y-1">
+                    <div class="flex justify-between gap-2"><b class="text-indigo-950">${evidenceText(v.label)}</b><b class="font-mono text-indigo-800">${v.evidenceScore}/95</b></div>
+                    <div class="font-bold text-slate-900">${evidenceText(v.name || '—')}</div>
+                    <div class="text-slate-700">পিতা: <b>${evidenceText(v.father || '—')}</b> · ${evidenceText(v.gender || '—')}</div>
+                    <div class="text-slate-600">${evidenceText(v.ward || '—')} · ভোটার নং: ${evidenceText(v.voterNo || '—')}</div>
+                    <div class="text-[11px] text-slate-500">Evidence: ${v.evidence.map(evidenceText).join(' · ')}</div>
+                </div>`).join('') : `<div class="border border-dashed border-slate-300 rounded-xl p-5 text-center text-sm text-slate-600">এই নির্দিষ্ট খতিয়ানের জন্য কমপক্ষে দুইটি independent evidence-সহ কোনো নির্ভরযোগ্য candidate পাওয়া যায়নি।</div>`;
+            const old = document.getElementById('evidence-heir-modal');
+            if (old) old.remove();
+            document.body.insertAdjacentHTML('beforeend', `
+                <div id="evidence-heir-modal" class="fixed inset-0 z-[100] bg-slate-950/60 p-4 flex items-center justify-center" onclick="if(event.target===this)this.remove()">
+                  <div class="bg-white w-full max-w-2xl max-h-[90vh] overflow-auto rounded-2xl shadow-2xl p-5 space-y-4">
+                    <div class="flex items-start justify-between gap-3"><div><h3 class="font-bold text-lg text-slate-900">এই খতিয়ানের সম্ভাব্য candidate</h3><p class="text-xs text-slate-500">${evidenceText(mouza)} · ${evidenceText(survey)} · খতিয়ান #${evidenceText(khatianNo)}</p></div><button onclick="document.getElementById('evidence-heir-modal').remove()" class="text-slate-500 text-xl">×</button></div>
+                    <div class="bg-amber-50 border border-amber-200 text-amber-900 rounded-xl p-3 text-xs">এটি নাম, পিতার নাম ও textual locality evidence-এর mathematical similarity মাত্র। এটি সরকারি ওয়ারিশ সনদ, মালিকানা প্রমাণ বা আদালত-স্বীকৃত উত্তরাধিকার সিদ্ধান্ত নয়।</div>
+                    <div class="space-y-2">${rows}</div>
+                  </div>
+                </div>`);
         }
 
         function searchPersonToLand() {
@@ -1433,13 +1486,13 @@ const CORE_DAGS = {"মধুপুর": {"BRS": {"1": ["82", "2026-100006"], "2
 
                 for (let po of primaryOwnerNames) {
                     if (guardianNorm.includes(po)) {
-                        matchScore = 0.95; // Direct heir/successor
+                        matchScore = 0.50; // Name-based candidate only; not an heir determination
                         break;
                     }
                     for (let to of k.owners) {
                         const toNorm = normalizeBengaliName(to);
                         if (toNorm.includes(po) || po.includes(toNorm)) {
-                            matchScore = 0.85; // Direct continuation
+                            matchScore = 0.35; // Name-based continuity candidate only
                             break;
                         }
                     }
@@ -2376,6 +2429,7 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
                                     </div>
                                     <div class="text-xs space-y-1">
                                         <p class="font-bold text-slate-900">মালিক: <span class="text-amber-950 font-semibold">${formatOwners(k.owners)}</span></p>
+                                        <button onclick="openHeirAnalysis(encodeURIComponent('${k.mouza}'), '${k.survey}', encodeURIComponent('${k.khatianNo}'))" class="mt-2 px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold">🔍 এই খতিয়ানের সম্ভাব্য উত্তরাধিকারী খুঁজুন</button>
                                         <p class="text-slate-600">পিতা: <span class="text-slate-800 font-medium">${sanitizeBengaliText(k.guardian)}</span></p>
                                         <p class="text-slate-500 pt-1">সাবেক দাগ: <span class="font-mono font-bold text-slate-800">${k.dags && k.dags.length > 0 ? k.dags.join(', ') : '—'}</span></p>
                                     </div>
@@ -2419,6 +2473,7 @@ const RAIPUR_REGISTRY_RATES = {"municipality": {"দেনায়েতপুর"
                                     </div>
                                     <div class="text-xs space-y-1">
                                         <p class="font-bold text-slate-900">বর্তমান মালিক: <span class="text-emerald-950 font-semibold">${formatOwners(k.owners)}</span></p>
+                                        <button onclick="openHeirAnalysis(encodeURIComponent('${k.mouza}'), '${k.survey}', encodeURIComponent('${k.khatianNo}'))" class="mt-2 px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold">🔍 এই খতিয়ানের সম্ভাব্য উত্তরাধিকারী খুঁজুন</button>
                                         <p class="text-slate-600">পিতা (পূর্বপুরুষ): <span class="text-indigo-900 font-semibold">${sanitizeBengaliText(k.guardian)}</span></p>
                                         <p class="text-slate-600 pt-1">হাল দাগসমূহ: <span class="font-mono font-bold text-emerald-800">${k.dags && k.dags.length > 0 ? k.dags.slice(0, 15).join(', ') + (k.dags.length > 15 ? '...' : '') : '—'}</span></p>
                                     </div>
