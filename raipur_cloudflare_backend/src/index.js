@@ -8,6 +8,18 @@ async function sha256(str) {
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
+function parseArrayField(val) {
+  if (!val) return [];
+  if (Array.isArray(val)) return val;
+  val = String(val).trim();
+  if (val.startsWith("[") && val.endsWith("]")) {
+    try {
+      return JSON.parse(val);
+    } catch (e) {}
+  }
+  return val.split(",").map(s => s.trim()).filter(Boolean);
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -30,6 +42,7 @@ export default {
         const dag = (url.searchParams.get("dag") || "").trim();
         const khatian = (url.searchParams.get("khatian") || "").trim();
         const name = (url.searchParams.get("name") || "").trim();
+        const father = (url.searchParams.get("father") || "").trim();
 
         let sabekRecords = [];
         let haalRecords = [];
@@ -42,13 +55,16 @@ export default {
           dagQuery += " LIMIT 200";
 
           const { results } = await env.DB.prepare(dagQuery).bind(...params).all();
-          results.forEach(r => {
+          (results || []).forEach(r => {
             const item = {
               mouza: r.mouza,
               survey: r.survey,
+              khatianNo: r.khatian_no,
               khatian_no: r.khatian_no,
-              owners: r.owners ? JSON.parse(r.owners) : [],
-              dags: r.dags ? JSON.parse(r.dags) : []
+              owners: parseArrayField(r.owners),
+              guardian: r.guardian || "—",
+              dags: parseArrayField(r.dags),
+              totalLand: r.total_land || "—"
             };
             if (r.survey === "CS" || r.survey === "SA") sabekRecords.push(item);
             else haalRecords.push(item);
@@ -63,13 +79,16 @@ export default {
           kQuery += " LIMIT 200";
 
           const { results } = await env.DB.prepare(kQuery).bind(...params).all();
-          results.forEach(r => {
+          (results || []).forEach(r => {
             const item = {
               mouza: r.mouza,
               survey: r.survey,
+              khatianNo: r.khatian_no,
               khatian_no: r.khatian_no,
-              owners: r.owners ? JSON.parse(r.owners) : [],
-              dags: r.dags ? JSON.parse(r.dags) : []
+              owners: parseArrayField(r.owners),
+              guardian: r.guardian || "—",
+              dags: parseArrayField(r.dags),
+              totalLand: r.total_land || "—"
             };
             if (r.survey === "CS" || r.survey === "SA") sabekRecords.push(item);
             else haalRecords.push(item);
@@ -84,13 +103,40 @@ export default {
           nQuery += " LIMIT 150";
 
           const { results } = await env.DB.prepare(nQuery).bind(...params).all();
-          results.forEach(r => {
+          (results || []).forEach(r => {
             const item = {
               mouza: r.mouza,
               survey: r.survey,
+              khatianNo: r.khatian_no,
               khatian_no: r.khatian_no,
-              owners: r.owners ? JSON.parse(r.owners) : [],
-              dags: r.dags ? JSON.parse(r.dags) : []
+              owners: parseArrayField(r.owners),
+              guardian: r.guardian || "—",
+              dags: parseArrayField(r.dags),
+              totalLand: r.total_land || "—"
+            };
+            if (r.survey === "CS" || r.survey === "SA") sabekRecords.push(item);
+            else haalRecords.push(item);
+          });
+        }
+
+        if (father) {
+          let fQuery = "SELECT * FROM khatians WHERE guardian LIKE ?";
+          let params = [`%${father}%`];
+          if (mouza !== "ALL") { fQuery += " AND mouza = ?"; params.push(mouza); }
+          if (survey !== "ALL") { fQuery += " AND survey = ?"; params.push(survey); }
+          fQuery += " LIMIT 150";
+
+          const { results } = await env.DB.prepare(fQuery).bind(...params).all();
+          (results || []).forEach(r => {
+            const item = {
+              mouza: r.mouza,
+              survey: r.survey,
+              khatianNo: r.khatian_no,
+              khatian_no: r.khatian_no,
+              owners: parseArrayField(r.owners),
+              guardian: r.guardian || "—",
+              dags: parseArrayField(r.dags),
+              totalLand: r.total_land || "—"
             };
             if (r.survey === "CS" || r.survey === "SA") sabekRecords.push(item);
             else haalRecords.push(item);
@@ -113,12 +159,16 @@ export default {
         const pHash = await sha256(password);
         const userId = "u_" + Math.random().toString(36).substr(2, 9);
         const userRole = role === "deed_writer" ? "deed_writer" : "citizen";
-        // Common citizens active immediately; deed writers need admin approval
-        const userStatus = userRole === "citizen" ? "active" : "pending";
+        const status = userRole === "deed_writer" ? "pending" : "active";
+
+        const existing = await env.DB.prepare("SELECT id FROM users WHERE phone = ?").bind(cleanPhone).first();
+        if (existing) {
+          return new Response(JSON.stringify({ success: false, error: "এই মোবাইল নম্বরে ইতিমধ্যে একাউন্ট রয়েছে।" }), { status: 409, headers });
+        }
 
         await env.DB.prepare(
           "INSERT INTO users (id, phone, name, role, status, association_license_no, password_hash) VALUES (?, ?, ?, ?, ?, ?, ?)"
-        ).bind(userId, cleanPhone, name.trim(), userRole, userStatus, association_license_no || null, pHash).run();
+        ).bind(userId, cleanPhone, name.trim(), userRole, status, association_license_no || null, pHash).run();
 
         return new Response(JSON.stringify({
           success: true,
@@ -127,11 +177,11 @@ export default {
             phone: cleanPhone,
             name: name.trim(),
             role: userRole,
-            status: userStatus,
-            association_license_no: association_license_no || null
+            status,
+            association_license_no
           },
-          message: userStatus === "pending"
-            ? "দলিল লেখক হিসেবে আবেদন সফল হয়েছে। এডমিন অনুমোদনের পর প্রো-ফিচার আনলক হবে।"
+          message: status === "pending"
+            ? "দলিল লেখক রেজিস্ট্রেশন সম্পন্ন হয়েছে। এডমিন অনুমোদনের পর প্রো মোড চালু হবে।"
             : "সফলভাবে রেজিস্ট্রেশন সম্পন্ন হয়েছে।"
         }), { headers });
       }
@@ -178,7 +228,7 @@ export default {
       // 5. Admin Management: Approve / Reject writer
       if (url.pathname === "/api/admin/writers/action" && request.method === "POST") {
         const body = await request.json();
-        const { userId, action, adminId } = body; // action: 'approve' | 'reject'
+        const { userId, action, adminId } = body;
 
         if (!userId || !action) {
           return new Response(JSON.stringify({ success: false, error: "userId ও action আবশ্যক" }), { status: 400, headers });
@@ -192,7 +242,43 @@ export default {
         return new Response(JSON.stringify({ success: true, newStatus }), { headers });
       }
 
-      // 6. User Vault: Save / List items
+      // 6. Voter search endpoint (D1)
+      if (url.pathname === "/api/voters") {
+        const voterNo = (url.searchParams.get("voter_no") || "").trim();
+        const name = (url.searchParams.get("name") || "").trim();
+        const father = (url.searchParams.get("father") || "").trim();
+        const mother = (url.searchParams.get("mother") || "").trim();
+        const ward = (url.searchParams.get("ward") || "").trim();
+        const address = (url.searchParams.get("address") || "").trim();
+
+        let query = "SELECT voter_no, name, father, mother, gender, ward, address FROM voters WHERE 1=1";
+        const params = [];
+        if (voterNo) { query += " AND voter_no LIKE ?"; params.push(`%${voterNo}%`); }
+        if (name) { query += " AND name LIKE ?"; params.push(`%${name}%`); }
+        if (father) { query += " AND father LIKE ?"; params.push(`%${father}%`); }
+        if (mother) { query += " AND mother LIKE ?"; params.push(`%${mother}%`); }
+        if (ward) { query += " AND (ward LIKE ? OR address LIKE ?)"; params.push(`%${ward}%`, `%${ward}%`); }
+        if (address) { query += " AND address LIKE ?"; params.push(`%${address}%`); }
+        query += " LIMIT 200";
+
+        try {
+          const { results } = await env.DB.prepare(query).bind(...params).all();
+          const voters = (results || []).map(v => ({
+            voterNo: v.voter_no || "",
+            name: v.name || "",
+            father: v.father || "",
+            mother: v.mother || "",
+            gender: v.gender || "",
+            ward: v.ward || "",
+            address: v.address || ""
+          }));
+          return new Response(JSON.stringify({ success: true, voters }), { headers });
+        } catch (err) {
+          return new Response(JSON.stringify({ success: false, error: "voters table unavailable: " + err.message, voters: [] }), { status: 500, headers });
+        }
+      }
+
+      // 7. User Vault: Save / List items
       if (url.pathname === "/api/user/saved-items") {
         const userId = url.searchParams.get("userId");
         if (!userId) {

@@ -1,0 +1,5154 @@
+[
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "1",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "0.8800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "CS",
+  "khatianNo": "10",
+  "owners": [
+   "পত্তনি বিবি",
+   "জমিলা খাতুন",
+   "আয়িা খাতুন"
+  ],
+  "guardian": "জং মৃত ইাহিম,জং নবাব আলী,জং ফজর আলী",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "101",
+  "owners": [
+   "হাফেজ মাওলানা মোঃ নুরউনি — —"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "105",
+  "owners": [
+   "আবদুল আজিজ ওরপক্ষে দুলাল মিয়া — —"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "106",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "0.1000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "106",
+  "owners": [
+   "মা: নজির আহাম্মদ"
+  ],
+  "guardian": "মৃত আরব আলী বপারী",
+  "dags": [
+   "66",
+   "28"
+  ],
+  "totalLand": "0.4650"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "106",
+  "owners": [
+   "নজির আহাম্মদ"
+  ],
+  "guardian": "মৃত আরব আলী বপারী",
+  "dags": [
+   "66",
+   "28"
+  ],
+  "totalLand": "0.4650"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "108",
+  "owners": [
+   "রুহুল আমিন",
+   "আবদুল মান্নান",
+   "দলোয়ার হাসেন",
+   "আবদুর রহমান"
+  ],
+  "guardian": "মৃত হাসমত আলী,পিং রুহুল আমিন,পিং রুহুল আমিন,পিতা রুহুল আমিন",
+  "dags": [
+   "172",
+   "177",
+   "182"
+  ],
+  "totalLand": "0.3400"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "108",
+  "owners": [
+   "রুহুল আমিন",
+   "আবদুল মান্নান",
+   "দলোয়ার হাসেন",
+   "আবদুর রহমান"
+  ],
+  "guardian": "মৃত হাসমত আলী,পিং রুহুল আমিন,পিং রুহুল আমিন,পিতা রুহুল আমিন",
+  "dags": [
+   "172",
+   "177",
+   "182"
+  ],
+  "totalLand": "0.3400"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "CS",
+  "khatianNo": "11",
+  "owners": [
+   "অছিমনি বপারী",
+   "নুর বক্স"
+  ],
+  "guardian": "পিং মৃত করিমনি মিঞা জী",
+  "dags": [
+   "22"
+  ],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "116",
+  "owners": [
+   "মোঃ ইব্রাহীম নূরের জামান মিস্তরী"
+  ],
+  "guardian": "—",
+  "dags": [
+   "20",
+   "24",
+   "26"
+  ],
+  "totalLand": "0.3750"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "116",
+  "owners": [
+   "ইাহিম নুরুামান"
+  ],
+  "guardian": "—",
+  "dags": [
+   "20",
+   "24",
+   "26"
+  ],
+  "totalLand": "0.3750"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "117",
+  "owners": [
+   "জিবনের নছা আশরাফ আলী"
+  ],
+  "guardian": "—",
+  "dags": [
+   "46"
+  ],
+  "totalLand": "0.3600"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "117",
+  "owners": [
+   "জিবনের নছা আশরাফ আলী"
+  ],
+  "guardian": "—",
+  "dags": [
+   "46"
+  ],
+  "totalLand": "0.3600"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "118",
+  "owners": [
+   "মা রুহুল আমিন"
+  ],
+  "guardian": "মৃত হাসমত উল্লা ঢালী",
+  "dags": [
+   "84",
+   "79",
+   "87",
+   "106",
+   "86"
+  ],
+  "totalLand": "0.6687"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "118",
+  "owners": [
+   "মা রুহুল আমিন"
+  ],
+  "guardian": "মৃত হাসমত উল্লা ঢালী",
+  "dags": [
+   "84",
+   "79",
+   "87",
+   "106",
+   "86"
+  ],
+  "totalLand": "0.6687"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "1191",
+  "owners": [
+   "খারশেদ আলম"
+  ],
+  "guardian": "—",
+  "dags": [
+   "4378"
+  ],
+  "totalLand": "0.6300"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "1191",
+  "owners": [
+   "খারশেদ আলম"
+  ],
+  "guardian": "—",
+  "dags": [
+   "4378"
+  ],
+  "totalLand": "0.6300"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "1194",
+  "owners": [
+   "খারশেদ আলম"
+  ],
+  "guardian": "—",
+  "dags": [
+   "15109"
+  ],
+  "totalLand": "0.0375"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "1194",
+  "owners": [
+   "খারশেদ আলম"
+  ],
+  "guardian": "—",
+  "dags": [
+   "15109"
+  ],
+  "totalLand": "0.0375"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "1198",
+  "owners": [
+   "খারশেদ আলম জমদার"
+  ],
+  "guardian": "—",
+  "dags": [
+   "4147"
+  ],
+  "totalLand": "0.3100"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "1198",
+  "owners": [
+   "খারশেদ আলম জমদার"
+  ],
+  "guardian": "—",
+  "dags": [
+   "4147"
+  ],
+  "totalLand": "0.3100"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "CS",
+  "khatianNo": "12",
+  "owners": [
+   "রহাননি",
+   "নুর মিঞা"
+  ],
+  "guardian": "পিং মৃত ওয়াজনি বপারী",
+  "dags": [
+   "4",
+   "5"
+  ],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "120",
+  "owners": [
+   "মনির আহাম্মদ"
+  ],
+  "guardian": "পিং - মৃত লকিয়ত উল্লা",
+  "dags": [
+   "168"
+  ],
+  "totalLand": "0.3750"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "120",
+  "owners": [
+   "মনির আহাম্মদ"
+  ],
+  "guardian": "পিং - মৃত লকিয়ত উল্লা",
+  "dags": [
+   "168"
+  ],
+  "totalLand": "0.3750"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "122",
+  "owners": [
+   "মা: ফজল মিয়া",
+   "মা: ইমাম হক",
+   "আবুল কালাম মা: এতিম আলী",
+   "মা: মা: এতিম আলী",
+   "এতিম আলি"
+  ],
+  "guardian": "—",
+  "dags": [
+   "77",
+   "69",
+   "101",
+   "78"
+  ],
+  "totalLand": "0.6125"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "122",
+  "owners": [
+   "মা: ফজল মিয়া",
+   "মা: ইমাম হক",
+   "আবুল কালাম মা: এতিম আলী",
+   "মা: মা: এতিম আলী",
+   "এতিম আলি"
+  ],
+  "guardian": "—",
+  "dags": [
+   "77",
+   "69",
+   "101",
+   "78"
+  ],
+  "totalLand": "0.6125"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "123",
+  "owners": [
+   "সানা মিয়া বপারী"
+  ],
+  "guardian": "মৃত বুজরুক আলী বপারী",
+  "dags": [
+   "40"
+  ],
+  "totalLand": "0.3750"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "123",
+  "owners": [
+   "সানা মিয়া বপারী"
+  ],
+  "guardian": "পিং - মৃত বুজরুক আলী বপারী",
+  "dags": [
+   "40"
+  ],
+  "totalLand": "0.3750"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "128",
+  "owners": [
+   "মোঃ রুহুল আমিন",
+   "মোঃ খারশেদ আলম"
+  ],
+  "guardian": "মৃত হাসমত উল্লা",
+  "dags": [
+   "167",
+   "107"
+  ],
+  "totalLand": "0.9750"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "128",
+  "owners": [
+   "মা রুহুল আমিন",
+   "মোঃ খারশেদ আলম"
+  ],
+  "guardian": "মৃত হাসমত উল্লা,পিং মৃত হাসমত উল্লা",
+  "dags": [
+   "167",
+   "107"
+  ],
+  "totalLand": "0.9750"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "CS",
+  "khatianNo": "13",
+  "owners": [
+   "অছিমনি বপারী",
+   "নুর বক্স বপারী"
+  ],
+  "guardian": "পিং মৃত করিমনি মিঞা জী",
+  "dags": [
+   "1"
+  ],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "130",
+  "owners": [
+   "আবদুল ছাত্তার তালুকদার"
+  ],
+  "guardian": "মৃত হাবিব উল্লা তালুকদার",
+  "dags": [
+   "28",
+   "29",
+   "10991"
+  ],
+  "totalLand": "0.6400"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "131",
+  "owners": [
+   "ফাতেমা বগম শাহ আলম"
+  ],
+  "guardian": "—",
+  "dags": [
+   "173",
+   "29",
+   "10991"
+  ],
+  "totalLand": "0.4174"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "133",
+  "owners": [
+   "আবদুল আজিজ দুলাল"
+  ],
+  "guardian": "—",
+  "dags": [
+   "6"
+  ],
+  "totalLand": "0.0900"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "134",
+  "owners": [
+   "মোঃ আনোয়ার হাসেন বশির উল্লা মাঝি"
+  ],
+  "guardian": "—",
+  "dags": [
+   "78",
+   "1085"
+  ],
+  "totalLand": "0.2833"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "135",
+  "owners": [
+   "মোঃ ইমান হক"
+  ],
+  "guardian": "—",
+  "dags": [
+   "71"
+  ],
+  "totalLand": "0.1900"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "137",
+  "owners": [
+   "মোঃ জিন্নাহ মস্তরী",
+   "সফালী বগম"
+  ],
+  "guardian": "মৃত মোঃ নুরেরামান,মোঃ জিন্নাহ মস্তরী",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "138",
+  "owners": [
+   "মোঃ জিন্নাহ",
+   "মাসাঃ শফালী"
+  ],
+  "guardian": "মৃত নুরোমান,মোঃ জিন্নাহ",
+  "dags": [
+   "78"
+  ],
+  "totalLand": "0.6250"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "138",
+  "owners": [
+   "মাহাম্মদ জিন্নাহ",
+   "মাসাম্মদ শপালী"
+  ],
+  "guardian": "পিং - মৃত নুরোমান,,আব্দুল ছামাদ বপারী",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "139",
+  "owners": [
+   "আবদুল খালেক"
+  ],
+  "guardian": "—",
+  "dags": [
+   "132"
+  ],
+  "totalLand": "0.0750"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "CS",
+  "khatianNo": "14",
+  "owners": [
+   "রহাননি",
+   "নুরমিঞা",
+   "পি"
+  ],
+  "guardian": "মৃত ওয়াজনি বপারী —",
+  "dags": [
+   "25"
+  ],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "140",
+  "owners": [
+   "রহিমা বগম"
+  ],
+  "guardian": "—",
+  "dags": [
+   "39"
+  ],
+  "totalLand": "0.0500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "141",
+  "owners": [
+   "জহিরুল ইসলাম"
+  ],
+  "guardian": "—",
+  "dags": [
+   "78"
+  ],
+  "totalLand": "0.1125"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "142",
+  "owners": [
+   "মোঃ রুহুল আমিন"
+  ],
+  "guardian": "—",
+  "dags": [
+   "180"
+  ],
+  "totalLand": "0.0775"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "143",
+  "owners": [
+   "মোঃ ইমান হক",
+   "বিাল হাসেন",
+   "আমির হাসেন (সাাম)"
+  ],
+  "guardian": "—",
+  "dags": [
+   "70",
+   "166"
+  ],
+  "totalLand": "0.4217"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "1433",
+  "owners": [
+   "জয়নাল আবদীন"
+  ],
+  "guardian": "পিং - মহের আলী বলি",
+  "dags": [
+   "16367"
+  ],
+  "totalLand": "0.1700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "1433",
+  "owners": [
+   "জয়নাল আবদীন"
+  ],
+  "guardian": "পিং - মহের আলী বলি",
+  "dags": [
+   "16367"
+  ],
+  "totalLand": "0.1700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "144",
+  "owners": [
+   "আনোয়ার হাসেন পাটওয়ারী আফাজ উনি পাটওয়ারী"
+  ],
+  "guardian": "—",
+  "dags": [
+   "50",
+   "55",
+   "56",
+   "04",
+   "49",
+   "36",
+   "02",
+   "10"
+  ],
+  "totalLand": "0.7512"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "144",
+  "owners": [
+   "আনোয়ার হাসেন পাটওয়ারী আফাজ উনি পাটওয়ারী"
+  ],
+  "guardian": "—",
+  "dags": [
+   "50",
+   "55",
+   "56",
+   "04",
+   "49",
+   "36",
+   "02",
+   "10"
+  ],
+  "totalLand": "0.7512"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "145",
+  "owners": [
+   "মোঃ আমির হাসেন",
+   "মোঃ হাসেন অজি উল্লাহ মিয়াজি",
+   "অজি উল্লাহ মিয়াজি"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "145",
+  "owners": [
+   "মোঃ আমির হাসেন",
+   "মোঃ আমির হাসেন অজি উল্লাহ মিয়াজি",
+   "অজি উল্লাহ মিয়াজি"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "146",
+  "owners": [
+   "সিরাজ মিয়া",
+   "শাহারন মিয়া",
+   "বাু মিয়া"
+  ],
+  "guardian": "—",
+  "dags": [
+   "73"
+  ],
+  "totalLand": "0.0850"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "147",
+  "owners": [
+   "সিরাজুল ইসলাম"
+  ],
+  "guardian": "মৃত আব্দুর রব",
+  "dags": [
+   "15",
+   "3"
+  ],
+  "totalLand": "0.4875"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "147",
+  "owners": [
+   "সিরাজুল ইসলাম"
+  ],
+  "guardian": "মৃত আব্দুর রব",
+  "dags": [
+   "15",
+   "3"
+  ],
+  "totalLand": "0.4875"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "148",
+  "owners": [
+   "আবুল কালাম বপারী"
+  ],
+  "guardian": "—",
+  "dags": [
+   "169"
+  ],
+  "totalLand": "0.2466"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "149",
+  "owners": [
+   "সিরাজ মিয়া"
+  ],
+  "guardian": "পিং - আবদুল লতিফ",
+  "dags": [
+   "47",
+   "38",
+   "41"
+  ],
+  "totalLand": "0.3175"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "149",
+  "owners": [
+   "সিরাজ মিয়া"
+  ],
+  "guardian": "পিং - আবদুল লতিফ",
+  "dags": [
+   "47",
+   "38",
+   "41"
+  ],
+  "totalLand": "0.3175"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "CS",
+  "khatianNo": "15",
+  "owners": [
+   "অছিমনি বপারী",
+   "নুর বকস বপারী"
+  ],
+  "guardian": "পিং মৃত করিমনি মিঞা জী",
+  "dags": [
+   "2"
+  ],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "15",
+  "owners": [
+   "আবদূল ছাত্তার",
+   "ডাকঘর নুর নগর"
+  ],
+  "guardian": "পিং আবদুর রহিম",
+  "dags": [
+   "33"
+  ],
+  "totalLand": "0.0600"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "15",
+  "owners": [
+   "নিত গাপাল রায়",
+   "ান গাপাল রায়"
+  ],
+  "guardian": "পিং মহেন্দ্র কুমার রায়",
+  "dags": [
+   "93"
+  ],
+  "totalLand": "0.2800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "150",
+  "owners": [
+   "মোঃ আমির হাসেন অজি উল্লাহ মিয়াজি"
+  ],
+  "guardian": "—",
+  "dags": [
+   "20"
+  ],
+  "totalLand": "0.0150"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "150",
+  "owners": [
+   "মোঃ আমির হাসেন অজি উল্লাহ মিয়াজি"
+  ],
+  "guardian": "—",
+  "dags": [
+   "20"
+  ],
+  "totalLand": "0.0150"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "151",
+  "owners": [
+   "হাফেজ"
+  ],
+  "guardian": "—",
+  "dags": [
+   "161"
+  ],
+  "totalLand": "0.1875"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "152",
+  "owners": [
+   "আব্দুল মান্নান"
+  ],
+  "guardian": "—",
+  "dags": [
+   "44",
+   "34"
+  ],
+  "totalLand": "0.2950"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "153",
+  "owners": [
+   "মাবারো বগম অজিউল্লা গাজি"
+  ],
+  "guardian": "—",
+  "dags": [
+   "36",
+   "37",
+   "57"
+  ],
+  "totalLand": "0.2175"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "153",
+  "owners": [
+   "মাবারো বগম অজিউল্লা গাজি"
+  ],
+  "guardian": "—",
+  "dags": [
+   "36",
+   "37",
+   "57"
+  ],
+  "totalLand": "0.1590"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "154",
+  "owners": [
+   "হলাল"
+  ],
+  "guardian": "—",
+  "dags": [
+   "85"
+  ],
+  "totalLand": "0.1900"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "155",
+  "owners": [
+   "মোঃ আনোয়ার হাসেন"
+  ],
+  "guardian": "—",
+  "dags": [
+   "29"
+  ],
+  "totalLand": "0.0871"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "155",
+  "owners": [
+   "মা: আনোয়ার হাসেন নুরুামান"
+  ],
+  "guardian": "—",
+  "dags": [
+   "29"
+  ],
+  "totalLand": "0.0871"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "156",
+  "owners": [
+   "ইমান হক"
+  ],
+  "guardian": "—",
+  "dags": [
+   "70",
+   "102"
+  ],
+  "totalLand": "0.2737"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "156",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "0.1000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "158",
+  "owners": [
+   "মা: আনোয়ার হাসেন মা: তাজুল ইসলাম"
+  ],
+  "guardian": "—",
+  "dags": [
+   "61",
+   "53",
+   "59",
+   "28"
+  ],
+  "totalLand": "0.4100"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "158",
+  "owners": [
+   "মা: আনোয়ার হাসেন মা: তাজুল ইসলাম"
+  ],
+  "guardian": "—",
+  "dags": [
+   "61",
+   "53",
+   "59",
+   "28"
+  ],
+  "totalLand": "0.4100"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "159",
+  "owners": [
+   "মমতাজী বগম ফজল আহম্মদ"
+  ],
+  "guardian": "—",
+  "dags": [
+   "28",
+   "60"
+  ],
+  "totalLand": "0.3000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "159",
+  "owners": [
+   "মমতাজী বগম ফজল আহম্মদ"
+  ],
+  "guardian": "—",
+  "dags": [
+   "28",
+   "60"
+  ],
+  "totalLand": "0.3000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "CS",
+  "khatianNo": "16",
+  "owners": [
+   "পত্তনি বানু",
+   "জমিলা খাতুন",
+   "আয়িা খাতুন"
+  ],
+  "guardian": "জং মৃত ইাহিম,জং নবাব আলী,জং ফজর আলী",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "16",
+  "owners": [
+   "আবদুর রউপ",
+   "কাদর আলী",
+   "আমিরের নছা"
+  ],
+  "guardian": "পিং আরব আলী,পিং রৗশন আলী,জং কদর আলী",
+  "dags": [
+   "1",
+   "12",
+   "44"
+  ],
+  "totalLand": "0.5400"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "16",
+  "owners": [
+   "আবদুল ছমিদ বপারী"
+  ],
+  "guardian": "পিং হাজী রজ্জব আলী",
+  "dags": [
+   "47",
+   "48"
+  ],
+  "totalLand": "0.7100"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "160",
+  "owners": [
+   "ছালেহা বগম"
+  ],
+  "guardian": "—",
+  "dags": [
+   "153",
+   "140",
+   "149",
+   "132"
+  ],
+  "totalLand": "0.1800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "161",
+  "owners": [
+   "আাস মিয়া"
+  ],
+  "guardian": "—",
+  "dags": [
+   "40",
+   "66",
+   "73"
+  ],
+  "totalLand": "0.1537"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "162",
+  "owners": [
+   "ফাতেমা খাতুন",
+   "সহিদের নছা কারবান আলী"
+  ],
+  "guardian": "—",
+  "dags": [
+   "16"
+  ],
+  "totalLand": "0.1600"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "162",
+  "owners": [
+   "ফাতেমা খাতুন",
+   "সহিদের নছা কারবান আলী"
+  ],
+  "guardian": "—",
+  "dags": [
+   "16"
+  ],
+  "totalLand": "0.3200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "166",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "0.3000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "1671",
+  "owners": [
+   "রফিকুল ইসলাম মিজি",
+   "আাছ আলী",
+   "ঝরনা বগম",
+   "সুপিয়া বগম",
+   "মনোয়ারা বগম"
+  ],
+  "guardian": "পিং - আবদুর রব মিজি,পিং- আবদুর রব মিজি,পিং- আবদুর রব মিজি,পিং- আবদুর রব মিজি,জং-",
+  "dags": [
+   "9991",
+   "9994",
+   "9996",
+   "9998"
+  ],
+  "totalLand": "0.6600"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "1671",
+  "owners": [
+   "রফিকুল ইসলাম মিজি",
+   "আাছ আলী",
+   "ঝরনা বগম",
+   "সুপিয়া বগম",
+   "মনোয়ারা বগম"
+  ],
+  "guardian": "পিং - আবদুর রব মিজি,পিং- আবদুর রব মিজি,পিং- আবদুর রব মিজি,পিং- আবদুর রব মিজি,জং-",
+  "dags": [
+   "9991",
+   "9994",
+   "9996",
+   "9998"
+  ],
+  "totalLand": "0.6600"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "169",
+  "owners": [
+   "সিরাজুল ইসলাম",
+   "সহিদের নছা সানা মিয়া",
+   "কারবান আলী"
+  ],
+  "guardian": "—",
+  "dags": [
+   "6"
+  ],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "CS",
+  "khatianNo": "17",
+  "owners": [
+   "প্রভাত চন্দ্র শীল"
+  ],
+  "guardian": "পিং মৃত মহিমচন্দ্র শীল",
+  "dags": [
+   "26",
+   "58"
+  ],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "17",
+  "owners": [
+   "আবদুর রব",
+   "ফাজিলের রহমান",
+   "জালাল আহাং",
+   "নুরে জামান",
+   "ফরিদগঞ্জ"
+  ],
+  "guardian": "পিং বুরজুগ আলী",
+  "dags": [
+   "32"
+  ],
+  "totalLand": "0.0700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "17",
+  "owners": [
+   "আাছ আলী বপারী"
+  ],
+  "guardian": "পিং ওমেদ আলী বপারী",
+  "dags": [
+   "69",
+   "70",
+   "56"
+  ],
+  "totalLand": "0.8800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "170",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "0.3200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "176",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "0.1300"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "1775",
+  "owners": [
+   "পারভনের নছা"
+  ],
+  "guardian": "জং - নাছির আহাম্মদ",
+  "dags": [
+   "13020",
+   "13051"
+  ],
+  "totalLand": "0.8000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "1775",
+  "owners": [
+   "পারভনের নছা"
+  ],
+  "guardian": "জং - নাছির আহাম্মদ",
+  "dags": [
+   "13020",
+   "13051"
+  ],
+  "totalLand": "0.8000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "CS",
+  "khatianNo": "18",
+  "owners": [
+   "আপছরনি মিঞা জী"
+  ],
+  "guardian": "পিং মৃত ঠাকুরদন মিঞা জী",
+  "dags": [
+   "10",
+   "11"
+  ],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "18",
+  "owners": [
+   "আবদুর রশিদ",
+   "আবদূল লতিপ"
+  ],
+  "guardian": "পিং ছয়দ আলী",
+  "dags": [
+   "36",
+   "49",
+   "50",
+   "55",
+   "56"
+  ],
+  "totalLand": "0.4300"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "18",
+  "owners": [
+   "সুন্দর আলী",
+   "ইউছপ আলী",
+   "ছায়েদ আলী",
+   "নুর মহাম্মদ",
+   "ময়মুনা খাতুন"
+  ],
+  "guardian": "পিং আমিননি,জং সামছল হক,জং মফিজনি",
+  "dags": [
+   "81",
+   "83"
+  ],
+  "totalLand": "0.1100"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "183",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "0.0600"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "CS",
+  "khatianNo": "19",
+  "owners": [
+   "ইছলাম বক্স",
+   "ক এয়াছিন",
+   "নবাব আলী"
+  ],
+  "guardian": "পিং মৃত আছরনি,পিং মৃত আছরনি মিঞা জী",
+  "dags": [
+   "16",
+   "17",
+   "18",
+   "39",
+   "40",
+   "41"
+  ],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "19",
+  "owners": [
+   "আবদুল আউয়াল",
+   "পিয় কাদের আলী",
+   "ডাকঘর হায়দর গঞ্জ",
+   "উপ: রায়পুর"
+  ],
+  "guardian": "পিং কাদের আলী",
+  "dags": [
+   "34"
+  ],
+  "totalLand": "0.0700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "19",
+  "owners": [
+   "আবদুল ছমিদ"
+  ],
+  "guardian": "পিং হাজী রজ্জব আলী",
+  "dags": [
+   "85"
+  ],
+  "totalLand": "0.2700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "2",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "0.8200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "CS",
+  "khatianNo": "20",
+  "owners": [
+   "ইমাননি",
+   "কাদির বক্স",
+   "আাবালী",
+   "আয়ুব আলী",
+   "আবদুল জর"
+  ],
+  "guardian": "পিং মৃত আপ্তরনি,পিং মৃত কারিমবক্স,পিং মৃত মিনা গাজী,পিং মৃত আবদুল রহমান",
+  "dags": [
+   "90",
+   "91"
+  ],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "20",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "0.1100"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "20",
+  "owners": [
+   "আবদুল আউয়াল",
+   "ডাকঘর নুর নগর",
+   "উপ: ফরিদগঞ্জ"
+  ],
+  "guardian": "পিং মাহাম্মদ আলী",
+  "dags": [
+   "35",
+   "45",
+   "54",
+   "61",
+   "51"
+  ],
+  "totalLand": "0.7500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "20",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "0.1100"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "20",
+  "owners": [
+   "মহাম্মদ আলী",
+   "বদিয়জ্জমান",
+   "নুরেজ্জমান"
+  ],
+  "guardian": "পিং ইছি আলী,পিং হাকিমনি",
+  "dags": [
+   "3",
+   "42"
+  ],
+  "totalLand": "1.2600"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "2026-100001",
+  "owners": [
+   "নাছরিন আার চিকি মিয়া"
+  ],
+  "guardian": "—",
+  "dags": [
+   "28"
+  ],
+  "totalLand": "0.1500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "2026-100001",
+  "owners": [
+   "নাছরিন আার চিকি মিয়া"
+  ],
+  "guardian": "—",
+  "dags": [
+   "28"
+  ],
+  "totalLand": "0.1500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "2026-100002",
+  "owners": [
+   "রহিমা বগম আলি আহমেদ"
+  ],
+  "guardian": "—",
+  "dags": [
+   "17",
+   "8"
+  ],
+  "totalLand": "0.0675"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "2026-100002",
+  "owners": [
+   "রহিমা বগম আলি আহমেদ"
+  ],
+  "guardian": "—",
+  "dags": [
+   "17",
+   "8"
+  ],
+  "totalLand": "0.0675"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "2026-100003",
+  "owners": [
+   "মিজানুর রহমান আবু সুফিয়ান"
+  ],
+  "guardian": "—",
+  "dags": [
+   "38",
+   "41"
+  ],
+  "totalLand": "0.1675"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "2026-100003",
+  "owners": [
+   "মিজানুর রহমান আবু সুফিয়ান"
+  ],
+  "guardian": "—",
+  "dags": [
+   "38",
+   "41"
+  ],
+  "totalLand": "0.1675"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "2026-100004",
+  "owners": [
+   "খাকন মিঝি রুস্তম আলী মিজি"
+  ],
+  "guardian": "—",
+  "dags": [
+   "87",
+   "80",
+   "90"
+  ],
+  "totalLand": "0.1309"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "2026-100004",
+  "owners": [
+   "খাকন মিঝি রুস্তম আলী মিজি"
+  ],
+  "guardian": "—",
+  "dags": [
+   "87",
+   "80",
+   "90"
+  ],
+  "totalLand": "0.1309"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "2026-100005",
+  "owners": [
+   "দলোয়ার হাসেন শামছুল হক"
+  ],
+  "guardian": "—",
+  "dags": [
+   "131"
+  ],
+  "totalLand": "0.3376"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "2026-100005",
+  "owners": [
+   "দলোয়ার হাসেন শামছুল হক"
+  ],
+  "guardian": "—",
+  "dags": [
+   "131"
+  ],
+  "totalLand": "0.3376"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "2026-100006",
+  "owners": [
+   "হাছিনা খাতুন মৌলভী সামছুল আলম"
+  ],
+  "guardian": "—",
+  "dags": [
+   "125"
+  ],
+  "totalLand": "0.0954"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "2026-100006",
+  "owners": [
+   "হাছিনা খাতুন মৌলভী সামছুল আলম"
+  ],
+  "guardian": "—",
+  "dags": [
+   "125"
+  ],
+  "totalLand": "0.0954"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "2026-100007",
+  "owners": [
+   "ইসমাইল",
+   "ফারুল বগম নুরমিয়া",
+   "মোঃ হানিফ"
+  ],
+  "guardian": "—",
+  "dags": [
+   "126",
+   "182",
+   "177",
+   "172"
+  ],
+  "totalLand": "0.3575"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "2026-100007",
+  "owners": [
+   "ইসমাইল",
+   "ফারুল বগম নুরমিয়া",
+   "মোঃ হানিফ"
+  ],
+  "guardian": "—",
+  "dags": [
+   "126",
+   "182",
+   "177",
+   "172"
+  ],
+  "totalLand": "0.3575"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "2026-100008",
+  "owners": [
+   "মোঃ ছলেমান",
+   "মনোয়ারা বগম আব্দুল হক",
+   "রুহুল আমিন"
+  ],
+  "guardian": "—",
+  "dags": [
+   "172",
+   "182"
+  ],
+  "totalLand": "0.3000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "2026-100008",
+  "owners": [
+   "মোঃ ছলেমান",
+   "মনোয়ারা বগম আব্দুল হক",
+   "রুহুল আমিন"
+  ],
+  "guardian": "—",
+  "dags": [
+   "172",
+   "182"
+  ],
+  "totalLand": "0.3000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "2026-100009",
+  "owners": [
+   "শাকিল খন্দকার",
+   "মোঃ শাহ আলম মোঃ শাহ আলম",
+   "আহম্মদ উল্লা খন্দকার"
+  ],
+  "guardian": "—",
+  "dags": [
+   "6",
+   "5"
+  ],
+  "totalLand": "0.8100"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "2026-100009",
+  "owners": [
+   "শাকিল খন্দকার",
+   "মোঃ শাহ আলম মোঃ শাহ আলম",
+   "আহম্মদ উল্লা খন্দকার"
+  ],
+  "guardian": "—",
+  "dags": [
+   "6",
+   "5"
+  ],
+  "totalLand": "0.8100"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "CS",
+  "khatianNo": "21",
+  "owners": [
+   "ইছি আলী সদাগর"
+  ],
+  "guardian": "পিং মৃত নিজামনি সদাগর",
+  "dags": [
+   "8",
+   "9"
+  ],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "21",
+  "owners": [
+   "আব্দুল আউয়াল"
+  ],
+  "guardian": "পিং ছিকি আলী",
+  "dags": [
+   "175",
+   "180"
+  ],
+  "totalLand": "0.0750"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "21",
+  "owners": [
+   "আবদুল আউয়াল",
+   "উপ: রায়পুর"
+  ],
+  "guardian": "পিং সিকি আলী",
+  "dags": [
+   "175",
+   "178",
+   "180"
+  ],
+  "totalLand": "0.2300"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "21",
+  "owners": [
+   "আইউব আলী"
+  ],
+  "guardian": "পিং করিম বকস",
+  "dags": [
+   "44",
+   "52",
+   "53",
+   "54",
+   "51",
+   "74"
+  ],
+  "totalLand": "0.6800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "CS",
+  "khatianNo": "22",
+  "owners": [
+   "উমেদ আলী"
+  ],
+  "guardian": "পিং মৃত জমির মহম্মদ",
+  "dags": [
+   "6",
+   "7"
+  ],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "22",
+  "owners": [
+   "আবদুল কাদের"
+  ],
+  "guardian": "পিং আবদুল হাকিম",
+  "dags": [
+   "123"
+  ],
+  "totalLand": "0.1500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "22",
+  "owners": [
+   "আবদুল কাদের"
+  ],
+  "guardian": "পিং আবদুল হাকিম",
+  "dags": [
+   "123"
+  ],
+  "totalLand": "0.1500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "22",
+  "owners": [
+   "আাছ আলী বপারী"
+  ],
+  "guardian": "পিং হাজী উমেদ আলী বপারী",
+  "dags": [
+   "24",
+   "46",
+   "56",
+   "69",
+   "70"
+  ],
+  "totalLand": "2.3500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "22",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "1.1600"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "2270",
+  "owners": [
+   "মাহাম্মদ উল্লা"
+  ],
+  "guardian": "—",
+  "dags": [
+   "15113"
+  ],
+  "totalLand": "0.0800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "2270",
+  "owners": [
+   "মাহাম্মদ উল্লা"
+  ],
+  "guardian": "—",
+  "dags": [
+   "15113"
+  ],
+  "totalLand": "0.0800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "CS",
+  "khatianNo": "23",
+  "owners": [
+   "ফজর আলী",
+   "উজির আলী",
+   "মিন্নত আলী",
+   "ছিকি আলী"
+  ],
+  "guardian": "পিং মৃত আছরনি ছয়াল",
+  "dags": [
+   "20"
+  ],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "23",
+  "owners": [
+   "আবদুল কাদির"
+  ],
+  "guardian": "পিং আব্দুল হাকিম",
+  "dags": [
+   "105"
+  ],
+  "totalLand": "0.1300"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "23",
+  "owners": [
+   "আাবদুল কাদির",
+   "উপ: রায়পুর"
+  ],
+  "guardian": "পিং আবদুল হাকিম",
+  "dags": [
+   "105"
+  ],
+  "totalLand": "0.1300"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "23",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "0.2700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "23",
+  "owners": [
+   "আছলাম মিঞা",
+   "গনি মিঞা",
+   "জমিলা খাতুন",
+   "ফতেমা খাতুন",
+   "উমেদ আলী"
+  ],
+  "guardian": "পিং অছিমনি,জং অছিমনি,জং নুর বকস,পিং নুর বকস,পিং রহিমনি,পিং ছিকি আলী,পিং আমিরনি,",
+  "dags": [
+   "14",
+   "15",
+   "19",
+   "38",
+   "43",
+   "21",
+   "23"
+  ],
+  "totalLand": "4.4500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "24",
+  "owners": [
+   "আবদুল গনি"
+  ],
+  "guardian": "পিং অছিম উনি",
+  "dags": [
+   "38",
+   "41"
+  ],
+  "totalLand": "0.1900"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "24",
+  "owners": [
+   "আবদুল গনি",
+   "উপ: ফরিদগঞ্জ",
+   "ডাকঘর নুর নগর"
+  ],
+  "guardian": "পিং অছিম উনি",
+  "dags": [
+   "38",
+   "41",
+   "46",
+   "53",
+   "59"
+  ],
+  "totalLand": "0.8600"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "24",
+  "owners": [
+   "অজি উল্লা",
+   "বসির উল্লা",
+   "সকান্দর আলী",
+   "মক্রম আলী"
+  ],
+  "guardian": "পিং নায়াব আলী,পিং এয়াছিন মিজী",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "25",
+  "owners": [
+   "আবদুল লতিফ"
+  ],
+  "guardian": "পিং ছয়দ আলী",
+  "dags": [
+   "2",
+   "4"
+  ],
+  "totalLand": "0.6300"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "25",
+  "owners": [
+   "আবদুল লতিফ",
+   "আবদুর রসিদ"
+  ],
+  "guardian": "পিং সয়দ আলী",
+  "dags": [
+   "2",
+   "4"
+  ],
+  "totalLand": "0.6300"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "25",
+  "owners": [
+   "ইছলাম বকস"
+  ],
+  "guardian": "পিং আছরনি হাজী",
+  "dags": [
+   "55",
+   "45"
+  ],
+  "totalLand": "0.3000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "25",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "1.0400"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "25-165",
+  "owners": [
+   "শুকুর আহম্মদ — —"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "25-166",
+  "owners": [
+   "মা: হাসেন — —"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "25-166",
+  "owners": [
+   "মোঃ হাসেন কারবান আলী"
+  ],
+  "guardian": "—",
+  "dags": [
+   "14"
+  ],
+  "totalLand": "0.5000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "25-167",
+  "owners": [
+   "মোঃ সাহেল — —"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "25-168",
+  "owners": [
+   "ছায়েরা হায়দার হাজী ফজলুল করিম পাটারি"
+  ],
+  "guardian": "—",
+  "dags": [
+   "1",
+   "12",
+   "3",
+   "15"
+  ],
+  "totalLand": "0.5550"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "25-168",
+  "owners": [
+   "ছায়েরা হায়দার হাজী ফজলুল করিম পাটারি"
+  ],
+  "guardian": "—",
+  "dags": [
+   "1",
+   "12",
+   "3",
+   "15"
+  ],
+  "totalLand": "0.5550"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "25-169",
+  "owners": [
+   "সিরাজুল ইসলাম",
+   "সহিদের নছা সানা মিয়া",
+   "কারবান আলী"
+  ],
+  "guardian": "—",
+  "dags": [
+   "6"
+  ],
+  "totalLand": "0.0750"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "25-169",
+  "owners": [
+   "সিরাজুল ইসলাম",
+   "সহিদের নছা সানা মিয়া",
+   "কারবান আলী"
+  ],
+  "guardian": "—",
+  "dags": [
+   "6"
+  ],
+  "totalLand": "0.0750"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "25-170",
+  "owners": [
+   "আনোয়ারা বগম"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "25-171",
+  "owners": [
+   "শামছুল হক",
+   "দলোয়ার হাসেন ফজল হক",
+   "শামছুল হক"
+  ],
+  "guardian": "—",
+  "dags": [
+   "168",
+   "131"
+  ],
+  "totalLand": "0.1875"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "25-171",
+  "owners": [
+   "শামছুল হক",
+   "দলোয়ার হাসেন ফজল হক",
+   "শামছুল হক"
+  ],
+  "guardian": "—",
+  "dags": [
+   "168",
+   "131"
+  ],
+  "totalLand": "0.1875"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "25-172",
+  "owners": [
+   "আনোয়ার হাসেন পাটওয়ারী আফাজ উনি পাটওয়ারী"
+  ],
+  "guardian": "—",
+  "dags": [
+   "2",
+   "4",
+   "3"
+  ],
+  "totalLand": "0.1550"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "25-172",
+  "owners": [
+   "আনোয়ার হাসেন পাটওয়ারী আফাজ উনি পাটওয়ারী"
+  ],
+  "guardian": "—",
+  "dags": [
+   "2",
+   "4",
+   "3"
+  ],
+  "totalLand": "0.1550"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "2514",
+  "owners": [
+   "শফি উীন আহাম্মদ"
+  ],
+  "guardian": "—",
+  "dags": [
+   "0"
+  ],
+  "totalLand": "0.0000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "2514",
+  "owners": [
+   "শফি উীন আহাম্মদ"
+  ],
+  "guardian": "—",
+  "dags": [
+   "0"
+  ],
+  "totalLand": "0.0000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "2532",
+  "owners": [
+   "সফিকুল ইসলাম"
+  ],
+  "guardian": "—",
+  "dags": [
+   "0"
+  ],
+  "totalLand": "0.0000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "2532",
+  "owners": [
+   "সফিকুল ইসলাম"
+  ],
+  "guardian": "—",
+  "dags": [
+   "0"
+  ],
+  "totalLand": "0.0000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "2582",
+  "owners": [
+   "সফি উল্লা"
+  ],
+  "guardian": "—",
+  "dags": [
+   "0"
+  ],
+  "totalLand": "0.0000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "2582",
+  "owners": [
+   "সফি উল্লা"
+  ],
+  "guardian": "—",
+  "dags": [
+   "0"
+  ],
+  "totalLand": "0.0000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "26",
+  "owners": [
+   "আবদুল হক"
+  ],
+  "guardian": "পিং মনছুর আলী",
+  "dags": [
+   "183"
+  ],
+  "totalLand": "0.0300"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "26",
+  "owners": [
+   "আবদুল হক"
+  ],
+  "guardian": "পিং মনসুর আলী",
+  "dags": [
+   "183"
+  ],
+  "totalLand": "0.0300"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "26",
+  "owners": [
+   "আাছ আলী বপারী"
+  ],
+  "guardian": "পিং উমেদ আলী",
+  "dags": [
+   "21",
+   "23",
+   "49"
+  ],
+  "totalLand": "1.5800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "2612",
+  "owners": [
+   "সামছল হক মাঝি"
+  ],
+  "guardian": "—",
+  "dags": [
+   "0"
+  ],
+  "totalLand": "0.0000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "2612",
+  "owners": [
+   "সামছল হক মাঝি"
+  ],
+  "guardian": "—",
+  "dags": [
+   "0"
+  ],
+  "totalLand": "0.0000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "27",
+  "owners": [
+   "আহলাদের নছা"
+  ],
+  "guardian": "জং সিরাজ মিয়া",
+  "dags": [
+   "17"
+  ],
+  "totalLand": "0.1100"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "27",
+  "owners": [
+   "আহলাদের নছা"
+  ],
+  "guardian": "জং সিরাজ মিয়া",
+  "dags": [
+   "17"
+  ],
+  "totalLand": "0.1100"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "27",
+  "owners": [
+   "আবদু ছমিদ বপারী"
+  ],
+  "guardian": "পিং হাজী রজ্জব আলী",
+  "dags": [
+   "52"
+  ],
+  "totalLand": "0.1400"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "28",
+  "owners": [
+   "আহাম্মদ আলী"
+  ],
+  "guardian": "পিং হাজী আাছ আলী",
+  "dags": [
+   "75",
+   "187"
+  ],
+  "totalLand": "2.6650"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "28",
+  "owners": [
+   "আহাম্মদ আলী",
+   "ডাকঘর নুর নগর"
+  ],
+  "guardian": "পিং হাজী আববাছ আলী",
+  "dags": [
+   "187"
+  ],
+  "totalLand": "2.8900"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "28",
+  "owners": [
+   "ফজর আলী",
+   "নুর মহাম্মদ",
+   "ইছমাইল",
+   "আাছ আলী",
+   "আবদু ছমিদ বপারী"
+  ],
+  "guardian": "পিং আহাম্মদ আলী,পিং ফজর আলী,পিং আবদুল আজিজ,পিং হাজী উমেদ আলী,পিং হাজী রজ্জব আলী",
+  "dags": [
+   "93",
+   "47",
+   "50",
+   "69",
+   "70"
+  ],
+  "totalLand": "1.5300"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "2838",
+  "owners": [
+   "মোঃ আহছান উল্লা মাল"
+  ],
+  "guardian": "পিং মৃত আতরোমান মাল",
+  "dags": [
+   "1564",
+   "5494",
+   "5493"
+  ],
+  "totalLand": "0.8800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "2838",
+  "owners": [
+   "মোঃ আহছান উল্লা মাল"
+  ],
+  "guardian": "পিং মৃত আতরোমান মাল",
+  "dags": [
+   "1564",
+   "5494",
+   "5493"
+  ],
+  "totalLand": "0.8800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "2860",
+  "owners": [
+   "হাছন আলী",
+   "হনুফা খাতুন",
+   "আবুল খায়ের",
+   "সাদাদ হাসেন",
+   "আমির হাসেন"
+  ],
+  "guardian": "—",
+  "dags": [
+   "0"
+  ],
+  "totalLand": "0.0000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "2860",
+  "owners": [
+   "হাছন আলী",
+   "হনুফা খাতুন",
+   "আবুল খায়ের",
+   "সাদাদ হাসেন",
+   "আমির হাসেন"
+  ],
+  "guardian": "—",
+  "dags": [
+   "0"
+  ],
+  "totalLand": "0.0000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "29",
+  "owners": [
+   "আাছ মিয়া ছয়াল"
+  ],
+  "guardian": "পিং মিন্নত আলী ছয়াল",
+  "dags": [
+   "67",
+   "63"
+  ],
+  "totalLand": "0.3500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "29",
+  "owners": [
+   "আককাছ মিয়া ছয়াল"
+  ],
+  "guardian": "পিং মিন্নত আলী ছয়াল",
+  "dags": [
+   "67",
+   "63"
+  ],
+  "totalLand": "0.3500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "29",
+  "owners": [
+   "আবদুল ছমিদ বপারী",
+   "জাফর আলী মশাল",
+   "আছিয়া খাতুন"
+  ],
+  "guardian": "পিং হাজী রজ্জব আলী বপারী,পিং আহাম্মদ আলী মশাল,জং ফজল আলী মশাল",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "30",
+  "owners": [
+   "এতিম আলী"
+  ],
+  "guardian": "পিং বুজরগ আলী",
+  "dags": [
+   "76"
+  ],
+  "totalLand": "0.4200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "30",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "0.2800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "30",
+  "owners": [
+   "এতিম আলী"
+  ],
+  "guardian": "পিং বুজরগ আলী",
+  "dags": [
+   "76"
+  ],
+  "totalLand": "0.4200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "30",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "0.2800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "30",
+  "owners": [
+   "আছলাম মিঞা",
+   "গনি মিঞা",
+   "ছয়দ আলী",
+   "মহাম্মদ আলী"
+  ],
+  "guardian": "পিং অছিমনি বপারী,পিং নুর বকস",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "31",
+  "owners": [
+   "এতিম আলি"
+  ],
+  "guardian": "পিং বুজরগ আলি",
+  "dags": [
+   "72"
+  ],
+  "totalLand": "0.2700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "31",
+  "owners": [
+   "এতিম আলী",
+   "জমিলা খাতুন"
+  ],
+  "guardian": "পিং বুজরগ আলি,জং এতিম আলী",
+  "dags": [
+   "72"
+  ],
+  "totalLand": "0.2700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "31",
+  "owners": [
+   "রহান উনি",
+   "লাল মিঞা সদাগর"
+  ],
+  "guardian": "পিং মৃত ওয়াজনি বপারী,পিং ইছি আলী সদাগর",
+  "dags": [
+   "4",
+   "5"
+  ],
+  "totalLand": "1.6700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "316",
+  "owners": [
+   "ছানা উল্লা"
+  ],
+  "guardian": "পিং - আবুল কাশেম",
+  "dags": [
+   "2497",
+   "2446",
+   "2447",
+   "2498"
+  ],
+  "totalLand": "0.4900"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "316",
+  "owners": [
+   "ছানা উল্লা"
+  ],
+  "guardian": "পিং - আবুল কাশেম",
+  "dags": [
+   "2497",
+   "2446",
+   "2447",
+   "2498"
+  ],
+  "totalLand": "0.4900"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "32",
+  "owners": [
+   "কালু মিয়া"
+  ],
+  "guardian": "পিং ছয়দ আলি",
+  "dags": [
+   "48",
+   "57"
+  ],
+  "totalLand": "0.0800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "32",
+  "owners": [
+   "কালু মিয়া"
+  ],
+  "guardian": "পিং ছয়দ আলী",
+  "dags": [
+   "48",
+   "57",
+   "83"
+  ],
+  "totalLand": "0.2200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "32",
+  "owners": [
+   "আছলাম মিঞা",
+   "গনি মিঞা",
+   "ছয়দ আলী",
+   "মহাম্মদ আলী"
+  ],
+  "guardian": "পিং অছিমনি বপারী,পিং নুর বকস বপারী",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "329",
+  "owners": [
+   "শাহ আলম চৌধুরী"
+  ],
+  "guardian": "পিং - ছাবিদ আলী",
+  "dags": [
+   "16897"
+  ],
+  "totalLand": "0.0900"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "329",
+  "owners": [
+   "শাহ আলম চৌধুরী"
+  ],
+  "guardian": "পিং - ছাবিদ আলী",
+  "dags": [
+   "16897"
+  ],
+  "totalLand": "0.0900"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "33",
+  "owners": [
+   "কালু মিয়া",
+   "আবদুর রশিদ",
+   "আবদুল লতিফ"
+  ],
+  "guardian": "পিং ছয়দ আলি,পিং ছয়দ আলি,পিং ছয়দ আলি",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "33",
+  "owners": [
+   "কালু মিয়া",
+   "আবদুর রসিদ",
+   "আবদুল লতিফ"
+  ],
+  "guardian": "পিং ছয়দ আলী",
+  "dags": [
+   "106"
+  ],
+  "totalLand": "0.1000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "33",
+  "owners": [
+   "আবদুল ছমিদ বপারী",
+   "বুজরুক আলী বপারী"
+  ],
+  "guardian": "পিং হাজী রজ্জব আলী বপারী,পিং চুনী বপারী",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "3368",
+  "owners": [
+   "আমির"
+  ],
+  "guardian": "—",
+  "dags": [
+   "5172"
+  ],
+  "totalLand": "0.0375"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "3368",
+  "owners": [
+   "আমির"
+  ],
+  "guardian": "—",
+  "dags": [
+   "5172"
+  ],
+  "totalLand": "0.0375"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "34",
+  "owners": [
+   "কারবান আলী"
+  ],
+  "guardian": "পিং উমেদ আলী",
+  "dags": [
+   "14",
+   "16"
+  ],
+  "totalLand": "0.7600"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "34",
+  "owners": [
+   "কারবান আলী"
+  ],
+  "guardian": "পিং উমেদ আলী",
+  "dags": [
+   "14",
+   "16"
+  ],
+  "totalLand": "0.7600"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "34",
+  "owners": [
+   "আছলাম মিঞা",
+   "গনি মিঞা",
+   "ছয়দ আলী",
+   "মহাম্মদ আলী",
+   "এক্রম আলী ছয়াল"
+  ],
+  "guardian": "পিং অছিমনি বপারী,পিং নুর বকস বপারী,পিং বকস আলী",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "35",
+  "owners": [
+   "কাাদ আলী"
+  ],
+  "guardian": "পিং জৗবন আলি",
+  "dags": [
+   "53"
+  ],
+  "totalLand": "0.5000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "35",
+  "owners": [
+   "কারবান আলি",
+   "ফাতেমা খাতুন",
+   "মাহাম্মদ হানিফ",
+   "মাহাম্মদ হাসেন"
+  ],
+  "guardian": "পিং জৗবন আলি,জং কাববাদ আলী,পিং কাববাদ আলী",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "35",
+  "owners": [
+   "জাফর আলী মশাল",
+   "আছিয়া খাতুন",
+   "আবদুল ছমিদ বপারী"
+  ],
+  "guardian": "পিং আহাম্মদ আলী মশাল,জং ফজর আলী মশাল,পিং হাজী রজ্জব আলী বপারী",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "36",
+  "owners": [
+   "খলিলুর রহমান"
+  ],
+  "guardian": "পিং কবির বক্স",
+  "dags": [
+   "90",
+   "92"
+  ],
+  "totalLand": "0.1434"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "36",
+  "owners": [
+   "খলিলুর রহমান"
+  ],
+  "guardian": "পিং করিম বকস",
+  "dags": [
+   "90",
+   "92"
+  ],
+  "totalLand": "0.1700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "36",
+  "owners": [
+   "নুর মহাম্মদ",
+   "আনর আলী",
+   "জাফর আলী"
+  ],
+  "guardian": "পিং ফজর আলী,পিং আহাম্মদ আলী",
+  "dags": [
+   "26",
+   "58"
+  ],
+  "totalLand": "1.9500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "37",
+  "owners": [
+   "খলিলুর রহমান",
+   "রুহুল আমিন",
+   "খারশেদ মিয়া"
+  ],
+  "guardian": "পিং করিম বক্স,পিং হাসমত উল্লা,পিং হাসমত উল্লা",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "37",
+  "owners": [
+   "খলিলুর রহমান",
+   "রুহুল আসমন",
+   "খারশেদ মিয়া"
+  ],
+  "guardian": "পিং করিম বকস,পিং হাসমত উল্লাহ",
+  "dags": [
+   "80",
+   "91"
+  ],
+  "totalLand": "0.2000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "37",
+  "owners": [
+   "মক্রম আলী মিজী",
+   "সকান্তর আলী মিজী",
+   "অজি উল্লা মিজী",
+   "বসির উল্লা মিজী",
+   "ছুরতের ছা"
+  ],
+  "guardian": "পিং এয়াছিন মিজী,জং সকান্তর মিজী,পিং মনিরনি রাড়ী",
+  "dags": [
+   "10",
+   "11"
+  ],
+  "totalLand": "1.6800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "38",
+  "owners": [
+   "গনি মিয়া"
+  ],
+  "guardian": "পিং অচিমনি",
+  "dags": [
+   "10",
+   "13",
+   "15",
+   "87"
+  ],
+  "totalLand": "0.9036"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "38",
+  "owners": [
+   "গনী মিয়া"
+  ],
+  "guardian": "পিং অছিমনি",
+  "dags": [
+   "3",
+   "5",
+   "10",
+   "13",
+   "15",
+   "87"
+  ],
+  "totalLand": "2.1100"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "38",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "0.2000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "38",
+  "owners": [
+   "ক খলিলের রহমান",
+   "আবদুল করিম",
+   "আলিমের নছা",
+   "রজিয়া খাতুন",
+   "আবদুল আউয়াল"
+  ],
+  "guardian": "পিং করিম বকস,পিং ইছলাম বকস,জং আরব আলী,জং ইউনুছ মিঞা,পিং কাদর আলী,জং কাদর আলী,পি",
+  "dags": [
+   "16",
+   "17",
+   "18",
+   "39",
+   "40",
+   "41"
+  ],
+  "totalLand": "1.2400"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "39",
+  "owners": [
+   "চান মিয়া সরদার"
+  ],
+  "guardian": "পিং ইসি আলী",
+  "dags": [
+   "17"
+  ],
+  "totalLand": "0.1000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "39",
+  "owners": [
+   "চানমিয়া সদাগর"
+  ],
+  "guardian": "পিং ইসি আলি",
+  "dags": [
+   "17"
+  ],
+  "totalLand": "0.1000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "39",
+  "owners": [
+   "আবদুল ছমিদ বপারী"
+  ],
+  "guardian": "পিং হাজী রজ্জব আলী বপারী",
+  "dags": [
+   "90",
+   "91"
+  ],
+  "totalLand": "0.4500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "40",
+  "owners": [
+   "সয়দ আহমেদ আবদুছ ছমিদ"
+  ],
+  "guardian": "—",
+  "dags": [
+   "100",
+   "115",
+   "118",
+   "127",
+   "158",
+   "119"
+  ],
+  "totalLand": "1.1300"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "40",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "0.1875"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "40",
+  "owners": [
+   "ছয়দ আহাম্মদ",
+   "উপ: ফরিদগঞ্জ"
+  ],
+  "guardian": "পিং হাজী আবদুর ছমিদ",
+  "dags": [
+   "100",
+   "115",
+   "118",
+   "127",
+   "158",
+   "119"
+  ],
+  "totalLand": "1.0300"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "4029",
+  "owners": [
+   "আমেনা খাতুন"
+  ],
+  "guardian": "—",
+  "dags": [
+   "0"
+  ],
+  "totalLand": "0.0000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "4029",
+  "owners": [
+   "আমেনা খাতুন"
+  ],
+  "guardian": "—",
+  "dags": [
+   "0"
+  ],
+  "totalLand": "0.0000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "41",
+  "owners": [
+   "জয়নাল আবদিন"
+  ],
+  "guardian": "পিং জাপর আলি",
+  "dags": [
+   "135",
+   "143"
+  ],
+  "totalLand": "0.1600"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "41",
+  "owners": [
+   "জয়নাল আবদিন"
+  ],
+  "guardian": "পিং জাপর আলি",
+  "dags": [
+   "135",
+   "143"
+  ],
+  "totalLand": "0.1600"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "42",
+  "owners": [
+   "জামাল আহমেদ"
+  ],
+  "guardian": "পিং হাজী আাছ আলী",
+  "dags": [
+   "137",
+   "147",
+   "167"
+  ],
+  "totalLand": "1.9600"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "42",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "0.0500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "42",
+  "owners": [
+   "জামাল আহমেদ"
+  ],
+  "guardian": "পিং হাজী আববাছ আলি",
+  "dags": [
+   "137",
+   "147",
+   "167",
+   "168"
+  ],
+  "totalLand": "1.9600"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "42",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "0.0500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "43",
+  "owners": [
+   "জমিলা খাতুন"
+  ],
+  "guardian": "জং এতিম আলি",
+  "dags": [
+   "71"
+  ],
+  "totalLand": "0.2200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "43",
+  "owners": [
+   "জমিলা খাতুন"
+  ],
+  "guardian": "জং এতিম আলি",
+  "dags": [
+   "71"
+  ],
+  "totalLand": "0.2200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "44",
+  "owners": [
+   "জুলফিকের আলি"
+  ],
+  "guardian": "পিং আবদুর রশিদ",
+  "dags": [
+   "121"
+  ],
+  "totalLand": "0.9500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "44",
+  "owners": [
+   "জুলফিকের আলি",
+   "জাকির হাসেন",
+   "শাহিন আহাম্মদ"
+  ],
+  "guardian": "পিং আবদুর রসিদ",
+  "dags": [
+   "121"
+  ],
+  "totalLand": "0.9500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "44023",
+  "owners": [
+   "তামান্না জাহান"
+  ],
+  "guardian": "পতি- মোঃ আনোয়ার হাসেন স্বপন সাং উত্তর করোয়া-রায়পুর- লীপুর",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "44023",
+  "owners": [
+   "তামান্না জাহান"
+  ],
+  "guardian": "পতি- মোঃ আনোয়ার হাসেন স্বপন সাং উত্তর করোয়া-রায়পুর- লীপুর",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "45",
+  "owners": [
+   "অরিক আলী"
+  ],
+  "guardian": "পিং সয়দ আলী",
+  "dags": [
+   "167"
+  ],
+  "totalLand": "0.1500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "45",
+  "owners": [
+   "অরিক আলি"
+  ],
+  "guardian": "পিং সয়দ আলি",
+  "dags": [
+   "186"
+  ],
+  "totalLand": "0.1500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "4533",
+  "owners": [
+   "মোঃ ফজলুল করিম"
+  ],
+  "guardian": "—",
+  "dags": [
+   "16691"
+  ],
+  "totalLand": "0.0865"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "4533",
+  "owners": [
+   "মোঃ ফজলুল করিম"
+  ],
+  "guardian": "—",
+  "dags": [
+   "16691"
+  ],
+  "totalLand": "0.0865"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "46",
+  "owners": [
+   "তসলিম আহাম্মদ"
+  ],
+  "guardian": "পিং হাফিজ উনি",
+  "dags": [
+   "42",
+   "58"
+  ],
+  "totalLand": "0.4400"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "46",
+  "owners": [
+   "তসলিম আহাম্মদ"
+  ],
+  "guardian": "পিং হাফিজ উনি",
+  "dags": [
+   "42",
+   "58"
+  ],
+  "totalLand": "0.4400"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "47",
+  "owners": [
+   "তাজিমের নছা"
+  ],
+  "guardian": "জং মাহাম্মদ হানিফ",
+  "dags": [
+   "17"
+  ],
+  "totalLand": "0.1100"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "47",
+  "owners": [
+   "তাজিমের নছা"
+  ],
+  "guardian": "জং মাহাম্মদ হানিফ",
+  "dags": [
+   "17"
+  ],
+  "totalLand": "0.1100"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "475",
+  "owners": [
+   "ময়না খাতুন"
+  ],
+  "guardian": "জং নুর বকস",
+  "dags": [
+   "1249",
+   "1255"
+  ],
+  "totalLand": "0.2700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "475",
+  "owners": [
+   "ময়না খাতুন"
+  ],
+  "guardian": "জং নুর বকস",
+  "dags": [
+   "1249",
+   "1255"
+  ],
+  "totalLand": "0.2700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "48",
+  "owners": [
+   "তাফায়েল আহাম্মদ"
+  ],
+  "guardian": "পিং আবদুস ছমিদ",
+  "dags": [
+   "97",
+   "101",
+   "110",
+   "111",
+   "124",
+   "145"
+  ],
+  "totalLand": "0.9000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "48",
+  "owners": [
+   "তাফায়েল আহাম্মদ"
+  ],
+  "guardian": "পিং আবদুস ছমিদ",
+  "dags": [
+   "97",
+   "101",
+   "110",
+   "111",
+   "124",
+   "154"
+  ],
+  "totalLand": "0.8700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "49",
+  "owners": [
+   "দুলা মিয়া"
+  ],
+  "guardian": "পিং আনর আলী",
+  "dags": [
+   "183"
+  ],
+  "totalLand": "0.0700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "49",
+  "owners": [
+   "দুলা মিয়া"
+  ],
+  "guardian": "পিং আনর আলী",
+  "dags": [
+   "183"
+  ],
+  "totalLand": "0.0700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "50",
+  "owners": [
+   "দনি আলোনিয়া জামে মসজিদ কমিটি পক্ষে মাতাওয়াী দনি আলোনিয়া জামে মসজিদ কমিটি পক্ষে মাতাওয়াী"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "50",
+  "owners": [
+   "দনি আলোনিয়া জামে মসজিদ কমিটি পক্ষে মাতাওয়াী দনি আলোনিয়া জামে মসজিদ কমিটি পক্ষে মাতাওয়াী"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "51",
+  "owners": [
+   "নুর উনি"
+  ],
+  "guardian": "পিং আবুল কাসেম",
+  "dags": [
+   "161",
+   "162",
+   "163"
+  ],
+  "totalLand": "1.0000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "51",
+  "owners": [
+   "নুর উনি"
+  ],
+  "guardian": "পিং আবুল কাসেম",
+  "dags": [
+   "161",
+   "162",
+   "163"
+  ],
+  "totalLand": "1.0000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "52",
+  "owners": [
+   "নুর মিয়া"
+  ],
+  "guardian": "পিং মিন্নত আলী",
+  "dags": [
+   "172",
+   "177",
+   "182"
+  ],
+  "totalLand": "0.3400"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "52",
+  "owners": [
+   "নুর মিয়া",
+   "জরিনা খাতুন",
+   "ইসমাইল",
+   "মালাম্মৎ রনু"
+  ],
+  "guardian": "পিং মিন্নত আলী,জং নুর মিয়া,পিং নুর মিয়া",
+  "dags": [
+   "172",
+   "177",
+   "182"
+  ],
+  "totalLand": "0.3400"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "53",
+  "owners": [
+   "নুর মাহাম্মদ"
+  ],
+  "guardian": "পিং ফজর আলী",
+  "dags": [
+   "166"
+  ],
+  "totalLand": "0.3000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "53",
+  "owners": [
+   "নুর মাহাম্মদ",
+   "ফাতেমা খাতুন",
+   "সহিদ উল্লা"
+  ],
+  "guardian": "পিং ফজর আলী,জং আমিন উল্লা গাজী,পিং লকিয়ত উল্লা",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "54",
+  "owners": [
+   "নুর হাসেন",
+   "মাহাম্মদ আলী",
+   "বসির উল্লা",
+   "আবদুর রব"
+  ],
+  "guardian": "পিং - সকান্দর আলী,পিং- সকান্দর আলী,পিং- নায়াব আলি,পিং-বুজরগ আলি",
+  "dags": [
+   "81",
+   "82"
+  ],
+  "totalLand": "0.2500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "54",
+  "owners": [
+   "নুর হাসেন",
+   "মাহাম্মদ আলী",
+   "বসির উল্লা",
+   "আবদুর রব"
+  ],
+  "guardian": "পিং সকান্দর আলী,পিং নায়াব আলী,পিং বুজরগ আলী",
+  "dags": [
+   "81",
+   "82"
+  ],
+  "totalLand": "0.2500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "55",
+  "owners": [
+   "ফয়েজ আহাম্মদ"
+  ],
+  "guardian": "পিং - আবদুস ছমিদ",
+  "dags": [
+   "98",
+   "109",
+   "112",
+   "122",
+   "128",
+   "148"
+  ],
+  "totalLand": "0.8700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "55",
+  "owners": [
+   "ফয়েজ আহম্মদ",
+   "উজেলা ফরিদগঞ্জ"
+  ],
+  "guardian": "পিং আবদুস ছমিদ",
+  "dags": [
+   "98",
+   "109",
+   "112",
+   "122",
+   "128",
+   "148"
+  ],
+  "totalLand": "0.8700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "56",
+  "owners": [
+   "ফতেমা খাতুন"
+  ],
+  "guardian": "জং লালা মিয়া",
+  "dags": [
+   "17"
+  ],
+  "totalLand": "0.0200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "56",
+  "owners": [
+   "ফতেমা খাতুন"
+  ],
+  "guardian": "জং লালা মিয়া",
+  "dags": [
+   "17"
+  ],
+  "totalLand": "0.0200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "57",
+  "owners": [
+   "মোঃ ফিরোজ আলম হাজী আঃ ছামাদ"
+  ],
+  "guardian": "—",
+  "dags": [
+   "103",
+   "129",
+   "130",
+   "133",
+   "151",
+   "159"
+  ],
+  "totalLand": "0.8800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "57",
+  "owners": [
+   "ফিরোজ আহাম্মদ"
+  ],
+  "guardian": "পিং আবদুল ছমিদ",
+  "dags": [
+   "103",
+   "129",
+   "130",
+   "133",
+   "151",
+   "159"
+  ],
+  "totalLand": "0.8800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "58",
+  "owners": [
+   "বদিউর রহমান"
+  ],
+  "guardian": "পিং হাকিমুনি",
+  "dags": [
+   "6"
+  ],
+  "totalLand": "0.7200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "58",
+  "owners": [
+   "বদিউর রহমান"
+  ],
+  "guardian": "পিং হাকিমুনি",
+  "dags": [
+   "6"
+  ],
+  "totalLand": "0.8100"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "59",
+  "owners": [
+   "বুরজুগ আলী"
+  ],
+  "guardian": "পিং কামিস উনি",
+  "dags": [
+   "23"
+  ],
+  "totalLand": "0.2700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "59",
+  "owners": [
+   "বুরজুগ আলী",
+   "আবদুর রব",
+   "ফাজিলের রহমান",
+   "জালাল আহাম্মদ",
+   "নুরের জামান"
+  ],
+  "guardian": "পিং কামিস উনি,পিং বুরজুগ আলী",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "60",
+  "owners": [
+   "বুরজুগ আলী"
+  ],
+  "guardian": "পিং কাসিম উনি",
+  "dags": [
+   "19"
+  ],
+  "totalLand": "0.0600"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "61",
+  "owners": [
+   "বছির উল্লা"
+  ],
+  "guardian": "পিং রহিম উনি",
+  "dags": [
+   "78"
+  ],
+  "totalLand": "0.7900"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "61",
+  "owners": [
+   "বছির উল্লা",
+   "আনোয়ার হাসেন",
+   "রছুমা খাতুন",
+   "ফাতেমা খাতুন"
+  ],
+  "guardian": "পিং রহিম উনি,পিং বশির উল্লা,জং বছির উল্লা,জং আনোয়ার হাসেন",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "62",
+  "owners": [
+   "বছির উল্লা"
+  ],
+  "guardian": "পিং নায়াব আলী",
+  "dags": [
+   "84"
+  ],
+  "totalLand": "0.1600"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "62",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "0.3300"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "63",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "0.5000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "64",
+  "owners": [
+   "ময়না ভানু"
+  ],
+  "guardian": "জং মাহাম্মদ সুলতান",
+  "dags": [
+   "27"
+  ],
+  "totalLand": "0.0900"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "64",
+  "owners": [
+   "ময়না ভানু",
+   "ফরিদগঞ্জ"
+  ],
+  "guardian": "জং মাহাম্মদ সুলতান",
+  "dags": [
+   "27"
+  ],
+  "totalLand": "0.0900"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "65",
+  "owners": [
+   "মাইন উনি",
+   "বিাল হাসেন",
+   "হলাল উনি",
+   "আমিনা খাতুন",
+   "নুর জাহান বগম"
+  ],
+  "guardian": "পিং - আসলাম মিয়া,পিং আসলাম মিয়া,পিং আসলাম মিয়া,জং- আসলাম মিয়া,জং- ফজল আহাম্মদ,জং",
+  "dags": [
+   "39",
+   "52",
+   "60",
+   "85",
+   "65"
+  ],
+  "totalLand": "0.5700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "65",
+  "owners": [
+   "মাইন উনি",
+   "বিাল হাসেন",
+   "হলাল উনি",
+   "আমিন খাতুন",
+   "আয়েশা খাতুন"
+  ],
+  "guardian": "পিং আসলাম মিয়া,জং আসলাম মিযা,জং ফজল আহাম্মদ",
+  "dags": [
+   "39",
+   "43",
+   "52",
+   "60",
+   "85",
+   "65"
+  ],
+  "totalLand": "0.2500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "66",
+  "owners": [
+   "মাছুদা খাতুন"
+  ],
+  "guardian": "জং আহসান উনি",
+  "dags": [
+   "17"
+  ],
+  "totalLand": "0.1200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "66",
+  "owners": [
+   "মাজুদা খাতুন"
+  ],
+  "guardian": "জং আহসান উনি",
+  "dags": [
+   "17"
+  ],
+  "totalLand": "0.1200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "CS",
+  "khatianNo": "67",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "67",
+  "owners": [
+   "মাধু মিয়া"
+  ],
+  "guardian": "পিং ছয়দ আলী",
+  "dags": [
+   "37",
+   "47",
+   "64"
+  ],
+  "totalLand": "1.4800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "67",
+  "owners": [
+   "নাধু মিয়া",
+   "ববি খাতুন"
+  ],
+  "guardian": "পিং ছয়দ আলী",
+  "dags": [
+   "37",
+   "47",
+   "64"
+  ],
+  "totalLand": "0.5000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "67",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "0.4000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "CS",
+  "khatianNo": "68",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "68",
+  "owners": [
+   "মনির আহাম্মদ"
+  ],
+  "guardian": "পিং লকিরত উল্লা",
+  "dags": [
+   "99",
+   "102"
+  ],
+  "totalLand": "0.3700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "68",
+  "owners": [
+   "মনির আহাম্মদ"
+  ],
+  "guardian": "পিং লকিয়ত উল্লা",
+  "dags": [
+   "99",
+   "102"
+  ],
+  "totalLand": "0.3700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "68",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "0.3300"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "SA",
+  "khatianNo": "68",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "1.1700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "69",
+  "owners": [
+   "মনির আহাম্মদ"
+  ],
+  "guardian": "পিং লকিরত উল্লা",
+  "dags": [
+   "169"
+  ],
+  "totalLand": "0.3700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "69",
+  "owners": [
+   "মনির আহাম্মদ",
+   "মা: মাস্তফা",
+   "রুহুল আমিন"
+  ],
+  "guardian": "পিং লকিয়ত উল্লা",
+  "dags": [
+   "169"
+  ],
+  "totalLand": "0.3700"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "70",
+  "owners": [
+   "মিজানুর রহমান"
+  ],
+  "guardian": "পিং আবদুস ছত্তার",
+  "dags": [
+   "17"
+  ],
+  "totalLand": "0.0500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "70",
+  "owners": [
+   "মিজানুর রহমান"
+  ],
+  "guardian": "পিং আবদুছ ছত্তার",
+  "dags": [
+   "17"
+  ],
+  "totalLand": "0.0500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "71",
+  "owners": [
+   "মুনসর আহাম্মদ"
+  ],
+  "guardian": "পিং নুরের জামান",
+  "dags": [
+   "9"
+  ],
+  "totalLand": "0.4900"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "71",
+  "owners": [
+   "মুনসর আহাম্মদ"
+  ],
+  "guardian": "পিং নুরের জামান",
+  "dags": [
+   "9"
+  ],
+  "totalLand": "0.4900"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "72",
+  "owners": [
+   "মনছুর আহাম্মদ"
+  ],
+  "guardian": "পিং ফজলুল হক",
+  "dags": [
+   "173",
+   "174"
+  ],
+  "totalLand": "0.1500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "72",
+  "owners": [
+   "মনসুর আহাম্মদ",
+   "নজির আহাম্মদ",
+   "তাফায়েল আহাম্মদ",
+   "সয়দ আহাম্মদ"
+  ],
+  "guardian": "পিং ফজলুল হক",
+  "dags": [
+   "173",
+   "174"
+  ],
+  "totalLand": "0.1800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "73",
+  "owners": [
+   "মুনসর আহাম্মদ"
+  ],
+  "guardian": "পিং নুরের জামান",
+  "dags": [
+   "107"
+  ],
+  "totalLand": "0.4500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "73",
+  "owners": [
+   "মুনসর আহাম্মদ",
+   "রজাউল করিম"
+  ],
+  "guardian": "পিং নুরের জামান",
+  "dags": [
+   "107"
+  ],
+  "totalLand": "0.4500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "74",
+  "owners": [
+   "মুনসর আহাম্মদ"
+  ],
+  "guardian": "পিং হাজী আাছ আলী",
+  "dags": [
+   "40",
+   "66",
+   "139",
+   "157"
+  ],
+  "totalLand": "1.4300"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "74",
+  "owners": [
+   "মুনসর আহাম্মদ"
+  ],
+  "guardian": "পিং হাজী আববাছ আলী",
+  "dags": [
+   "40",
+   "66",
+   "139",
+   "157"
+  ],
+  "totalLand": "1.4200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "75",
+  "owners": [
+   "মাহাম্মদ মাস্তফা"
+  ],
+  "guardian": "পিং হাজী আবদুস ছমিদ",
+  "dags": [
+   "108"
+  ],
+  "totalLand": "0.1900"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "75",
+  "owners": [
+   "মাহাম্মদ মাস্তফা"
+  ],
+  "guardian": "পিং হাজী আবদুস ছমিদ",
+  "dags": [
+   "108"
+  ],
+  "totalLand": "0.1900"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "76",
+  "owners": [
+   "মহিম আলী"
+  ],
+  "guardian": "পিং আইউব আলি",
+  "dags": [
+   "67"
+  ],
+  "totalLand": "0.1200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "76",
+  "owners": [
+   "মহিম আলি"
+  ],
+  "guardian": "পিং আইউব আলি",
+  "dags": [
+   "67"
+  ],
+  "totalLand": "0.1200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "77",
+  "owners": [
+   "মাহাম্মদ হানিফ"
+  ],
+  "guardian": "পিং কাাত আলী",
+  "dags": [
+   "68"
+  ],
+  "totalLand": "0.3300"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "77",
+  "owners": [
+   "মাহাম্মদ হানিফ",
+   "মাহাম্মদ হাসেন",
+   "ফাতেমা খাতুন"
+  ],
+  "guardian": "পিং কাববাত আলি,জং কাববাত আলি",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "78",
+  "owners": [
+   "মাহাম্মদ হাসেন"
+  ],
+  "guardian": "পিং কাাত আলি",
+  "dags": [
+   "62"
+  ],
+  "totalLand": "0.3300"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "78",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "0.7900"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "78",
+  "owners": [
+   "মাহাম্মদ হাসেন",
+   "মাহাম্মদ হানিফ মিয়া",
+   "মাহাম্মদ হাছেন মিয়া",
+   "ফাতেমা খাতুন"
+  ],
+  "guardian": "পিং কাববাত আলি,জং কাববাত আলি",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "78",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "1.6250"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "79",
+  "owners": [
+   "রফিক উল্লা"
+  ],
+  "guardian": "পিং আবদুল ওহাদ",
+  "dags": [
+   "185",
+   "184"
+  ],
+  "totalLand": "0.3800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "79",
+  "owners": [
+   "রফিক উল্লা"
+  ],
+  "guardian": "পিং আবদুল ওহাব",
+  "dags": [
+   "185",
+   "184"
+  ],
+  "totalLand": "0.3800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "80",
+  "owners": [
+   "—"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "0.0200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "80",
+  "owners": [
+   "রুহুল আমিন"
+  ],
+  "guardian": "পিং সিকি আলি",
+  "dags": [
+   "176"
+  ],
+  "totalLand": "0.1300"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "80",
+  "owners": [
+   "রুহুল আমিন",
+   "আবদুল আওয়াল"
+  ],
+  "guardian": "পিং হাসমত উল্লা ডালি,পিং সিকি আলি",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "81",
+  "owners": [
+   "রুহুল আমিন হাসমত উল্লা"
+  ],
+  "guardian": "—",
+  "dags": [
+   "88",
+   "89",
+   "93",
+   "96",
+   "104",
+   "113",
+   "131",
+   "145",
+   "171",
+   "179",
+   "181"
+  ],
+  "totalLand": "1.8000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "81",
+  "owners": [
+   "রুহুল আমিন",
+   "খারশেদ মিয়া"
+  ],
+  "guardian": "পিং হাসমত উল্লা",
+  "dags": [
+   "88",
+   "89",
+   "93",
+   "96",
+   "104",
+   "113",
+   "131",
+   "145",
+   "171",
+   "179",
+   "181"
+  ],
+  "totalLand": "1.8000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "82",
+  "owners": [
+   "লাল মিয়া"
+  ],
+  "guardian": "পিং জিন্নত আলি",
+  "dags": [
+   "74",
+   "75",
+   "63"
+  ],
+  "totalLand": "0.5300"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "82",
+  "owners": [
+   "মলিক",
+   "লাল মিয়া"
+  ],
+  "guardian": "পিং জিন্নত আলি",
+  "dags": [
+   "74",
+   "75",
+   "63"
+  ],
+  "totalLand": "0.5400"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "83",
+  "owners": [
+   "লাল মিয়া সদাগর"
+  ],
+  "guardian": "পিং ইসি আলী সদাগর",
+  "dags": [
+   "7",
+   "8",
+   "11",
+   "17"
+  ],
+  "totalLand": "0.8300"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "83",
+  "owners": [
+   "লাল মিয়া সদাগর"
+  ],
+  "guardian": "পিং ইসি আলী সদাগর",
+  "dags": [
+   "7",
+   "8",
+   "11",
+   "17"
+  ],
+  "totalLand": "0.9400"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "84",
+  "owners": [
+   "সয়দ আলি"
+  ],
+  "guardian": "পিং ফজর আলী",
+  "dags": [
+   "63"
+  ],
+  "totalLand": "0.0200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "84",
+  "owners": [
+   "সয়দ আলি"
+  ],
+  "guardian": "পিং ফজর আলী",
+  "dags": [
+   "63"
+  ],
+  "totalLand": "0.0200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "8449",
+  "owners": [
+   "মোঃ ফিরোজ আলম"
+  ],
+  "guardian": "—",
+  "dags": [
+   "108"
+  ],
+  "totalLand": "0.1900"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "85",
+  "owners": [
+   "সিরাজ আহাম্মদ"
+  ],
+  "guardian": "পিং হাজী আাছ আলী",
+  "dags": [
+   "73",
+   "95",
+   "94",
+   "138",
+   "160"
+  ],
+  "totalLand": "0.9000"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "85",
+  "owners": [
+   "সিরাজ আহাম্মদ"
+  ],
+  "guardian": "পিং হাজী আববাছ আলী",
+  "dags": [
+   "73",
+   "95",
+   "94",
+   "138",
+   "160"
+  ],
+  "totalLand": "1.2400"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "86",
+  "owners": [
+   "সহিদ উল্লা"
+  ],
+  "guardian": "পিং সাহাদ উল্লা",
+  "dags": [
+   "69"
+  ],
+  "totalLand": "0.2500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "86",
+  "owners": [
+   "সহিদ উল্লা",
+   "আলি আহাম্মদ",
+   "মাহাম্মদ হাসেন"
+  ],
+  "guardian": "পিং সাহাদ উল্লা",
+  "dags": [
+   "69"
+  ],
+  "totalLand": "0.2500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "87",
+  "owners": [
+   "সহিদ উল্লা পাটারী"
+  ],
+  "guardian": "পিং বসির উল্লা পাটারী",
+  "dags": [
+   "146",
+   "136"
+  ],
+  "totalLand": "0.4500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "87",
+  "owners": [
+   "সহিদ উল্লা পাটারি",
+   "মা: তবির উল্লা পাটারী"
+  ],
+  "guardian": "পিং বসির উল্লা পাটারি",
+  "dags": [
+   "146",
+   "436"
+  ],
+  "totalLand": "0.4500"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "88",
+  "owners": [
+   "সহিদ উল্লা পাটারি",
+   "রুহুল আমিন"
+  ],
+  "guardian": "পিং বসির উল্লা পাটারি,পিং হাসমত উল্লা",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "89",
+  "owners": [
+   "সহিদ উল্লা রাড়ী"
+  ],
+  "guardian": "পিং হাবিব উল্লা",
+  "dags": [
+   "170"
+  ],
+  "totalLand": "0.3200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "89",
+  "owners": [
+   "সহিদ উল্লা রাড়ী",
+   "জাহারি আলম"
+  ],
+  "guardian": "পিং হাবিব উল্লা,পিং মনির আহাম্মদ",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "CS",
+  "khatianNo": "9",
+  "owners": [
+   "ক বঙ্গচন্দ্র শীল",
+   "প্রভাত চন্দ্র শীল",
+   "খ আবদুল ছাবাহান ভূঁইয়া",
+   "গ মনিরনি রাঢ়ী",
+   "মিঞা জান"
+  ],
+  "guardian": "পিং মৃত রামকৃষ্ণ শীল,পিং মৃত মহিমচন্দ্র শীল,পিং মৃত মহম্মদ জান মিঞা জী,পিং মৃত",
+  "dags": [
+   "3",
+   "15",
+   "19",
+   "21",
+   "23",
+   "24",
+   "38",
+   "42",
+   "43",
+   "44",
+   "45",
+   "46",
+   "47",
+   "48",
+   "49",
+   "50",
+   "51",
+   "52",
+   "53",
+   "54",
+   "55",
+   "56",
+   "57",
+   "69",
+   "70",
+   "74",
+   "75",
+   "76",
+   "77",
+   "81",
+   "82",
+   "83",
+   "84",
+   "85",
+   "93",
+   "14"
+  ],
+  "totalLand": "34.9600"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "90",
+  "owners": [
+   "মাহাম্মদ মাস্তফা"
+  ],
+  "guardian": "পিং লতিয়ত উল্লা",
+  "dags": [
+   "70"
+  ],
+  "totalLand": "0.2850"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "90",
+  "owners": [
+   "সহিদ উল্লা হাওলাদার",
+   "মাহাম্মদ মাস্তফা",
+   "মাহাম্মদ রুহুল আমিন"
+  ],
+  "guardian": "পিং লকিয়ত উল্লা",
+  "dags": [
+   "70"
+  ],
+  "totalLand": "0.6200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "91",
+  "owners": [
+   "সহিদ উল্লা হাওলাদার"
+  ],
+  "guardian": "পিং লকিয়ত উল্লা",
+  "dags": [
+   "153",
+   "140",
+   "149",
+   "132"
+  ],
+  "totalLand": "0.1800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "91",
+  "owners": [
+   "সহিদ উল্লা হাওলাদর",
+   "আয়েশা খাতুন"
+  ],
+  "guardian": "পিং লকিয়ত উল্লা,জং সহিদ উল্লা",
+  "dags": [
+   "153",
+   "140",
+   "149",
+   "132"
+  ],
+  "totalLand": "0.1800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "92",
+  "owners": [
+   "হরমতের নছা"
+  ],
+  "guardian": "জং জয়নাল আবদিন",
+  "dags": [
+   "183"
+  ],
+  "totalLand": "0.0600"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "92",
+  "owners": [
+   "হরমতের নছা",
+   "বাবূল হাসেন"
+  ],
+  "guardian": "জং জয়নাল আবদিন,পিং জয়নাল আবদিন",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "93",
+  "owners": [
+   "হাবিব উল্লা"
+  ],
+  "guardian": "পিং জবেদ উল্লা",
+  "dags": [
+   "28",
+   "29"
+  ],
+  "totalLand": "1.9800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "93",
+  "owners": [
+   "হাবিব উল্লা",
+   "নুরেরামান",
+   "আমিন উল্লা",
+   "মুকসুদা খাতুন"
+  ],
+  "guardian": "পিং জবেদ উল্লা,জং নুরেরামান বপারি",
+  "dags": [
+   "28",
+   "29"
+  ],
+  "totalLand": "1.9800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "94",
+  "owners": [
+   "হারিছ মিয়া"
+  ],
+  "guardian": "পিং উজির আলি",
+  "dags": [
+   "63"
+  ],
+  "totalLand": "0.1100"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "94",
+  "owners": [
+   "হারিছ মিয়া"
+  ],
+  "guardian": "পিং উজির আলী",
+  "dags": [
+   "63"
+  ],
+  "totalLand": "0.1100"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "9473",
+  "owners": [
+   "মোঃ আনোয়ার হাসেন — —"
+  ],
+  "guardian": "—",
+  "dags": [],
+  "totalLand": "—"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "95",
+  "owners": [
+   "হারিছ মিয়া সদাগর"
+  ],
+  "guardian": "পিং ইসি আলি",
+  "dags": [
+   "17"
+  ],
+  "totalLand": "0.1800"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "96",
+  "owners": [
+   "হাসান আলী"
+  ],
+  "guardian": "পিং কাাত আলী",
+  "dags": [
+   "67"
+  ],
+  "totalLand": "0.1200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "96",
+  "owners": [
+   "হাসান আলী",
+   "হাছন আলী"
+  ],
+  "guardian": "পিং কাববাত আলী",
+  "dags": [
+   "67"
+  ],
+  "totalLand": "0.1200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "97",
+  "owners": [
+   "ইসমাইল মিয়া"
+  ],
+  "guardian": "পিং সাহাদাত উল্লা",
+  "dags": [
+   "28",
+   "29"
+  ],
+  "totalLand": "1.1200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "97",
+  "owners": [
+   "ইসমাইল মিয়া",
+   "নুরজাহান বগম",
+   "ফাতেমা খাতুন"
+  ],
+  "guardian": "পিং সাহাদত উল্লা,জং শাহাজাহান,জং আবুল বসর",
+  "dags": [
+   "28",
+   "29"
+  ],
+  "totalLand": "1.1200"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "Mutation",
+  "khatianNo": "98",
+  "owners": [
+   "আলী আহাম্মদ গং"
+  ],
+  "guardian": "পিং মনির আহাম্মদ বপারী",
+  "dags": [
+   "70"
+  ],
+  "totalLand": "0.3350"
+ },
+ {
+  "mouza": "নাপিতের চর",
+  "survey": "RS",
+  "khatianNo": "98",
+  "owners": [
+   "আলী আহাম্মদ গং"
+  ],
+  "guardian": "পিং মনির আহাম্মদ বপারী",
+  "dags": [
+   "70"
+  ],
+  "totalLand": "0.3350"
+ }
+]
