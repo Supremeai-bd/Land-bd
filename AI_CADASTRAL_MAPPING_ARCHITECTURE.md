@@ -1,16 +1,18 @@
 # এক্সটার্নাল এআই (Multimodal AI) ভিত্তিক ভূমি রেকর্ড ম্যাপিং ও ভেরিফিকেশন আর্কিটেকচার
-## (External AI Pipeline for Cadastral Mapping, Cross-Verification & Auto-Correction)
+## (Proposed External AI Pipeline for Cadastral Review — No Automatic Correction)
 
 > **প্রজেক্ট:** রায়পুর স্মার্ট ভূমি ও নাগরিক অনুসন্ধান পোর্টাল (Raipur Land & Citizen Intelligence Hub)  
 > **উদ্দেশ্য:** কাঁচা ভূমি জরিপ বই (PDF স্ক্যান) থেকে এক্সটার্নাল এআই (Gemini 2.5 Pro / Claude 3.5 Sonnet / GPT-4o) ব্যবহার করে প্রস্তুতকৃত JSON ডেটার নির্ভুলতা যাচাই (Cross-Verification) এবং নতুন মৌজার জন্য স্বয়ংক্রিয় দাগ-খতিয়ান ম্যাপিং পাইপলাইন তৈরি করা।
+
+> **Status / safety:** এটি proposed design, implemented/validated pipeline নয়। PDF-ভিত্তিক audit, AI accuracy benchmark, বা verified cross-survey lineage করা হয়নি। AI output কেবল review candidate; human approval ছাড়া canonical source বা production D1-এ auto-write/correction করা যাবে না। Voter/land PII public R2-তে upload করা যাবে না; private storage and least-privilege access ব্যবহার করতে হবে।
 
 ---
 
 ## ১. ভূমিকা ও পটভূমি (Executive Overview)
 
-ইতিপূর্বে আমরা পাইথন স্ক্রিপ্ট ও OCR দিয়ে ২৯১টি ভূমি জরিপ বই ও ৫৫২টি ভোটার তালিকা থেকে JSON ডেটা তৈরি করেছি। তবে হস্তলিখিত প্রাচীন খতিয়ান, ছেঁড়া পৃষ্ঠা এবং জটিল সাবেক-হাল দাগ রূপান্তরে শতভাগ নির্ভুলতা নিশ্চিত করতে এবং ভবিষ্যতে যেকোনো নতুন মৌজার ডেটা সহজে একীভূত করতে **Multimodal Vision AI** একটি যুগান্তকারী সমাধান।
+Project inventory-তে ২৯১টি land-survey PDF ও ৫৫২টি voter-list PDF আছে; কিন্তু বর্তমান JSON-এর PDF/page provenance-সহ পুনরুৎপাদনযোগ্য extraction/verification run নিশ্চিত হয়নি। হাতে লেখা/ক্ষতিগ্রস্ত পৃষ্ঠা এবং cross-survey split/merge mapping অনিশ্চিত; **Multimodal Vision AI** সহায়ক review tool হতে পারে, নির্ভুলতার নিশ্চয়তা নয়।
 
-এই আর্কিটেকচারে ক্লাউড অবজেক্ট স্টোরেজ (Cloudflare R2), এক্সটার্নাল এআই ভিশন মডেল এবং আমাদের এক্সিস্টিং Cloudflare D1 ডাটাবেজের মধ্যে একটি শক্তিশালী ব্রিজ স্থাপন করা হয়েছে।
+এই নথির architecture Cloudflare R2, external AI ও D1-এর মধ্যে একটি future workflow প্রস্তাব করে; bridge চালু হয়েছে বা D1 পূর্ণ হয়েছে—এমন দাবি নয়।
 
 ---
 
@@ -18,9 +20,9 @@
 
 ```mermaid
 flowchart TD
-    subgraph Storage["১. ক্লাউড স্টোরেজ (Cloudflare R2)"]
-        R1["স্ক্যান করা ভূমি জরিপ বই (PDF)"]
-        R2["ভোটার তালিকা ও অন্যান্য র-ফাইল"]
+    subgraph Storage["১. সীমিত/প্রাইভেট স্টোরেজ (Cloudflare R2)"]
+        R1["অনুমোদিত survey PDF (private access)"]
+        R2["voter PII public upload নয়"]
     end
 
     subgraph AIEngine["২. এক্সটার্নাল মাল্টিমোডাল এআই (External AI Provider)"]
@@ -34,13 +36,13 @@ flowchart TD
     end
 
     subgraph Production["৪. প্রোডাকশন ডাটাবেস ও লাইভ পোর্টাল"]
-        D1["Cloudflare D1 Database<br/>(raipur-land-cadastre)"]
-        D2["Audit Logs & Human Review Dashboard"]
+        D1["Cloudflare D1<br/>(migration/full data pending)"]
+        D2["Human review and provenance required"]
     end
 
     Storage -->|Presigned URL / File URI| AIEngine
     AIEngine --> Verification
-    Verification -->|Verified Updates| Production
+    Verification -->|Human-approved candidates only| Production
 ```
 
 ---
@@ -67,20 +69,20 @@ flowchart TD
    {
      "status": "MATCHED" | "MISMATCH_DETECTED",
      "discrepancies": [...],
-     "corrected_data": { ... }
+     "candidate_data": { ... }
    }
    ```
 3. **ফলাফল প্রসেসিং:**
-   - যদি `status == "MATCHED"` হয়, রেকর্ডটি `verified_by_ai: true` ফ্ল্যাগ পাবে।
-   - যদি কোনো অমিল থাকে, তা অটোমেটিক্যালি একটি কারেকশন প্যাচ ফাইলে জমা হবে অথবা সরাসরি D1 ডাটাবেজে আপডেট হবে।
+   - AI result একা `verified_by_ai: true` বা legally verified status দেবে না। Model/version, input page, candidate change, uncertainty ও reviewer decision রাখুন।
+   - অমিল correction candidate হিসেবে quarantine হবে; human approval ও audit trail ছাড়া canonical JSON বা D1 update নয়।
 
 ---
 
 ### কর্মপদ্ধতি খ: নতুন ফাইল/মৌজার এন্ড-টু-এন্ড অটোমেটেড ম্যাপিং (New Mouza Mapping)
 
-ভবিষ্যতে নতুন কোনো ইউনিয়ন বা মৌজার বই আসলে কোনো ম্যানুয়াল স্ক্রিপ্ট ছাড়াই সম্পূর্ণ ডেটা এক্সট্রাক্ট করার নিয়ম:
+ভবিষ্যতে নতুন বই এলে এটি একটি proposed review workflow; manual QA ছাড়া সম্পূর্ণ data extraction দাবি করা যাবে না:
 
-1. **ফাইল আপলোড:** নতুন স্ক্যানকৃত PDF ফাইলটি `upload_raw_to_r2.py` স্ক্রিপ্টের মাধ্যমে ক্লাউডে আপলোড হবে।
+1. **ফাইল অ্যাক্সেস:** অনুমোদন ও retention policy যাচাই করে private storage-এ সীমিত access দিন; voter/land PII public-read করবেন না।
 2. **স্ট্রাকচার্ড এক্সট্রাকশন (Strict Schema Extraction):**
    AI-কে সরাসরি স্কিমা দিয়ে কল করা হবে যাতে আউটপুট সবসময় সুনির্দিষ্ট ও ক্লিন থাকে:
    ```json
@@ -100,7 +102,7 @@ flowchart TD
      ]
    }
    ```
-3. **ইনজেশন:** AI-এর আউটপুট সরাসরি ভ্যালিডেশন পাস করে Cloudflare D1-এর `khatians`, `dags`, এবং `mapping_index` টেবিলে ইনসার্ট হবে।
+3. **Review:** AI output-কে provenance-সহ staging candidate হিসেবে রাখুন। D1 write কেবল approved schema, human review, row-count/checksum QA ও rollback plan-এর পর হবে; current D1 contract-এ cross-survey lineage table নেই।
 
 ---
 
@@ -124,7 +126,7 @@ def verify_cadastre_page(mouza_name, page_image_url, current_json_record):
     {current_json_record}
     
     উপরের স্ক্যান পৃষ্ঠার সাথে এই JSON ডেটা মিলিয়ে দেখো। 
-    সকল সাবেক দাগের বিপরীতে হাল দাগের ম্যাপিং ১০০% সঠিক আছে কিনা নিশ্চিত করো।
+    সম্ভাব্য mismatch চিহ্নিত করো; source page/field উদ্ধৃত করো, uncertainty লিখো, ownership বা cross-survey correctness নিশ্চিত বলে দাবি কোরো না।
     """
     
     response = client.models.generate_content(
@@ -147,16 +149,16 @@ def verify_cadastre_page(mouza_name, page_image_url, current_json_record):
 
 | ফিচার | ট্র্যাডিশনাল স্ক্রিপ্ট / রেগুলার OCR | এক্সটার্নাল মাল্টিমোডাল এআই (Gemini/Claude) |
 | :--- | :--- | :--- |
-| **হস্তলিখিত ও ঝাপসা রেকর্ড** | ৬০% - ৭০% সঠিকতা | **৯৫% - ৯৯% নির্ভুল পাঠোদ্ধার** |
-| **বিভক্ত দাগ ম্যাপিং** | জটিল রেগুলার এক্সপ্রেশন দরকার | কনটেক্সট বুঝে দাগ বিভাজন শনাক্ত করতে পারে |
-| **নতুন মৌজা সংযোজন** | প্রতিবার স্ক্রিপ্ট কাস্টমাইজ করতে হয় | জিরো-শট (Zero-Shot) বা শুধু প্রম্পট দিয়েই সম্পন্ন |
-| **বাংলা ফন্ট গ্লিচ প্রতিরোধ** | ফন্ট মেরামত লজিক লিখতে হয় | সরাসরি ভিজ্যুয়াল টেবিল দেখে নির্ভুল ইউনিকোড দেয় |
-| **খরচ ও দক্ষতা** | লোকাল কম্পিউটেশন দরকার | সম্পূর্ণ ক্লাউড-স্কেল ও দ্রুততম |
+| **হস্তলিখিত/ঝাপসা রেকর্ড** | OCR error হতে পারে | AI candidate দিতে পারে; benchmark ছাড়া কোনো accuracy rate দাবি নয় |
+| **বিভক্ত দাগ mapping** | manual/provenance review দরকার | candidate relationship প্রস্তাব করতে পারে; legal lineage নয় |
+| **নতুন মৌজা** | extraction schema ও QA দরকার | structured draft; completeness human-verified হবে |
+| **বাংলা font glyph** | OCR/encoding issue হতে পারে | visual cross-check সহায়তা; automatic correction নয় |
+| **Data privacy** | source files sensitive হতে পারে | private storage, minimal access, no public PII links |
 
 ---
 
 ## ৬. পরবর্তী পদক্ষেপ (Action Plan)
 
-1. `upload_raw_to_r2.py` স্ক্রিপ্ট চালিয়ে সমস্ত কাঁচা PDF ফাইল ক্লাউড স্টোরেজে রাখা।
-2. R2 বাকেটে পাবলিক রিড অথবা প্রিসাইনড ইউআরএল এনাবল করা।
-3. একটি ডেডিকেটেড ভেরিফায়ার স্ক্রিপ্ট (`verify_mapping_ai.py`) চালু করে সন্দেহজনক বা জটিল মৌজাগুলোর ডেটা AI দিয়ে অডিট ও অটো-আপডেট করা।
+1. লিখিত access/retention approval ও private-bucket configuration ছাড়া কোনো raw voter/land PDF R2-তে upload নয়।
+2. সীমিত, অনুমোদিত sample দিয়ে AI/OCR benchmark ও source-page provenance যাচাই করুন; accuracy rate অনুমান করে লিখবেন না।
+3. `verify_mapping_ai.py` থাকলে candidate-only output, human review, audit trail ও rollback যোগ করুন; production auto-update বন্ধ রাখুন।

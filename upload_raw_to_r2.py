@@ -94,10 +94,18 @@ def get_existing_objects(client, bucket_name):
         print(f"[!] Warning: Could not list existing objects: {e}")
     return existing
 
-def collect_target_files():
-    """Collects all heavy raw files to upload."""
+def collect_target_files(include_sensitive=False):
+    """Return public-safe files by default; PII sources require explicit safeguards."""
     base_dir = Path(".").resolve()
     targets = []
+
+    # Registry rates are public/reference material. Citizen and land records are
+    # deliberately excluded from the default upload set.
+    rates = base_dir / "raipur_registry_rates_2025_2026.json"
+    if rates.is_file():
+        targets.append((rates, "public/raipur_registry_rates_2025_2026.json"))
+    if not include_sensitive:
+        return targets
 
     # 1. Partitioned AI-Ready Data (khatians, voters, manifest)
     data_dir = base_dir / "data"
@@ -134,7 +142,7 @@ def collect_target_files():
 
     return targets
 
-def upload_files(client, bucket_name):
+def upload_files(client, bucket_name, include_sensitive=False):
     if not ensure_bucket_exists(client, bucket_name):
         return
 
@@ -142,7 +150,7 @@ def upload_files(client, bucket_name):
     existing = get_existing_objects(client, bucket_name)
     print(f"[✓] Found {len(existing)} existing files in bucket.")
 
-    targets = collect_target_files()
+    targets = collect_target_files(include_sensitive=include_sensitive)
     total_files = len(targets)
     total_bytes = sum(p.stat().st_size for p, _ in targets)
 
@@ -197,10 +205,8 @@ def upload_files(client, bucket_name):
     print(f"   Time Taken: {elapsed:.1f} seconds")
     print("="*70)
 
-    if PUBLIC_DOMAIN:
-        print(f"\n🌐 Your files are accessible to external AI at:")
-        print(f"   {PUBLIC_DOMAIN.rstrip('/')}/<file_key>")
-        print(f"   Example: {PUBLIC_DOMAIN.rstrip('/')}/02_BACKUP_AND_RAW_DATA/Raipur_Land_Mapping_Data/raipur_all_voters.json")
+    if include_sensitive:
+        print("Sensitive files were uploaded only after explicit private-bucket confirmation.")
 
 def generate_presigned_url(client, bucket_name, key, expires_in=3600):
     """Generate a temporary URL for AI providers to fetch private files."""
@@ -216,8 +222,13 @@ def generate_presigned_url(client, bucket_name, key, expires_in=3600):
         return None
 
 if __name__ == "__main__":
+    include_sensitive = "--include-sensitive" in sys.argv
+    confirm_private = "--confirm-private-bucket" in sys.argv
+    if include_sensitive and (PUBLIC_DOMAIN or not confirm_private):
+        print("ERROR: refusing sensitive-data upload: remove the public-domain setting and pass --confirm-private-bucket only after verifying bucket access is private.")
+        sys.exit(2)
     print("🚀 Initializing Cloudflare R2 Raw Data Sync...")
     client = get_r2_client()
     if client:
-        upload_files(client, BUCKET_NAME)
+        upload_files(client, BUCKET_NAME, include_sensitive=include_sensitive)
 

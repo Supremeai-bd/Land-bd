@@ -1,6 +1,7 @@
-name = "raipur-land-api"
+name = "raipur-land-portal"
 main = "src/index.js"
 compatibility_date = "2024-01-01"
+migrations_dir = "migrations"
 
 [[d1_databases]]
 binding = "DB"

@@ -9,10 +9,10 @@
  *  - Unified Cadastre Search Helpers
  */
 
-const DEFAULT_TOKEN_SECRET = "RAIPUR_CADASTRE_INTERNAL_SESSION_SECRET_2026_V1";
-
 function getTokenSecret(env) {
-  return (env && env.TOKEN_SECRET) ? env.TOKEN_SECRET : DEFAULT_TOKEN_SECRET;
+  const secret = env && env.TOKEN_SECRET;
+  if (typeof secret !== "string" || new TextEncoder().encode(secret).length < 32) return null;
+  return secret;
 }
 
 // 1. Password Hashing: PBKDF2 with Salt (Zero Unsalted Hashes)
@@ -80,7 +80,7 @@ async function generateSessionToken(userId, role, secret) {
 }
 
 async function verifySessionToken(authHeader, secret) {
-  if (!authHeader || !authHeader.startsWith("Bearer ")) return null;
+  if (typeof secret !== "string" || !secret || !authHeader || !authHeader.startsWith("Bearer ")) return null;
   const token = authHeader.substring(7).trim();
   const parts = token.split(".");
   if (parts.length !== 3) return null;
@@ -100,12 +100,24 @@ async function verifySessionToken(authHeader, secret) {
   if (!isValid) return null;
 
   try {
+    const headerObj = JSON.parse(atob(header));
     const payloadObj = JSON.parse(atob(payload));
-    if (payloadObj.exp && Date.now() > payloadObj.exp) return null;
+    if (headerObj.alg !== "HS256" || !payloadObj || typeof payloadObj.sub !== "string" || !payloadObj.sub) return null;
+    if (typeof payloadObj.exp !== "number" || !Number.isFinite(payloadObj.exp) || Date.now() >= payloadObj.exp) return null;
+    if (typeof payloadObj.role !== "string" || !payloadObj.role) return null;
     return payloadObj;
   } catch (e) {
     return null;
   }
+}
+
+async function authenticateActiveUser(request, env, secret) {
+  if (!secret) return null;
+  const claims = await verifySessionToken(request.headers.get("Authorization"), secret);
+  if (!claims) return null;
+  const user = await env.DB.prepare("SELECT id, role, status FROM users WHERE id = ?").bind(claims.sub).first();
+  if (!user || user.status !== "active") return null;
+  return { ...claims, role: user.role };
 }
 
 // 3. Helpers
@@ -166,6 +178,8 @@ export default {
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS, DELETE",
       "Access-Control-Allow-Headers": "Content-Type, Authorization",
       "Vary": "Origin",
+      "Cache-Control": "no-store",
+      "X-Content-Type-Options": "nosniff",
       "Content-Type": "application/json; charset=utf-8"
     };
 
@@ -193,25 +207,25 @@ export default {
           query = "SELECT k.* FROM dag_khatian_map m JOIN khatians k ON m.mouza = k.mouza AND m.survey = k.survey AND m.khatian_no = k.khatian_no WHERE m.dag_no = ?";
           params = [dag];
         } else if (khatian) {
-          query = "SELECT * FROM khatians WHERE khatian_no = ?";
+          query = "SELECT k.* FROM khatians k WHERE k.khatian_no = ?";
           params = [khatian];
         } else if (name) {
-          query = "SELECT * FROM khatians WHERE owners LIKE ? ESCAPE '\\'";
+          query = "SELECT k.* FROM khatians k WHERE k.owners LIKE ? ESCAPE '\\'";
           params = [`%${name}%`];
         } else if (father) {
-          query = "SELECT * FROM khatians WHERE guardian LIKE ? ESCAPE '\\'";
+          query = "SELECT k.* FROM khatians k WHERE k.guardian LIKE ? ESCAPE '\\'";
           params = [`%${father}%`];
         }
 
         if (query) {
-          if (mouza !== "ALL") { query += " AND mouza = ?"; params.push(mouza); }
+          if (mouza !== "ALL") { query += " AND k.mouza = ?"; params.push(mouza); }
           if (survey !== "ALL") {
             if (survey === "SABEK") {
-              query += " AND survey IN ('CS', 'SA', 'RS', 'সাবেক')";
+              query += " AND k.survey IN ('CS', 'SA', 'RS', 'সাবেক')";
             } else if (survey === "HAAL") {
-              query += " AND survey IN ('BRS', 'Mutation', 'নামজারি', 'হাল')";
+              query += " AND k.survey IN ('BRS', 'Mutation', 'নামজারি', 'হাল')";
             } else {
-              query += " AND survey = ?";
+              query += " AND k.survey = ?";
               params.push(survey);
             }
           }
@@ -220,7 +234,7 @@ export default {
           const { results } = await env.DB.prepare(query).bind(...params).all();
           (results || []).forEach(r => {
             const item = mapKhatianRow(r);
-            if (["BRS", "হাল"].includes(item.survey)) {
+            if (["BRS", "Mutation", "নামজারি", "হাল"].includes(item.survey)) {
               haalRecords.push(item);
             } else {
               sabekRecords.push(item);
@@ -243,6 +257,7 @@ export default {
 
       // 2. Authentication: Register
       if (url.pathname === "/api/auth/register" && request.method === "POST") {
+        if (!tokenSecret) return new Response(JSON.stringify({ success: false, error: "Authentication is temporarily unavailable." }), { status: 503, headers });
         const body = await request.json();
         const { phone, name, password, role, association_license_no } = body;
 
@@ -293,6 +308,7 @@ export default {
 
       // 3. Authentication: Login
       if (url.pathname === "/api/auth/login" && request.method === "POST") {
+        if (!tokenSecret) return new Response(JSON.stringify({ success: false, error: "Authentication is temporarily unavailable." }), { status: 503, headers });
         const body = await request.json();
         const { phone, password } = body;
 
@@ -305,7 +321,7 @@ export default {
           "SELECT id, phone, name, role, status, association_license_no, password_hash FROM users WHERE phone = ?"
         ).bind(cleanPhone).first();
 
-        if (!user || !(await verifyPassword(password, user.password_hash))) {
+        if (!user || user.status !== "active" || !(await verifyPassword(password, user.password_hash))) {
           return new Response(JSON.stringify({ success: false, error: "ভুল মোবাইল নম্বর অথবা পাসওয়ার্ড!" }), { status: 401, headers });
         }
 
@@ -327,7 +343,7 @@ export default {
 
       // 4. Admin Management: Pending deed writers (AUTHENTICATED ADMIN ONLY)
       if (url.pathname === "/api/admin/writers/pending") {
-        const auth = await verifySessionToken(request.headers.get("Authorization"), tokenSecret);
+        const auth = await authenticateActiveUser(request, env, tokenSecret);
         if (!auth || (auth.role !== "admin" && auth.role !== "superadmin")) {
           return new Response(JSON.stringify({ success: false, error: "অননুমোদিত অ্যাক্সেস! শুধুমাত্র এডমিন প্রবেশাধিকার।" }), { status: 403, headers });
         }
@@ -340,7 +356,7 @@ export default {
 
       // 5. Admin Management: Approve / Reject writer (AUTHENTICATED ADMIN ONLY)
       if (url.pathname === "/api/admin/writers/action" && request.method === "POST") {
-        const auth = await verifySessionToken(request.headers.get("Authorization"), tokenSecret);
+        const auth = await authenticateActiveUser(request, env, tokenSecret);
         if (!auth || (auth.role !== "admin" && auth.role !== "superadmin")) {
           return new Response(JSON.stringify({ success: false, error: "অননুমোদিত অ্যাক্সেস! শুধুমাত্র এডমিন অনুমোদন দিতে পারেন।" }), { status: 403, headers });
         }
@@ -359,24 +375,35 @@ export default {
         return new Response(JSON.stringify({ success: true, newStatus }), { headers });
       }
 
-      // 6. Voter search endpoint (D1)
+      // 6. Restricted voter lookup: active, approved deed writers/admins only.
       if (url.pathname === "/api/voters") {
+        const auth = await authenticateActiveUser(request, env, tokenSecret);
+        if (!auth) return new Response(JSON.stringify({ success: false, error: "লগইন আবশ্যক" }), { status: 401, headers });
+        if (!["deed_writer", "admin", "superadmin"].includes(auth.role)) {
+          return new Response(JSON.stringify({ success: false, error: "অনুমোদিত দলিল লেখক বা এডমিন অ্যাক্সেস প্রয়োজন" }), { status: 403, headers });
+        }
+
         const voterNo = escapeSqlWildcards((url.searchParams.get("voter_no") || "").trim());
         const name = escapeSqlWildcards((url.searchParams.get("name") || "").trim());
         const father = escapeSqlWildcards((url.searchParams.get("father") || "").trim());
-        const mother = escapeSqlWildcards((url.searchParams.get("mother") || "").trim());
-        const ward = escapeSqlWildcards((url.searchParams.get("ward") || "").trim());
-        const address = escapeSqlWildcards((url.searchParams.get("address") || "").trim());
+        if (voterNo && (name || father)) return new Response(JSON.stringify({ success: false, error: "একবারে একটি নির্দিষ্ট অনুসন্ধান শর্ত দিন" }), { status: 400, headers });
+        if (!voterNo && ((!name && !father) || (name && name.length < 3) || (father && father.length < 3))) {
+          return new Response(JSON.stringify({ success: false, error: "ভোটার নম্বর অথবা কমপক্ষে ৩ অক্ষরের নাম/পিতার নাম দিন" }), { status: 400, headers });
+        }
 
-        let query = "SELECT voter_no, name, father, mother, gender, ward, address FROM voters WHERE 1=1";
-        const params = [];
-        if (voterNo) { query += " AND voter_no LIKE ? ESCAPE '\\'"; params.push(`%${voterNo}%`); }
-        if (name) { query += " AND name LIKE ? ESCAPE '\\'"; params.push(`%${name}%`); }
-        if (father) { query += " AND father LIKE ? ESCAPE '\\'"; params.push(`%${father}%`); }
-        if (mother) { query += " AND mother LIKE ? ESCAPE '\\'"; params.push(`%${mother}%`); }
-        if (ward) { query += " AND (ward LIKE ? ESCAPE '\\' OR address LIKE ? ESCAPE '\\')"; params.push(`%${ward}%`, `%${ward}%`); }
-        if (address) { query += " AND address LIKE ? ESCAPE '\\'"; params.push(`%${address}%`); }
-        query += " LIMIT 50";
+        let query = "SELECT voter_no, name, father, ward FROM voters WHERE ";
+        let params;
+        if (voterNo) {
+          query += "voter_no = ?";
+          params = [voterNo];
+        } else if (name) {
+          query += "name LIKE ? ESCAPE '\\'";
+          params = [`%${name}%`];
+        } else {
+          query += "father LIKE ? ESCAPE '\\'";
+          params = [`%${father}%`];
+        }
+        query += " LIMIT 5";
 
         try {
           const { results } = await env.DB.prepare(query).bind(...params).all();
@@ -384,10 +411,7 @@ export default {
             voterNo: v.voter_no || "",
             name: v.name || "",
             father: v.father || "",
-            mother: v.mother || "",
-            gender: v.gender || "",
-            ward: v.ward || "",
-            address: v.address || ""
+            ward: v.ward || ""
           }));
           return new Response(JSON.stringify({ success: true, voters }), { headers });
         } catch (err) {
@@ -397,7 +421,7 @@ export default {
 
       // 7. User Vault: Save / List items (USER AUTHENTICATED)
       if (url.pathname === "/api/user/saved-items") {
-        const auth = await verifySessionToken(request.headers.get("Authorization"), tokenSecret);
+        const auth = await authenticateActiveUser(request, env, tokenSecret);
         if (!auth) {
           return new Response(JSON.stringify({ success: false, error: "লগইন আবশ্যক" }), { status: 401, headers });
         }
@@ -413,7 +437,7 @@ export default {
       }
 
       if (url.pathname === "/api/user/save-khatian" && request.method === "POST") {
-        const auth = await verifySessionToken(request.headers.get("Authorization"), tokenSecret);
+        const auth = await authenticateActiveUser(request, env, tokenSecret);
         if (!auth) {
           return new Response(JSON.stringify({ success: false, error: "লগইন আবশ্যক" }), { status: 401, headers });
         }
@@ -430,7 +454,7 @@ export default {
       }
 
       if (url.pathname === "/api/user/save-voter" && request.method === "POST") {
-        const auth = await verifySessionToken(request.headers.get("Authorization"), tokenSecret);
+        const auth = await authenticateActiveUser(request, env, tokenSecret);
         if (!auth) {
           return new Response(JSON.stringify({ success: false, error: "লগইন আবশ্যক" }), { status: 401, headers });
         }

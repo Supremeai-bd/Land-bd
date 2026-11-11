@@ -1,12 +1,14 @@
 # রায়পুর ভোটার সার্চ ইঞ্জিটারি প্রোগ্রাম (RAIPUR_VOTER_SEARCH_INTEGRATION_PLAN)
 
 ## Overview
-Integration plan for **Voter Search** module — Tab 3 of Raipur Smart Portal (3-Tab Navigation). Builds on the completed 3-tab navigation (Land Cadastre, Registry Fee Calculator, Voter & Citizen Search), the 492,074 registered voter database (SQLite + Cloud D1 indexed API), unified 3-pillar cross-match view, and dedicated citizen profile cards.
+Historical integration plan for **Voter Search** module — Tab 3 of Raipur Smart Portal. UI/code elements exist, but the local SQLite build and complete Cloud D1 voter ingestion are not verified; the production D1 count was only 108 voters in the 12 Nov 2026 audit.
 
 > **Project:** Raipur Smart Land Cadastre & Citizen Intelligence Hub  
 > **Coverage area:** Raipur Upazila, Lakshmipur District, Chattogram Division  
 > **Live cloud URL:** https://raipur-land-portal.raipur-land.workers.dev  
-> **Prep date:** 11 Nov 2026  
+> **Prep date:** 11 Nov 2026
+
+> **Current API/privacy contract:** Cloud `/api/voters` requires an active approved deed-writer/admin token. It accepts one of: exact `voter_no`, name substring (minimum 3 characters), or father-name substring (minimum 3 characters); max 5 results. It returns only voter number, name, father and ward. Mother, gender and full address are not part of the cloud response. Fuzzy owner↔voter matches are unverified leads, never legal inheritance/ownership proof.
 
 ---
 
@@ -21,45 +23,38 @@ NavBar ──► Tab ৩. ভোটার ও নাগরিক অনুসন
 ```
 
 ### Tab ৩ — Flexible Querying Panel (`InputConsole` → `Engine`)
-- **F1:** ভোটার নম্বর (Voter No / NID)
+- **F1:** ভোটার নম্বর (Voter number; not an NID field)
 - **F2:** নাগরিকের নাম (Bangla Name)
 - **F3:** পিতার নাম (Father's Name)
-- **F4:** মাতার নাম (Mother's Name)
-- **F5:** ওয়ার্ড / ইউনিয়ন নির্বাচন (Ward / Union)
-- **F6:** গ্রাম / পাড়া / ঠিকানা (Gram / Village / Address)
+- **F4–F6:** mother/ward/address filters are not supported by the current cloud API; if retained locally, keep access local and privacy-restricted.
 
 ### Engine Architecture
 - **Local:** `raipur_voters_database.js` → fast in-memory/SQLite search (fast client in-mem / SQLite)
-- **Cloud:** `deploy_to_cloudflare.py` → D1 Edge Serverless `/api/voters?voter_no=...&name=...&father=...&ward=...` (30 ms response)
+- **Cloud:** `deploy_to_cloudflare.py` → secured D1 API with exactly one of `voter_no`, `name` or `father`; no cloud `ward` parameter or response-time SLA is promised.
 - **Output:** `OutputCards` → citizen profile card + smart profile result card
 
 ---
 
 ## ২. সার্চ ইন্টারফেস (UI/UX) ডিজাইন বৈশিষ্ট্য
 
-### ১. Flexible Multi-Parameter Search
+### ১. Current single-condition search modes
 - User provides **any single field** (e.g., only voter number, only name, only father) → still searches.
-- Multiple fields → finer filtering (e.g., name "হারুন" + পিতা "আব্দুল" + ওয়ার্ড "কেরোয়া").
+- Current cloud API accepts one search mode at a time; combined name+father+ward filtering is not implemented.
 - **Partial match / LIKE %name%** supported for Bengali names.
 
-### ২. রেজাল্ট কার্ডে প্রদর্শিত পূর্ণাঙ্গ তথ্য (Citizen Profile Card)
-- 🆔 **ভোটার নম্বর (NID):** copyable ID
-- 👤 **নাগরিকের নাম:** Full Bangla name
-- 👨‍👦 **পিতার নাম:** Father's name
-- 👩‍👧 **মাতার নাম:** Mother's name
-- 🔗 **লিঙ্গ:** পুরুষ / মহিলা / হিজড়া (gender inference via similarity)
-- 📍 **ওয়ার্ড ও ইউনিয়ন:** Ward & Union
-- 🏠 **গ্রাম ও বাড়ি/ঠিকানা:** Full address (e.g., পাঠারী বাড়ী, চর আবাবিল, রায়পুর, লক্ষ্মীপুর)
-- 🔗 **ভূমি রেকর্ড লিঙ্কার বাটন:** "এই ব্যক্তির ভূমি রেকর্ড খুঁজুন" → opens Cadastre tab, searches by name
+### ২. Cloud result — ন্যূনতম field
+- **ভোটার নম্বর, নাম, পিতার নাম ও ward** — current Worker response contract; voter number-কে NID বলা যাবে না।
+- Mother, gender, full address, export/print ও extended profile এই secured cloud endpoint দেয় না; local-only display হলে access, retention ও disclosure policy আলাদা করে নির্ধারণ করুন।
+- Land-record name search একটি সম্ভাব্য match দেখাতে পারে; confirmed owner/heir হিসেবে label নয়, source citation ও human review ছাড়া সিদ্ধান্ত নয়।
 
 ### ৩. Print & Export
-- One or multiple voters selected → instant clean slips print.
-- Browser print available; vault save records for each voter.
+- Any local print/export feature must be reviewed for personal-data disclosure; current cloud response is minimized and does not include mother, gender or full address.
+- Vault endpoints exist, but D1 schema migration and end-to-end integration tests remain pending.
 
 ### ৪. রেজাল্ট কার্ড (Rendered Cards)
 - Global status pill: "One glance voter search results"
 - 3 Pillar Matrix: Sabek (CS/SA) Records · Haal Modern Records · Voter/Cross-Match
-- Cross-match: name + father + land owner matching (0.45 threshold)
+- Cross-match: নাম/পিতার নামের similarity হলে কেবল unverified candidate; কোনো validated threshold বা legal match নেই।
 
 ---
 
@@ -69,8 +64,8 @@ NavBar ──► Tab ৩. ভোটার ও নাগরিক অনুসন
 - `01_LIVE_SMART_PORTAL_APP\Land_Intelligence_Hub.html` loads locally (port 8080) offline — super-fast results.
 
 ### ২. Cloudflare Edge / D1
-- Syncs voter index into Cloudflare D1; launches live worker `raipur-land-portal` (worker `raipur-land-portal`, account `f8642291c490425e5bdc4070e28a3953`).
-- New binding: `GET /api/voters?voter_no=...&name=...&father=...&ward=...` (30 ms, no heavy file download).
+- Worker name `raipur-land-portal`; D1 schema/data migration ও full voter ingestion এখনো pending; audit-এ voter count 108 ছিল।
+- Current secured API accepts `voter_no` OR `name` OR `father`; ward filter ও 30 ms SLA দাবি করা হয় না.
 
 ---
 
@@ -80,15 +75,15 @@ NavBar ──► Tab ৩. ভোটার ও নাগরিক অনুসন
 |------|--------|--------|
 | ১ | Add 3rd nav button & container (done) | ✅ |
 | ২ | Multi-field input form & citizen result card UI (done) | ✅ |
-| ৩ | Local search logic + CloudFlare Worker API sync (done) | ✅ |
-| ৪ | Run `DEPLOY_TO_CLOUD.bat` → live deploy to Cloud (blocked: Python not installed in sandbox) | ⏳ pending |
-| ৫ | Add `/api/voters` endpoint bindings to `worker_script` (form-data POST for vault save) | ⏳ pending |
+| ৩ | Local search UI / Worker endpoint code exists; complete D1 data sync unverified | ⚠️ partial |
+| ৪ | Local build/tests, D1 backup/migrations/full-load validation, then deploy | ⏳ pending |
+| ৫ | Current Worker voter endpoint exists; vault requires migrated schema and integration tests | ⚠️ pending validation |
 
 ---
 
 ## ৫. ক্লাউড ডেটাবেস স্কিমা & অপ্টিমাইজেশন (D1 Distributed SQLite)
-- Compound indexes: `khatians(mouza, survey, khatian_no)`, `dag_khatian_map(dag_no, mouza, survey)`
-- Indexed search for fast lookups (milliseconds per query)
+- Proposed/expected indexes: `khatians(mouza, survey, khatian_no)`, `dag_khatian_map(dag_no, mouza, survey)`; migration and live presence require verification.
+- No milliseconds response SLA until full-load data and real query latency are measured.
 
 ---
 
@@ -105,10 +100,9 @@ NavBar ──► Tab ৩. ভোটার ও নাগরিক অনুসন
 
 ## ৮. পরিচালনা ও ব্যবহার নির্দেশিকা
 
-1. **Local run:** Open `Land_Intelligence_Hub.html` in any browser → fully offline portal.
-2. **Online cloud access:** Directly from phone/computer → https://raipur-land-portal.raipur-land.workers.dev
-3. **Free tier monitoring:** Cloudflare D1 → 50K queries/day free.
-4. **Response time:** 30–50 ms per search (responsive).
+1. **Local run:** use `RUN_LOCAL_PORTAL.bat` (loopback only); local data assets contain personal information.
+2. **Online access:** the Worker requires an active approved deed-writer/admin account for voter search; the current D1 dataset is incomplete.
+3. Do not promise full coverage or response-time SLAs until D1 is loaded, verified and measured.
 
 ---
 
@@ -118,7 +112,7 @@ NavBar ──► Tab ৩. ভোটার ও নাগরিক অনুসন
 ---
 
 ## ৯. রেকর্ড সংরক্ষণ (Vault)
-- Save Khatian, Voter, Saved items via `/api/user/save-khatian`, `/api/user/save-voter`, `/api/user/saved-items?userId=…`
+- Routes exist, but save/read behavior depends on the versioned D1 migration and must pass end-to-end tests before describing as production-ready.
 
 ---
 

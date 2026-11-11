@@ -2,14 +2,16 @@
 
 ## 1. Current State (as of 2026-11-11)
 
+> **Status correction (12 Nov 2026):** This file is a historical organization plan, not an authoritative completion checklist. The audit found zero rows in the local SQLite application tables and partial production D1 coverage. The old “done” marks and instructions below are superseded where noted; do not treat them as proof of complete ingestion, cross-survey mapping, or live deployment.
+
 ### Root Directory: `F:\khotiyan book/`
 
 | Category | Items |
 |---|---|
 | **Core App** | `Land_Intelligence_Hub.html`, `01_LIVE_SMART_PORTAL_APP/` (4 JS files), `raipur_pages_deploy/public/index.html` |
-| **Data / DB** | `raipur_cadastre_voters.db` (SQLite master, ~383 MB), `raipur_all_voters.json` (492,074 voters), `raipur_master_khatians.json`, `raipur_master_dag_index.json`, `core_7_database.js`, `raipur_full_database.js` |
+| **Data / DB** | `raipur_cadastre_voters.db` (application tables were empty in the audit), source JSONs (157,657 khatians / 492,074 voters), derived dag index, local JS data assets |
 | **R2 Cloud** | `upload_raw_to_r2.py`, `DEPLOY_TO_CLOUD.bat`, `deploy_to_cloudflare.py`, `.env` creds, `raipur_cloudflare_backend/wrangler.toml`, `src/index.js` |
-| **AI Pipeline** | `AI_CADASTRAL_MAPPING_ARCHITECTURE.md`, flowchart, `google.genai` scripts (`verify_cadastre_page.py`), `check_*.py` scripts |
+| **AI Pipeline** | `AI_CADASTRAL_MAPPING_ARCHITECTURE.md` proposal; PDF provenance/AI verification pipeline not confirmed as implemented |
 | **Backup/Raw** | `02_BACKUP_AND_RAW_DATA/` (291 PDFs, 552 voter PDFs) |
 | **Config** | `.env.example`, `.gitignore`, `README_কিভাবে_চালাবেন.txt`, pre-commit hooks |
 | **Docs** | `PROJECT_DOCUMENTATION.md`, `PROJECT_DOCUMENTATION_CATALOG_BANGLA.md`, `RAIPUR_VOTER_SEARCH_INTEGRATION_PLAN.md` |
@@ -72,16 +74,16 @@ From .gitignore:
 
 | File | Purpose | Status |
 |---|---|---|
-| `upload_raw_to_r2.py` | R2 S3-compatible upload of raw files (291 PDFs, 552 voter PDFs, DBs, JS) | ✅ exists |
-| `AI_CADASTRAL_MAPPING_ARCHITECTURE.md` | External Gemini/Claude multimodal mapping architecture | ✅ exists |
+| `upload_raw_to_r2.py` | Public-safe registry-rate upload by default; sensitive data requires private-bucket safeguards | ✅ exists |
+| `AI_CADASTRAL_MAPPING_ARCHITECTURE.md` | Proposed external AI workflow; not validated or production-connected | ⚠️ proposal |
 | `check_d1_voters.py` / `check_d1_mouzas.py` | Query D1 for khatians/dags/voters | ✅ exist |
-| `create_sqlite_db.py` | Create SQLite schema w/ B-Tree indexes | ✅ exists |
+| `create_sqlite_db.py` | Build/validate SQLite from partition JSON; must still be executed locally | ⚠️ code prepared, DB not yet rebuilt |
 | `check_khatians_structure.py` | Check khatians table structure | ✅ exists |
 | `DEPLOY_TO_CLOUD.bat` / `deploy_to_cloudflare.py` | Deploy live portal to Cloudflare Edge | ✅ exist |
-| `RAIPUR_VOTER_SEARCH_INTEGRATION_PLAN.md` | Integration plan (70% complete) | ✅ created |
+| `RAIPUR_VOTER_SEARCH_INTEGRATION_PLAN.md` | Historical plan; complete D1 ingestion and live tests pending | ⚠️ revised |
 | `Land_Intelligence_Hub.html` | Main app with all 3 tabs (incl. new voter tab) | ✅ modified |
 | `raipur_pages_deploy/public/index.html` | Public landing page | ✅ exists |
-| `upload_raw_to_r2.py` | Upload raw files to R2 storage | ✅ exists |
+| `upload_raw_to_r2.py` | Public-safe registry-rate upload by default; sensitive uploads are blocked without safeguards | ✅ exists |
 | `RAIPUR_REGISTRY_RATES_2025_2026.json` | Registry rates data | ✅ exists |
 | `raipur_pages_deploy/src/index.js` | Cloudflare Worker backend | ✅ exists |
 
@@ -102,17 +104,15 @@ From .gitignore:
 ## ৬. NEXT STEPS (High Priority)
 
 ### Step 4: `DEPLOY_TO_CLOUD.bat` → Live Deploy
-```bat
-cd F:\khotiyan book\01_LIVE_SMART_PORTAL_APP
-python "%APPD_DIR%deploy_to_cloudflare.py"
+```powershell
+Set-Location 'F:\khotiyan book'
+python .\deploy_to_cloudflare.py          # local build only
+# Use --apply only after D1 backup, migration and exact full-load validation.
 ```
-⚠️ Blocked: sandbox lacks direct Python. Install boto3/Python on target machine, then run.
+⚠️ Pending: local terminal validation, reviewed D1 migrations, backup, exact full-load counts and approval. Deploy script fails closed on missing secret/schema/counts.
 
 ### Step 5: `/api/voters` Endpoint Bindings
-Edit `worker_script` in `raipur_cloudflare_backend/src/index.js`:
-- Add GET handler for `GET /api/voters?voter_no=...&name=...&father=...&ward=...`
-- POST form-data payload for vault save records
-- Use existing `env.DB` bindings pattern.
+The secured `/api/voters` and vault routes exist in `raipur_cloudflare_backend/src/index.js`; validate them against the migrated D1 schema and integration tests. The voter route accepts one exact voter number or a 3+ character name/father query and returns at most five minimized records.
 
 ---
 
@@ -143,7 +143,7 @@ Edit `worker_script` in `raipur_cloudflare_backend/src/index.js`:
 |---|---|
 | ১. User journey & ৩-ট্যাব ন্যাভিগেশন আর্কিটেক্যার | ✅ |
 | ২. UI/UX design features (flexible search, result cards, land link button, print/slip) | ✅ |
-| ৩. Local + Cloud data architecture (SQLite fast search, Cloudflare D1 sync, 30 ms response) | ✅ |
+| ৩. Local + Cloud data architecture (complete SQLite/D1 sync, 30 ms response) | ⚠️ not verified; local DB was empty and D1 partial |
 | ৪. Next steps (Step ১-৪) | ✅ (plan written) |
 | ৫. Cloud DB schema & optimization (compound indexes) | ✅ |
 | ৬. দলিল রেজিস্ট্রি ফি ও অন-গ্রাউন্ড খরচ মডেল | ✅ |
@@ -151,8 +151,8 @@ Edit `worker_script` in `raipur_cloudflare_backend/src/index.js`:
 | ৮. পরিচালনা ও ব্যবহার নির্দেশিকা | ✅ |
 | ৯. প্রিন্ট ও এক্সপোর্ট সুবিধা | ✅ |
 | ১০. ভূমি জরিপ বই & ভোটার তালিকা PDF (Backup) | ✅ |
-| ১১. রেকর্ড সংরক্ষণ (Vault) | ✅ |
-| ১২. ক্লাউড/লোকাল ডেটা আর্কিটেকচার | ✅ |
+| ১১. রেকর্ড সংরক্ষণ (Vault) | ⚠️ endpoints exist; migration/integration tests pending |
+| ১২. ক্লাউড/লোকাল ডেটা আর্কিটেকচার | ⚠️ local DB was empty; D1 incomplete |
 | ১৩. গিট হুকস (pre-commit) | ✅ (existing) |
 | ১৪. নতুন ইঞ্জিটারি প্ল্যান | ✅ |
 
