@@ -35,6 +35,8 @@
 !/deploy_to_cloudflare.py
 !/upload_raw_to_r2.py
 !/partition_datasets.py
+!/reconcile_and_normalize.py
+!/.work/scripts/
 !/PROJECT_DOCUMENTATION.md
 !/AI_CADASTRAL_MAPPING_ARCHITECTURE.md
 !/ORGANIZATION_PLAN.md
