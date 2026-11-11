@@ -1,54 +1,48 @@
 # ==============================================================================
 # SupremeAI Land Cadastre & Citizen Intelligence Hub
-# STRICT GIT ALLOWLIST / WHITELIST CONFIGURATION
+# STRICT GIT ALLOWLIST / WHITELIST CONFIGURATION (ZERO PII LEAK POLICY)
 # ==============================================================================
-# Strategy: Ignore everything by default (to prevent AI agent scratchpad files,
-# temporary scripts, and monolithic dumps from being tracked).
-# Only explicitly whitelisted directories and production files are tracked.
+# Strategy: Ignore everything by default to prevent AI scratchpad files,
+# temporary scripts, and PII raw data files from being tracked.
+# Only explicitly whitelisted directories and production code are tracked.
 # ==============================================================================
 
 # ------------------------------------------------------------------------------
-# STEP 1: Ignore EVERYTHING in the repository root by default
+# STEP 1: Ignore EVERYTHING in repository by default
 # ------------------------------------------------------------------------------
 /*
 
 # ------------------------------------------------------------------------------
-# STEP 2: Whitelist Essential Production Directories
+# STEP 2: Whitelist Production Code & Tools (Code ONLY - NO DATA)
 # ------------------------------------------------------------------------------
 !/.github/
 !/.githooks/
-!/frontend/
-!/backend/
-!/data/
-!/scripts/
-!/docs/
-
-# Backward compatibility (while files are being organized into clean folders)
-!/01_LIVE_SMART_PORTAL_APP/
 !/raipur_cloudflare_backend/
 !/raipur_pages_deploy/
+!/01_LIVE_SMART_PORTAL_APP/
 
 # ------------------------------------------------------------------------------
-# STEP 3: Whitelist Essential Root Configuration & Tool Files
+# STEP 3: Whitelist Essential Configuration & Batch Files
 # ------------------------------------------------------------------------------
 !/.gitignore
 !/.env.example
 !/README.md
+!/requirements.txt
 !/CREATE_BRANCH_AND_PR.bat
 !/DEPLOY_TO_CLOUD.bat
 !/RUN_LOCAL_PORTAL.bat
 !/auto_pr.py
 !/deploy_to_cloudflare.py
 !/upload_raw_to_r2.py
-!/Land_Intelligence_Hub.html
-!/raipur_registry_rates_2025_2026.json
+!/partition_datasets.py
 !/PROJECT_DOCUMENTATION.md
 !/AI_CADASTRAL_MAPPING_ARCHITECTURE.md
-!/RAIPUR_VOTER_SEARCH_INTEGRATION_PLAN.md
+!/ORGANIZATION_PLAN.md
 
 # ------------------------------------------------------------------------------
-# STEP 4: Strict Security Rules (NEVER track these, even inside allowed folders)
+# STEP 4: STRICT SECURITY & PII BLOCKS (Never Track, Even If Allowed)
 # ------------------------------------------------------------------------------
+# Secrets & Environment
 .env
 .env.*
 !.env.example
@@ -58,7 +52,10 @@
 *.id_rsa
 *.id_ed25519
 
-# SQLite, Raw PDF and Monolithic Dumps (Always blocked)
+# Citizen PII & Databases (Local/D1 Only - NEVER COMMIT TO GITHUB)
+/data/
+data/
+02_BACKUP_AND_RAW_DATA/
 *.db
 *.sqlite
 *.sqlite3
@@ -70,7 +67,7 @@ core_7_database.js
 raipur_all_voters.json
 raipur_master_khatians.json
 raipur_master_dag_index.json
-02_BACKUP_AND_RAW_DATA/
+raipur_cadastre_voters.db
 
 # Cache, Build & OS junk
 node_modules/

@@ -1,11 +1,124 @@
 /**
  * Raipur Land & Citizen Intelligence Portal - Cloudflare Worker Backend
- * Includes Cadastral Search, Auth, Role Approval & Saved Vault Endpoints
+ * Secured Production Engine:
+ *  - PBKDF2 with Salt Password Hashing
+ *  - Cryptographic Session Token Verification
+ *  - Strict Admin Authorization
+ *  - User-Scoped Saved Vault Endpoints
+ *  - Wildcard Input Sanitization against DB Scraping
+ *  - Unified Cadastre Search Helpers
  */
 
-async function sha256(str) {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+const TOKEN_SECRET = "RAIPUR_CADASTRE_INTERNAL_SESSION_SECRET_2026_V1";
+
+// 1. Password Hashing: PBKDF2 with Salt (Zero Unsalted Hashes)
+async function hashPassword(password, saltHex = null) {
+  const enc = new TextEncoder();
+  const salt = saltHex ? hexToBytes(saltHex) : crypto.getRandomValues(new Uint8Array(16));
+  const keyMaterial = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(password),
+    { name: "PBKDF2" },
+    false,
+    ["deriveBits", "deriveKey"]
+  );
+  const derivedKey = await crypto.subtle.deriveKey(
+    {
+      name: "PBKDF2",
+      salt: salt,
+      iterations: 100000,
+      hash: "SHA-256"
+    },
+    keyMaterial,
+    { name: "HMAC", hash: "SHA-256", length: 256 },
+    true,
+    ["sign"]
+  );
+  const exported = await crypto.subtle.exportKey("raw", derivedKey);
+  const hashHex = bytesToHex(new Uint8Array(exported));
+  const saltOut = bytesToHex(salt);
+  return { hash: `pbkdf2:${saltOut}:${hashHex}`, salt: saltOut };
+}
+
+async function verifyPassword(password, storedHash) {
+  if (!storedHash) return false;
+  // If legacy unsalted sha256
+  if (!storedHash.startsWith("pbkdf2:")) {
+    const legacyBuf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(password));
+    const legacyHex = bytesToHex(new Uint8Array(legacyBuf));
+    return legacyHex === storedHash;
+  }
+  const parts = storedHash.split(":");
+  if (parts.length !== 3) return false;
+  const saltHex = parts[1];
+  const { hash } = await hashPassword(password, saltHex);
+  return hash === storedHash;
+}
+
+// 2. Cryptographic Session Token (HMAC SHA-256)
+async function generateSessionToken(userId, role) {
+  const enc = new TextEncoder();
+  const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+  const exp = Date.now() + (30 * 24 * 60 * 60 * 1000); // 30 days
+  const payload = btoa(JSON.stringify({ sub: userId, role, exp }));
+  const dataToSign = `${header}.${payload}`;
+
+  const key = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(TOKEN_SECRET),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const signatureBuf = await crypto.subtle.sign("HMAC", key, enc.encode(dataToSign));
+  const sig = bytesToHex(new Uint8Array(signatureBuf));
+  return `${dataToSign}.${sig}`;
+}
+
+async function verifySessionToken(authHeader) {
+  if (!authHeader || !authHeader.startsWith("Bearer ")) return null;
+  const token = authHeader.substring(7).trim();
+  const parts = token.split(".");
+  if (parts.length !== 3) return null;
+  const [header, payload, sig] = parts;
+  const dataToSign = `${header}.${payload}`;
+
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(TOKEN_SECRET),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["verify"]
+  );
+
+  const isValid = await crypto.subtle.verify("HMAC", key, hexToBytes(sig), enc.encode(dataToSign));
+  if (!isValid) return null;
+
+  try {
+    const payloadObj = JSON.parse(atob(payload));
+    if (payloadObj.exp && Date.now() > payloadObj.exp) return null;
+    return payloadObj;
+  } catch (e) {
+    return null;
+  }
+}
+
+// 3. Helpers
+function bytesToHex(bytes) {
+  return Array.from(bytes).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+function hexToBytes(hex) {
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < bytes.length; i++) {
+    bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
+  }
+  return bytes;
+}
+
+function escapeSqlWildcards(str) {
+  return str.replace(/[%_]/g, "\\$&");
 }
 
 function parseArrayField(val) {
@@ -20,12 +133,24 @@ function parseArrayField(val) {
   return val.split(",").map(s => s.trim()).filter(Boolean);
 }
 
+function mapKhatianRow(r) {
+  return {
+    mouza: r.mouza,
+    survey: r.survey,
+    khatianNo: String(r.khatian_no),
+    owners: parseArrayField(r.owners),
+    guardian: r.guardian || "—",
+    dags: parseArrayField(r.dags),
+    totalLand: r.total_land || "—"
+  };
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const headers = {
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS, DELETE",
       "Access-Control-Allow-Headers": "Content-Type, Authorization",
       "Content-Type": "application/json; charset=utf-8"
     };
@@ -39,111 +164,58 @@ export default {
       if (url.pathname === "/api/search") {
         const mouza = url.searchParams.get("mouza") || "ALL";
         const survey = url.searchParams.get("survey") || "ALL";
-        const dag = (url.searchParams.get("dag") || "").trim();
-        const khatian = (url.searchParams.get("khatian") || "").trim();
-        const name = (url.searchParams.get("name") || "").trim();
-        const father = (url.searchParams.get("father") || "").trim();
+        const dag = escapeSqlWildcards((url.searchParams.get("dag") || "").trim());
+        const khatian = escapeSqlWildcards((url.searchParams.get("khatian") || "").trim());
+        const name = escapeSqlWildcards((url.searchParams.get("name") || "").trim());
+        const father = escapeSqlWildcards((url.searchParams.get("father") || "").trim());
 
         let sabekRecords = [];
         let haalRecords = [];
 
+        let query = "";
+        let params = [];
+
         if (dag) {
-          let dagQuery = "SELECT k.* FROM dag_khatian_map m JOIN khatians k ON m.mouza = k.mouza AND m.survey = k.survey AND m.khatian_no = k.khatian_no WHERE m.dag_no = ?";
-          let params = [dag];
-          if (mouza !== "ALL") { dagQuery += " AND m.mouza = ?"; params.push(mouza); }
-          if (survey !== "ALL") { dagQuery += " AND m.survey = ?"; params.push(survey); }
-          dagQuery += " LIMIT 200";
+          query = "SELECT k.* FROM dag_khatian_map m JOIN khatians k ON m.mouza = k.mouza AND m.survey = k.survey AND m.khatian_no = k.khatian_no WHERE m.dag_no = ?";
+          params = [dag];
+        } else if (khatian) {
+          query = "SELECT * FROM khatians WHERE khatian_no = ?";
+          params = [khatian];
+        } else if (name) {
+          query = "SELECT * FROM khatians WHERE owners LIKE ? ESCAPE '\\'";
+          params = [`%${name}%`];
+        } else if (father) {
+          query = "SELECT * FROM khatians WHERE guardian LIKE ? ESCAPE '\\'";
+          params = [`%${father}%`];
+        }
 
-          const { results } = await env.DB.prepare(dagQuery).bind(...params).all();
+        if (query) {
+          if (mouza !== "ALL") { query += " AND mouza = ?"; params.push(mouza); }
+          if (survey !== "ALL") { query += " AND survey = ?"; params.push(survey); }
+          query += " LIMIT 100";
+
+          const { results } = await env.DB.prepare(query).bind(...params).all();
           (results || []).forEach(r => {
-            const item = {
-              mouza: r.mouza,
-              survey: r.survey,
-              khatianNo: r.khatian_no,
-              khatian_no: r.khatian_no,
-              owners: parseArrayField(r.owners),
-              guardian: r.guardian || "—",
-              dags: parseArrayField(r.dags),
-              totalLand: r.total_land || "—"
-            };
-            if (r.survey === "CS" || r.survey === "SA") sabekRecords.push(item);
-            else haalRecords.push(item);
+            const item = mapKhatianRow(r);
+            if (["BRS", "হাল"].includes(item.survey)) {
+              haalRecords.push(item);
+            } else {
+              sabekRecords.push(item);
+            }
           });
         }
 
-        if (khatian) {
-          let kQuery = "SELECT * FROM khatians WHERE khatian_no = ?";
-          let params = [khatian];
-          if (mouza !== "ALL") { kQuery += " AND mouza = ?"; params.push(mouza); }
-          if (survey !== "ALL") { kQuery += " AND survey = ?"; params.push(survey); }
-          kQuery += " LIMIT 200";
+        // Distinct mouzas for dropdown
+        const mouzaRows = await env.DB.prepare("SELECT DISTINCT mouza FROM khatians WHERE mouza IS NOT NULL ORDER BY mouza ASC").all();
+        const distinctMouzas = (mouzaRows.results || []).map(r => r.mouza).filter(Boolean);
 
-          const { results } = await env.DB.prepare(kQuery).bind(...params).all();
-          (results || []).forEach(r => {
-            const item = {
-              mouza: r.mouza,
-              survey: r.survey,
-              khatianNo: r.khatian_no,
-              khatian_no: r.khatian_no,
-              owners: parseArrayField(r.owners),
-              guardian: r.guardian || "—",
-              dags: parseArrayField(r.dags),
-              totalLand: r.total_land || "—"
-            };
-            if (r.survey === "CS" || r.survey === "SA") sabekRecords.push(item);
-            else haalRecords.push(item);
-          });
-        }
-
-        if (name) {
-          let nQuery = "SELECT * FROM khatians WHERE owners LIKE ?";
-          let params = [`%${name}%`];
-          if (mouza !== "ALL") { nQuery += " AND mouza = ?"; params.push(mouza); }
-          if (survey !== "ALL") { nQuery += " AND survey = ?"; params.push(survey); }
-          nQuery += " LIMIT 150";
-
-          const { results } = await env.DB.prepare(nQuery).bind(...params).all();
-          (results || []).forEach(r => {
-            const item = {
-              mouza: r.mouza,
-              survey: r.survey,
-              khatianNo: r.khatian_no,
-              khatian_no: r.khatian_no,
-              owners: parseArrayField(r.owners),
-              guardian: r.guardian || "—",
-              dags: parseArrayField(r.dags),
-              totalLand: r.total_land || "—"
-            };
-            if (r.survey === "CS" || r.survey === "SA") sabekRecords.push(item);
-            else haalRecords.push(item);
-          });
-        }
-
-        if (father) {
-          let fQuery = "SELECT * FROM khatians WHERE guardian LIKE ?";
-          let params = [`%${father}%`];
-          if (mouza !== "ALL") { fQuery += " AND mouza = ?"; params.push(mouza); }
-          if (survey !== "ALL") { fQuery += " AND survey = ?"; params.push(survey); }
-          fQuery += " LIMIT 150";
-
-          const { results } = await env.DB.prepare(fQuery).bind(...params).all();
-          (results || []).forEach(r => {
-            const item = {
-              mouza: r.mouza,
-              survey: r.survey,
-              khatianNo: r.khatian_no,
-              khatian_no: r.khatian_no,
-              owners: parseArrayField(r.owners),
-              guardian: r.guardian || "—",
-              dags: parseArrayField(r.dags),
-              totalLand: r.total_land || "—"
-            };
-            if (r.survey === "CS" || r.survey === "SA") sabekRecords.push(item);
-            else haalRecords.push(item);
-          });
-        }
-
-        return new Response(JSON.stringify({ success: true, sabekRecords, haalRecords }), { headers });
+        return new Response(JSON.stringify({
+          success: true,
+          count: sabekRecords.length + haalRecords.length,
+          sabekRecords,
+          haalRecords,
+          distinctMouzas
+        }), { headers });
       }
 
       // 2. Authentication: Register
@@ -156,8 +228,15 @@ export default {
         }
 
         const cleanPhone = phone.trim();
-        const pHash = await sha256(password);
-        const userId = "u_" + Math.random().toString(36).substr(2, 9);
+        if (!/^01[3-9]\d{8}$/.test(cleanPhone)) {
+          return new Response(JSON.stringify({ success: false, error: "সঠিক ১১ ডিজিটের বাংলাদেশী মোবাইল নম্বর দিন (যেমন: 017xxxxxxxx)" }), { status: 400, headers });
+        }
+        if (password.length < 6) {
+          return new Response(JSON.stringify({ success: false, error: "পাসওয়ার্ড ন্যূনতম ৬ অক্ষরের হতে হবে" }), { status: 400, headers });
+        }
+
+        const { hash: pHash } = await hashPassword(password);
+        const userId = "u_" + crypto.randomUUID().replace(/-/g, "").substring(0, 12);
         const userRole = role === "deed_writer" ? "deed_writer" : "citizen";
         const status = userRole === "deed_writer" ? "pending" : "active";
 
@@ -170,8 +249,11 @@ export default {
           "INSERT INTO users (id, phone, name, role, status, association_license_no, password_hash) VALUES (?, ?, ?, ?, ?, ?, ?)"
         ).bind(userId, cleanPhone, name.trim(), userRole, status, association_license_no || null, pHash).run();
 
+        const token = await generateSessionToken(userId, userRole);
+
         return new Response(JSON.stringify({
           success: true,
+          token,
           user: {
             id: userId,
             phone: cleanPhone,
@@ -195,17 +277,20 @@ export default {
           return new Response(JSON.stringify({ success: false, error: "মোবাইল নম্বর ও পাসওয়ার্ড প্রদান করুন" }), { status: 400, headers });
         }
 
-        const pHash = await sha256(password);
+        const cleanPhone = phone.trim();
         const user = await env.DB.prepare(
-          "SELECT id, phone, name, role, status, association_license_no FROM users WHERE phone = ? AND password_hash = ?"
-        ).bind(phone.trim(), pHash).first();
+          "SELECT id, phone, name, role, status, association_license_no, password_hash FROM users WHERE phone = ?"
+        ).bind(cleanPhone).first();
 
-        if (!user) {
+        if (!user || !(await verifyPassword(password, user.password_hash))) {
           return new Response(JSON.stringify({ success: false, error: "ভুল মোবাইল নম্বর অথবা পাসওয়ার্ড!" }), { status: 401, headers });
         }
 
+        const token = await generateSessionToken(user.id, user.role);
+
         return new Response(JSON.stringify({
           success: true,
+          token,
           user: {
             id: user.id,
             phone: user.phone,
@@ -217,19 +302,28 @@ export default {
         }), { headers });
       }
 
-      // 4. Admin Management: Pending deed writers
+      // 4. Admin Management: Pending deed writers (AUTHENTICATED ADMIN ONLY)
       if (url.pathname === "/api/admin/writers/pending") {
+        const auth = await verifySessionToken(request.headers.get("Authorization"));
+        if (!auth || (auth.role !== "admin" && auth.role !== "superadmin")) {
+          return new Response(JSON.stringify({ success: false, error: "অননুমোদিত অ্যাক্সেস! শুধুমাত্র এডমিন প্রবেশাধিকার।" }), { status: 403, headers });
+        }
+
         const { results } = await env.DB.prepare(
           "SELECT id, phone, name, role, status, association_license_no, created_at FROM users WHERE role = 'deed_writer' AND status = 'pending' ORDER BY created_at DESC"
         ).all();
         return new Response(JSON.stringify({ success: true, pendingWriters: results || [] }), { headers });
       }
 
-      // 5. Admin Management: Approve / Reject writer
+      // 5. Admin Management: Approve / Reject writer (AUTHENTICATED ADMIN ONLY)
       if (url.pathname === "/api/admin/writers/action" && request.method === "POST") {
-        const body = await request.json();
-        const { userId, action, adminId } = body;
+        const auth = await verifySessionToken(request.headers.get("Authorization"));
+        if (!auth || (auth.role !== "admin" && auth.role !== "superadmin")) {
+          return new Response(JSON.stringify({ success: false, error: "অননুমোদিত অ্যাক্সেস! শুধুমাত্র এডমিন অনুমোদন দিতে পারেন।" }), { status: 403, headers });
+        }
 
+        const body = await request.json();
+        const { userId, action } = body;
         if (!userId || !action) {
           return new Response(JSON.stringify({ success: false, error: "userId ও action আবশ্যক" }), { status: 400, headers });
         }
@@ -237,29 +331,29 @@ export default {
         const newStatus = action === "approve" ? "active" : "rejected";
         await env.DB.prepare(
           "UPDATE users SET status = ?, approved_by = ?, approved_at = CURRENT_TIMESTAMP WHERE id = ?"
-        ).bind(newStatus, adminId || "admin", userId).run();
+        ).bind(newStatus, auth.sub, userId).run();
 
         return new Response(JSON.stringify({ success: true, newStatus }), { headers });
       }
 
       // 6. Voter search endpoint (D1)
       if (url.pathname === "/api/voters") {
-        const voterNo = (url.searchParams.get("voter_no") || "").trim();
-        const name = (url.searchParams.get("name") || "").trim();
-        const father = (url.searchParams.get("father") || "").trim();
-        const mother = (url.searchParams.get("mother") || "").trim();
-        const ward = (url.searchParams.get("ward") || "").trim();
-        const address = (url.searchParams.get("address") || "").trim();
+        const voterNo = escapeSqlWildcards((url.searchParams.get("voter_no") || "").trim());
+        const name = escapeSqlWildcards((url.searchParams.get("name") || "").trim());
+        const father = escapeSqlWildcards((url.searchParams.get("father") || "").trim());
+        const mother = escapeSqlWildcards((url.searchParams.get("mother") || "").trim());
+        const ward = escapeSqlWildcards((url.searchParams.get("ward") || "").trim());
+        const address = escapeSqlWildcards((url.searchParams.get("address") || "").trim());
 
         let query = "SELECT voter_no, name, father, mother, gender, ward, address FROM voters WHERE 1=1";
         const params = [];
-        if (voterNo) { query += " AND voter_no LIKE ?"; params.push(`%${voterNo}%`); }
-        if (name) { query += " AND name LIKE ?"; params.push(`%${name}%`); }
-        if (father) { query += " AND father LIKE ?"; params.push(`%${father}%`); }
-        if (mother) { query += " AND mother LIKE ?"; params.push(`%${mother}%`); }
-        if (ward) { query += " AND (ward LIKE ? OR address LIKE ?)"; params.push(`%${ward}%`, `%${ward}%`); }
-        if (address) { query += " AND address LIKE ?"; params.push(`%${address}%`); }
-        query += " LIMIT 200";
+        if (voterNo) { query += " AND voter_no LIKE ? ESCAPE '\\'"; params.push(`%${voterNo}%`); }
+        if (name) { query += " AND name LIKE ? ESCAPE '\\'"; params.push(`%${name}%`); }
+        if (father) { query += " AND father LIKE ? ESCAPE '\\'"; params.push(`%${father}%`); }
+        if (mother) { query += " AND mother LIKE ? ESCAPE '\\'"; params.push(`%${mother}%`); }
+        if (ward) { query += " AND (ward LIKE ? ESCAPE '\\' OR address LIKE ? ESCAPE '\\')"; params.push(`%${ward}%`, `%${ward}%`); }
+        if (address) { query += " AND address LIKE ? ESCAPE '\\'"; params.push(`%${address}%`); }
+        query += " LIMIT 50";
 
         try {
           const { results } = await env.DB.prepare(query).bind(...params).all();
@@ -274,19 +368,19 @@ export default {
           }));
           return new Response(JSON.stringify({ success: true, voters }), { headers });
         } catch (err) {
-          return new Response(JSON.stringify({ success: false, error: "voters table unavailable: " + err.message, voters: [] }), { status: 500, headers });
+          return new Response(JSON.stringify({ success: false, error: "ভোটার ডেটাবেস অনুসন্ধান সম্পন্ন করা যায়নি।", voters: [] }), { status: 500, headers });
         }
       }
 
-      // 7. User Vault: Save / List items
+      // 7. User Vault: Save / List items (USER AUTHENTICATED)
       if (url.pathname === "/api/user/saved-items") {
-        const userId = url.searchParams.get("userId");
-        if (!userId) {
-          return new Response(JSON.stringify({ success: false, error: "userId আবশ্যক" }), { status: 400, headers });
+        const auth = await verifySessionToken(request.headers.get("Authorization"));
+        if (!auth) {
+          return new Response(JSON.stringify({ success: false, error: "লগইন আবশ্যক" }), { status: 401, headers });
         }
 
-        const khatians = await env.DB.prepare("SELECT * FROM saved_khatians WHERE user_id = ? ORDER BY saved_at DESC").bind(userId).all();
-        const voters = await env.DB.prepare("SELECT * FROM saved_voters WHERE user_id = ? ORDER BY saved_at DESC").bind(userId).all();
+        const khatians = await env.DB.prepare("SELECT * FROM saved_khatians WHERE user_id = ? ORDER BY saved_at DESC").bind(auth.sub).all();
+        const voters = await env.DB.prepare("SELECT * FROM saved_voters WHERE user_id = ? ORDER BY saved_at DESC").bind(auth.sub).all();
 
         return new Response(JSON.stringify({
           success: true,
@@ -296,37 +390,44 @@ export default {
       }
 
       if (url.pathname === "/api/user/save-khatian" && request.method === "POST") {
-        const body = await request.json();
-        const { userId, mouza, survey, khatian_no, dag_summary, owners_summary, notes } = body;
-        if (!userId || !khatian_no) {
-          return new Response(JSON.stringify({ success: false, error: "তথ্যাদি অসম্পূর্ণ" }), { status: 400, headers });
+        const auth = await verifySessionToken(request.headers.get("Authorization"));
+        if (!auth) {
+          return new Response(JSON.stringify({ success: false, error: "লগইন আবশ্যক" }), { status: 401, headers });
         }
 
-        await env.DB.prepare(
-          "INSERT INTO saved_khatians (user_id, mouza, survey, khatian_no, dag_summary, owners_summary, notes) VALUES (?, ?, ?, ?, ?, ?, ?)"
-        ).bind(userId, mouza, survey, khatian_no, dag_summary || "", owners_summary || "", notes || "").run();
+        const body = await request.json();
+        const { mouza, survey, khatian_no, dag_summary, owners_summary, notes } = body;
+        const id = "sk_" + crypto.randomUUID().replace(/-/g, "").substring(0, 12);
 
-        return new Response(JSON.stringify({ success: true }), { headers });
+        await env.DB.prepare(
+          "INSERT INTO saved_khatians (id, user_id, mouza, survey, khatian_no, dag_summary, owners_summary, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+        ).bind(id, auth.sub, mouza, survey, khatian_no, dag_summary || "", owners_summary || "", notes || "").run();
+
+        return new Response(JSON.stringify({ success: true, id }), { headers });
       }
 
       if (url.pathname === "/api/user/save-voter" && request.method === "POST") {
-        const body = await request.json();
-        const { userId, voter_no, name, father, mother, ward, address, relation_tag } = body;
-        if (!userId || !voter_no) {
-          return new Response(JSON.stringify({ success: false, error: "তথ্যাদি অসম্পূর্ণ" }), { status: 400, headers });
+        const auth = await verifySessionToken(request.headers.get("Authorization"));
+        if (!auth) {
+          return new Response(JSON.stringify({ success: false, error: "লগইন আবশ্যক" }), { status: 401, headers });
         }
 
-        await env.DB.prepare(
-          "INSERT INTO saved_voters (user_id, voter_no, name, father, mother, ward, address, relation_tag) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-        ).bind(userId, voter_no, name || "", father || "", mother || "", ward || "", address || "", relation_tag || "").run();
+        const body = await request.json();
+        const { voter_no, name, father, mother, ward, address, notes } = body;
+        const id = "sv_" + crypto.randomUUID().replace(/-/g, "").substring(0, 12);
 
-        return new Response(JSON.stringify({ success: true }), { headers });
+        await env.DB.prepare(
+          "INSERT INTO saved_voters (id, user_id, voter_no, name, father, mother, ward, address, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        ).bind(id, auth.sub, voter_no, name, father || "", mother || "", ward || "", address || "", notes || "").run();
+
+        return new Response(JSON.stringify({ success: true, id }), { headers });
       }
 
+      // Default 404
       return new Response(JSON.stringify({ error: "Endpoint not found" }), { status: 404, headers });
 
-    } catch (err) {
-      return new Response(JSON.stringify({ success: false, error: err.message }), { status: 500, headers });
+    } catch (e) {
+      return new Response(JSON.stringify({ success: false, error: "সার্ভারে সাময়িক সমস্যা দেখা দিয়েছে।" }), { status: 500, headers });
     }
   }
 };
