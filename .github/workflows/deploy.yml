@@ -33,7 +33,7 @@ jobs:
 
       - name: 🔍 Verify Python Code Syntax
         run: |
-          python -m py_compile deploy_to_cloudflare.py check_live_d1.py check_deploy_syntax.py
+          python -m py_compile deploy_to_cloudflare.py check_deploy_syntax.py
 
       - name: 🚀 Deploy Standalone Portal & Worker to Cloudflare
         env:
