@@ -31,6 +31,7 @@
 !/package.json
 !/package-lock.json
 !/index.html
+!/vite.config.js
 !/server.js
 !/CREATE_BRANCH_AND_PR.bat
 !/DEPLOY_TO_CLOUD.bat
