@@ -41,7 +41,6 @@
 !/reconcile_and_normalize.py
 !/setup_daily_task.ps1
 !/setup_mapping_governance.py
-!/upload_raw_to_r2.py
 !/sync_to_d1.py
 !/sync_batch_d1.py
 !/.work/scripts/

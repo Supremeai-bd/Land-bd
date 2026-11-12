@@ -57,7 +57,7 @@ def check_security():
         if os.path.exists(file_path):
             size = os.path.getsize(file_path)
             if size > MAX_FILE_SIZE:
-                violations.append(f"[OVERSIZED FILE] '{file_path}' is {size / (1024*1024):.2f} MB (Limit: 50 MB). Use R2 storage instead!")
+                violations.append(f"[OVERSIZED FILE] '{file_path}' is {size / (1024*1024):.2f} MB (Limit: 50 MB). Do not commit large files to git!")
 
         # 3. Check staged content for secret leaks (skip example/template files)
         if base_name in [".env.example", "wrangler.toml.example"]:
