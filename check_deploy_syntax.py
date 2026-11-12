@@ -19,7 +19,7 @@ def fail(message: str) -> None:
 def main() -> int:
     for filename in (
         "deploy_to_cloudflare.py", "create_sqlite_db.py", "partition_datasets.py",
-        "sync_to_d1.py", "sync_batch_d1.py", "fast_d1_sync.py", "upload_raw_to_r2.py",
+        "sync_to_d1.py", "sync_batch_d1.py", "upload_raw_to_r2.py",
         "reconcile_and_normalize.py",
     ):
         path = BASE / filename

@@ -14,7 +14,6 @@ on:
       - 'reconcile_and_normalize.py'
       - 'sync_to_d1.py'
       - 'sync_batch_d1.py'
-      - 'fast_d1_sync.py'
       - 'upload_raw_to_r2.py'
       - 'check_deploy_syntax.py'
       - '.github/workflows/deploy.yml'
@@ -52,7 +51,7 @@ jobs:
 
       - name: 🔍 Verify Python Code Syntax
         run: |
-          python -m py_compile deploy_to_cloudflare.py check_deploy_syntax.py create_sqlite_db.py partition_datasets.py sync_to_d1.py sync_batch_d1.py fast_d1_sync.py upload_raw_to_r2.py
+          python -m py_compile deploy_to_cloudflare.py check_deploy_syntax.py create_sqlite_db.py partition_datasets.py sync_to_d1.py sync_batch_d1.py upload_raw_to_r2.py
           python check_deploy_syntax.py
           node --input-type=module --check < raipur_cloudflare_backend/src/index.js
 

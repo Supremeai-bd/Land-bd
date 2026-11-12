@@ -44,11 +44,8 @@
 !/upload_raw_to_r2.py
 !/sync_to_d1.py
 !/sync_batch_d1.py
-!/fast_d1_sync.py
 !/.work/scripts/
-!/PROJECT_DOCUMENTATION.md
-!/AI_CADASTRAL_MAPPING_ARCHITECTURE.md
-!/ORGANIZATION_PLAN.md
+!/docs/
 !/outputs/
 
 # ------------------------------------------------------------------------------
