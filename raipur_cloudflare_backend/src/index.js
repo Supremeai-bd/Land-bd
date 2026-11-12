@@ -85,6 +85,15 @@ async function verifySessionToken(authHeader, secret) {
   const parts = token.split(".");
   if (parts.length !== 3) return null;
   const [header, payload, sig] = parts;
+
+  // Verify header algorithm explicitly
+  try {
+    const headerObj = JSON.parse(atob(header));
+    if (headerObj.alg !== "HS256" || headerObj.typ !== "JWT") return null;
+  } catch (e) {
+    return null;
+  }
+
   const dataToSign = `${header}.${payload}`;
 
   const enc = new TextEncoder();
@@ -181,6 +190,8 @@ export default {
       "Vary": "Origin",
       "Cache-Control": "no-store",
       "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "DENY",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
       "Content-Type": "application/json; charset=utf-8"
     };
 
