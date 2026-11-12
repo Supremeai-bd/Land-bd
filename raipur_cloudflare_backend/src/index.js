@@ -63,7 +63,7 @@ async function verifyPassword(password, storedHash) {
 async function generateSessionToken(userId, role, secret) {
   const enc = new TextEncoder();
   const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
-  const exp = Date.now() + (30 * 24 * 60 * 60 * 1000); // 30 days
+  const exp = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 days (reduced from 30 days)
   const payload = btoa(JSON.stringify({ sub: userId, role, exp }));
   const dataToSign = `${header}.${payload}`;
 
@@ -134,7 +134,7 @@ function hexToBytes(hex) {
 }
 
 function escapeSqlWildcards(str) {
-  return str.replace(/[%_]/g, "\\$&");
+  return str.replace(/[%_\\]/g, "\\$&");
 }
 
 function parseArrayField(val) {
@@ -170,7 +170,8 @@ export default {
       "https://raipur-land-portal.raipur-land.workers.dev",
       "https://data.supremeai.bd"
     ];
-    const isAllowedOrigin = allowedOrigins.includes(origin) || origin.startsWith("http://localhost:") || origin.startsWith("http://127.0.0.1:");
+    const isDev = env && env.ENVIRONMENT === "development";
+    const isAllowedOrigin = allowedOrigins.includes(origin) || (isDev && (origin.startsWith("http://localhost:") || origin.startsWith("http://127.0.0.1:")));
     const allowOriginHeader = isAllowedOrigin ? origin : (origin ? allowedOrigins[0] : "*");
 
     const headers = {
@@ -185,6 +186,26 @@ export default {
 
     if (request.method === "OPTIONS") {
       return new Response(null, { headers });
+    }
+
+    // Basic rate limiting (per IP) for authentication endpoints
+    const clientIP = request.headers.get("CF-Connecting-IP") || "unknown";
+    if (url.pathname.startsWith("/api/auth/")) {
+      const rateLimitKey = `rate_${clientIP}`;
+      const now = Date.now();
+      const windowMs = 60 * 1000; // 1 minute
+      const maxRequests = 10;
+      if (!globalThis._rateLimitMap) globalThis._rateLimitMap = new Map();
+      const record = globalThis._rateLimitMap.get(rateLimitKey) || { count: 0, resetAt: now + windowMs };
+      if (now > record.resetAt) {
+        record.count = 0;
+        record.resetAt = now + windowMs;
+      }
+      record.count++;
+      globalThis._rateLimitMap.set(rateLimitKey, record);
+      if (record.count > maxRequests) {
+        return new Response(JSON.stringify({ success: false, error: "অতিরিক্ত অনুরোধ। কিছুক্ষণ পর আবার চেষ্টা করুন।" }), { status: 429, headers });
+      }
     }
 
     try {
@@ -269,8 +290,13 @@ export default {
         if (!/^01[3-9]\d{8}$/.test(cleanPhone)) {
           return new Response(JSON.stringify({ success: false, error: "সঠিক ১১ ডিজিটের বাংলাদেশী মোবাইল নম্বর দিন (যেমন: 017xxxxxxxx)" }), { status: 400, headers });
         }
-        if (password.length < 6) {
-          return new Response(JSON.stringify({ success: false, error: "পাসওয়ার্ড ন্যূনতম ৬ অক্ষরের হতে হবে" }), { status: 400, headers });
+        // Stronger password policy: min 8 chars, at least one number and one special character
+        if (password.length < 8 || !/\d/.test(password) || !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+          return new Response(JSON.stringify({ success: false, error: "পাসওয়ার্ড ন্যূনতম ৮ অক্ষরের হতে হবে এবং কমপক্ষে একটি সংখ্যা ও একটি বিশেষ চিহ্ন থাকতে হবে।" }), { status: 400, headers });
+        }
+        // Validate association_license_no for deed writers
+        if (role === "deed_writer" && (!association_license_no || String(association_license_no).trim().length < 5)) {
+          return new Response(JSON.stringify({ success: false, error: "দলিল লেখকদের জন্য বৈধ অ্যাসোসিয়েশন লাইসেন্স নম্বর আবশ্যক।" }), { status: 400, headers });
         }
 
         const { hash: pHash } = await hashPassword(password);
@@ -474,6 +500,7 @@ export default {
       return new Response(JSON.stringify({ error: "Endpoint not found" }), { status: 404, headers });
 
     } catch (e) {
+      console.error("Worker runtime error:", e);
       return new Response(JSON.stringify({ success: false, error: "সার্ভারে সাময়িক সমস্যা দেখা দিয়েছে।" }), { status: 500, headers });
     }
   }

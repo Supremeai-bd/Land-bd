@@ -31,15 +31,22 @@
 !/CREATE_BRANCH_AND_PR.bat
 !/DEPLOY_TO_CLOUD.bat
 !/RUN_LOCAL_PORTAL.bat
+!/RUN_DAILY_SYNC.bat
 !/auto_pr.py
+!/check_deploy_syntax.py
+!/create_sqlite_db.py
+!/daily_d1_auto_sync.py
 !/deploy_to_cloudflare.py
-!/upload_raw_to_r2.py
 !/partition_datasets.py
 !/reconcile_and_normalize.py
+!/setup_daily_task.ps1
+!/setup_mapping_governance.py
+!/upload_raw_to_r2.py
 !/.work/scripts/
 !/PROJECT_DOCUMENTATION.md
 !/AI_CADASTRAL_MAPPING_ARCHITECTURE.md
 !/ORGANIZATION_PLAN.md
+!/outputs/
 
 # ------------------------------------------------------------------------------
 # STEP 4: STRICT SECURITY & PII BLOCKS (Never Track, Even If Allowed)
@@ -61,6 +68,10 @@ data/
 *.db
 *.sqlite
 *.sqlite3
+*.backup.*
+*.building
+d1_sync_state.json
+daily_sync.log
 *.pdf
 *.PDF
 raipur_voters_database.js
