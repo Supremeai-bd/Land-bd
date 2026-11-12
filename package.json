@@ -6,9 +6,14 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "node -e \"const fs=require('fs'); const html=fs.readFileSync('index.html','utf8'); [...html.matchAll(/<script(?![^>]*src=)[^>]*>([\\s\\S]*?)<\\/script>/gi)].forEach(s=>new Function(s[1])); console.log('Lint passed: all JS scripts valid');\""
   },
-  "dependencies": {},
+  "dependencies": {
+    "d3": "^7.9.2",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1"
+  },
   "devDependencies": {
     "vite": "^5.0.0"
   }

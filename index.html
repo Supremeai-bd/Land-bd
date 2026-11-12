@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>স্মার্ট ভূমি ও নাগরিক ওয়ান-স্টপ মিনি-ম্যাপিং পোর্টাল | রায়পুর</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/portal-styles.css">
 <script>
@@ -81,6 +81,11 @@ function getPortalAuthToken() {
                     <button onclick="toggleAuthModal()" id="btn-auth-trigger" class="px-4 py-2 rounded-2xl bg-slate-900 text-white font-bold text-xs hover:bg-emerald-800 transition flex items-center gap-2 shadow-sm border border-slate-700">
                         <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                         <span id="label-user-state">লগইন / সাইন-আপ</span>
+                    </button>
+                    <!-- Dedicated Signout / Logout Button for Signed-in Users -->
+                    <button onclick="logoutUser()" id="btn-logout" class="hidden px-3.5 py-2 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-700 hover:text-rose-800 border border-rose-200 text-xs font-bold transition flex items-center gap-1.5 shadow-sm" title="সাইন-আউট / লগআউট করুন">
+                        <svg class="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        <span>সাইন-আউট</span>
                     </button>
                     <button onclick="toggleSavedVault()" id="btn-vault-trigger" class="px-3.5 py-2 rounded-2xl bg-emerald-50 text-emerald-900 font-bold text-xs hover:bg-emerald-100 transition flex items-center gap-1.5 border border-emerald-200">
                         <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
@@ -716,8 +721,13 @@ function getPortalAuthToken() {
 </script>
     <script src="js/core_mock_data.js"></script>
     <script>
-        // Load Complete 100% Raipur Database (All 73 Mouzas) or Core 7
-        const DATABASE = { khatians: [], dagIndex: {}, voters: [] };
+        // Load Complete 100% Raipur Database (All 73 Mouzas) or Core 7 Mock Data
+        const DATABASE = {
+            khatians: (typeof CORE_KHATIANS !== 'undefined' && Array.isArray(CORE_KHATIANS)) ? CORE_KHATIANS : [],
+            dagIndex: (typeof CORE_DAGS !== 'undefined' && typeof CORE_DAGS === 'object') ? CORE_DAGS : {},
+            voters: (typeof CORE_VOTERS !== 'undefined' && Array.isArray(CORE_VOTERS)) ? CORE_VOTERS : []
+        };
+        window.DATABASE = DATABASE;
         const CORE_7_SET = new Set(['মধুপুর', 'দেবীপুর', 'কেরোয়া', 'দক্ষিণ কেরোয়া', 'দেয়ানতপুর', 'পূর্ব্বলাছ', 'চরপাতা']);
 
         const NO_DAG_MOUZAS = new Set(['কাছিয়ার চর', 'কেওড়াডগী', 'গাজিনগর', 'ঘাসিয়ার চর', 'চর পলোয়ান', 'চর বামনী', 'চরমোহনা', 'চরমোহড়া', 'চরলক্ষ্মী', 'জালিয়ার চর', 'টাকুয়ারচর', 'দক্ষিন কেরোয়া', 'দেনায়েতপুর', 'পাঙ্গাসিয়া', 'পূর্বলাছ', 'বগা', 'বরোচর', 'লামছরী']);
@@ -850,9 +860,13 @@ function getPortalAuthToken() {
         }
         // ================= UNIVERSAL ONE-STOP INTELLIGENCE ENGINE =================
         function runOneStopSearch() {
-            const mouza = document.getElementById('os-mouza').value;
-            let query = document.getElementById('os-query').value.trim();
+            const mouzaEl = document.getElementById('os-mouza');
+            const queryEl = document.getElementById('os-query');
             const container = document.getElementById('os-results');
+            if (!mouzaEl || !queryEl || !container) return;
+
+            const mouza = mouzaEl.value;
+            let query = queryEl.value.trim();
 
             if (!query) {
                 container.innerHTML = `<div class="bg-amber-50 border border-amber-200 text-amber-800 p-5 rounded-2xl text-center text-sm">দয়া করে একটি দাগ, খতিয়ান নম্বর অথবা ব্যক্তির নাম লিখুন।</div>`;
@@ -1669,10 +1683,6 @@ function getPortalAuthToken() {
                 </div>
             `;
         }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            switchTab('one-stop'); runOneStopSearch();
-        });
     </script>
 
     <!-- Official 2025-2026 Valuation Database (Initialized in head) -->
@@ -2086,10 +2096,6 @@ var RAIPUR_REGISTRY_RATES = window.RAIPUR_REGISTRY_RATES;
                 document.getElementById('res-grand-total').textContent = '৳ ' + grandTotalRealCost.toLocaleString('en-IN');
             }
         }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            switchTab('one-stop'); runOneStopSearch();
-        });
     </script>
 
     <!-- Unified Single Page Controller Script -->
@@ -2148,31 +2154,31 @@ var RAIPUR_REGISTRY_RATES = window.RAIPUR_REGISTRY_RATES;
                     <p class="text-xs text-slate-500 mt-1">খতিয়ান ও ভোটার রেকর্ড মিলিয়ে দেখা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন।</p>
                 </div>`;
 
-            // Cloud Serverless D1 API Search Bridge
-            const isCloud = window.location.hostname.includes('workers.dev') || window.location.port !== '8080';
-            if (isCloud) {
-                try {
-                    let apiParams = new URLSearchParams();
-                    if (mouza && mouza !== 'ALL') apiParams.append('mouza', mouza);
-                    if (surveyFilter && surveyFilter !== 'ALL') apiParams.append('survey', surveyFilter);
-                    if (dag) apiParams.append('dag', dag);
-                    if (khatian) apiParams.append('khatian', khatian);
-                    if (name) apiParams.append('name', name);
-                    if (father) apiParams.append('father', father);
+            // Cloud Serverless D1 API Search Bridge (with safe response validation & local fallback)
+            try {
+                let apiParams = new URLSearchParams();
+                if (mouza && mouza !== 'ALL') apiParams.append('mouza', mouza);
+                if (surveyFilter && surveyFilter !== 'ALL') apiParams.append('survey', surveyFilter);
+                if (dag) apiParams.append('dag', dag);
+                if (khatian) apiParams.append('khatian', khatian);
+                if (name) apiParams.append('name', name);
+                if (father) apiParams.append('father', father);
 
-                    const res = await fetch('/api/search?' + apiParams.toString());
-                    const data = await res.json();
-                    if (data && data.success && ((data.sabekRecords && data.sabekRecords.length > 0) || (data.haalRecords && data.haalRecords.length > 0))) {
-                        let sabekMatches = data.sabekRecords || [];
-                        let haalMatches = data.haalRecords || [];
-
-                        // Default unified land search: Focused on Cadastre records (no unrequested voter dumping)
-                        renderUnifiedMasterResults(mouza, dag, khatian, name, father, sabekMatches, haalMatches, [], [], container);
-                        return;
+                const res = await fetch('/api/search?' + apiParams.toString());
+                if (res.ok) {
+                    const contentType = res.headers.get('content-type') || '';
+                    if (contentType.includes('application/json')) {
+                        const data = await res.json();
+                        if (data && data.success && ((data.sabekRecords && data.sabekRecords.length > 0) || (data.haalRecords && data.haalRecords.length > 0))) {
+                            let sabekMatches = data.sabekRecords || [];
+                            let haalMatches = data.haalRecords || [];
+                            renderUnifiedMasterResults(mouza, dag, khatian, name, father, sabekMatches, haalMatches, [], [], container);
+                            return;
+                        }
                     }
-                } catch (apiErr) {
-                    console.warn('Cloud API search fallback to local scan:', apiErr);
                 }
+            } catch (apiErr) {
+                // Graceful fallback to embedded local/mock DATABASE
             }
 
             setTimeout(() => {
@@ -2186,11 +2192,11 @@ var RAIPUR_REGISTRY_RATES = window.RAIPUR_REGISTRY_RATES;
             let personLandMatches = [];
             let candidateOwnerNames = [];
 
-            // Filter survey helper
+            // Filter survey helper - Aligned with Cloudflare Worker contract
             function surveyAllowed(srv) {
                 if (surveyFilter === 'ALL') return true;
-                if (surveyFilter === 'SABEK') return (srv === 'CS' || srv === 'SA');
-                if (surveyFilter === 'HAAL') return (srv === 'BRS' || srv === 'Mutation');
+                if (surveyFilter === 'SABEK') return (srv === 'CS' || srv === 'SA' || srv === 'RS' || srv === 'সাবেক');
+                if (surveyFilter === 'HAAL') return (srv === 'BRS' || srv === 'Mutation' || srv === 'নামজারি' || srv === 'হাল');
                 return srv === surveyFilter;
             }
 
@@ -2291,6 +2297,623 @@ var RAIPUR_REGISTRY_RATES = window.RAIPUR_REGISTRY_RATES;
             renderUnifiedMasterResults(mouza, dag, khatian, name, father, sabekMatches, haalMatches, transformedHaalKhatians, voterMatches, container);
         }
 
+        // ================= SORTING & VIEW HELPERS =================
+        function parseBnNum(val) {
+            if (val === null || val === undefined) return 0;
+            const bnDigits = {'০':'0', '১':'1', '২':'2', '৩':'3', '৪':'4', '৫':'5', '৬':'6', '৭':'7', '৮':'8', '৯':'9'};
+            const str = String(val).split('').map(c => bnDigits[c] || c).join('');
+            const match = str.match(/\d+(\.\d+)?/);
+            return match ? parseFloat(match[0]) : 0;
+        }
+
+        function sortPropertyList(list, field, direction) {
+            return [...list].sort((a, b) => {
+                let valA = 0;
+                let valB = 0;
+                if (field === 'khatianNo') {
+                    valA = parseBnNum(a.khatianNo);
+                    valB = parseBnNum(b.khatianNo);
+                } else if (field === 'totalLand') {
+                    valA = parseBnNum(a.totalLand);
+                    valB = parseBnNum(b.totalLand);
+                }
+                if (valA === valB) {
+                    valA = parseBnNum(a.khatianNo);
+                    valB = parseBnNum(b.khatianNo);
+                }
+                return direction === 'asc' ? (valA - valB) : (valB - valA);
+            });
+        }
+
+        function toggleSort(field) {
+            if (!window.currentPropertySort) window.currentPropertySort = { field: 'khatianNo', direction: 'asc' };
+            if (window.currentPropertySort.field === field) {
+                window.currentPropertySort.direction = (window.currentPropertySort.direction === 'asc') ? 'desc' : 'asc';
+            } else {
+                window.currentPropertySort.field = field;
+                window.currentPropertySort.direction = 'asc';
+            }
+            window.isReSorting = true;
+            reapplySortAndRender();
+            const fieldName = (field === 'khatianNo') ? 'খতিয়ান নম্বর' : 'মোট জমির পরিমাণ';
+            const dirName = (window.currentPropertySort.direction === 'asc') ? 'ছোট থেকে বড় (Ascending)' : 'বড় থেকে ছোট (Descending)';
+            if (typeof showPortalToast === 'function') {
+                showPortalToast(`${fieldName} অনুযায়ী ${dirName} সাজানো হয়েছে`, 'info');
+            }
+        }
+
+        function handleSortSelect(val) {
+            if (!val) return;
+            const parts = val.split('-');
+            const field = parts[0];
+            const direction = parts[1] || 'asc';
+            window.currentPropertySort = { field, direction };
+            window.isReSorting = true;
+            reapplySortAndRender();
+            const fieldName = (field === 'khatianNo') ? 'খতিয়ান নম্বর' : 'মোট জমির পরিমাণ';
+            const dirName = (direction === 'asc') ? 'ছোট থেকে বড় (Ascending)' : 'বড় থেকে ছোট (Descending)';
+            if (typeof showPortalToast === 'function') {
+                showPortalToast(`${fieldName} অনুযায়ী ${dirName} সাজানো হয়েছে`, 'info');
+            }
+        }
+
+        // ================= D3.js CADASTRAL MOUZA MAP & PARCEL BOUNDARY ENGINE =================
+        window.cadastralMapState = {
+            svg: null,
+            g: null,
+            zoom: null,
+            currentTransform: null,
+            plots: [],
+            activePlot: null,
+            showLabels: true,
+            currentFilter: 'ALL',
+            mouza: '',
+            searchDag: ''
+        };
+
+        function initCadastralMapView() {
+            if (!window.activeSearchData) return;
+            const { mouza, dag, sabek, haal, transformed } = window.activeSearchData;
+            const properties = [
+                ...(sabek || []).map(k => ({ ...k, recordCategory: 'সাবেক CS/SA' })),
+                ...(haal || []).map(k => ({ ...k, recordCategory: 'হাল BRS' })),
+                ...(transformed || []).map(k => ({ ...k, recordCategory: 'নামজারি/রূপান্তর' }))
+            ];
+            
+            // Choose target mouza: if ALL, default to first available mouza or Madhupur
+            let targetMouza = (mouza && mouza !== 'ALL') ? mouza : (properties[0]?.mouza || 'মধুপুর');
+            renderCadastralMouzaMap(targetMouza, dag, properties);
+        }
+
+        function renderCadastralMouzaMap(targetMouza, targetDag, properties) {
+            const svgEl = document.getElementById('cadastral-map-svg');
+            const container = document.getElementById('cadastral-map-container');
+            if (!svgEl || typeof d3 === 'undefined') return;
+
+            window.cadastralMapState.mouza = targetMouza;
+            window.cadastralMapState.searchDag = targetDag;
+
+            const sheetTag = document.getElementById('cadastral-sheet-tag');
+            if (sheetTag) {
+                sheetTag.textContent = `মৌজা: ${targetMouza} | রায়পুর উপজেলা`;
+            }
+
+            const width = 900;
+            const height = 550;
+
+            // 1. Gather all dags for this mouza
+            const matchedDagsMap = new Map();
+            (properties || []).forEach(p => {
+                if (p.mouza === targetMouza || targetMouza === 'উপজেলা সার্বিক' || !targetMouza) {
+                    (p.dags || []).forEach(d => {
+                        const cleanD = String(d).trim();
+                        if (cleanD && !matchedDagsMap.has(cleanD)) {
+                            matchedDagsMap.set(cleanD, p);
+                        }
+                    });
+                }
+            });
+
+            // Gather contextual surrounding dags from DATABASE.dagIndex if available
+            const allDagsSet = new Set(Array.from(matchedDagsMap.keys()));
+            if (typeof DATABASE !== 'undefined' && DATABASE.dagIndex && DATABASE.dagIndex[targetMouza]) {
+                const srvDict = DATABASE.dagIndex[targetMouza];
+                for (const srv in srvDict) {
+                    for (const d in srvDict[srv]) {
+                        allDagsSet.add(d);
+                        if (allDagsSet.size >= 80) break;
+                    }
+                    if (allDagsSet.size >= 80) break;
+                }
+            }
+
+            // If small, generate surrounding sequential buffer plots around the searched dag or 1-40
+            const seedCenter = parseInt((targetDag || '25').replace(/\D/g, '') || '25', 10);
+            for (let i = Math.max(1, seedCenter - 25); i <= seedCenter + 25; i++) {
+                allDagsSet.add(String(i));
+                if (allDagsSet.size >= 65) break;
+            }
+
+            const sortedDags = Array.from(allDagsSet).sort((a, b) => {
+                const na = parseInt(a.replace(/\D/g, '') || '0', 10);
+                const nb = parseInt(b.replace(/\D/g, '') || '0', 10);
+                return na - nb;
+            });
+
+            // 2. Generate deterministic Voronoi parcel geometry
+            const n = sortedDags.length;
+            const cols = Math.ceil(Math.sqrt(n * 1.6));
+            const rows = Math.ceil(n / cols);
+            const padX = 60;
+            const padY = 50;
+            const cellW = (width - padX * 2) / cols;
+            const cellH = (height - padY * 2) / rows;
+
+            const points = [];
+            sortedDags.forEach((dag, i) => {
+                const c = i % cols;
+                const r = Math.floor(i / cols);
+                const num = parseInt(dag.replace(/\D/g, '') || (i + 1), 10);
+                const jx = Math.sin(num * 12.9898 + 78.233) * 43758.5453;
+                const jitterX = ((jx - Math.floor(jx)) - 0.5) * cellW * 0.45;
+                const jy = Math.cos(num * 78.233 + 12.9898) * 43758.5453;
+                const jitterY = ((jy - Math.floor(jy)) - 0.5) * cellH * 0.45;
+
+                const x = padX + c * cellW + cellW / 2 + jitterX;
+                const y = padY + r * cellH + cellH / 2 + jitterY;
+                points.push([Math.max(35, Math.min(width - 35, x)), Math.max(35, Math.min(height - 35, y))]);
+            });
+
+            const delaunay = d3.Delaunay.from(points);
+            const voronoi = delaunay.voronoi([25, 25, width - 25, height - 25]);
+
+            const plotsData = sortedDags.map((dag, i) => {
+                const path = voronoi.renderCell(i);
+                const [cx, cy] = points[i];
+                const matchedProp = matchedDagsMap.get(dag);
+                const isDirectSearch = (targetDag && (String(dag) === String(targetDag) || String(dag) === parseBnNum(targetDag).toString()));
+                const isMatch = !!matchedProp || isDirectSearch;
+                const survey = matchedProp ? matchedProp.survey : (i % 3 === 0 ? 'CS' : 'BRS');
+                const khatianNo = matchedProp ? matchedProp.khatianNo : '—';
+                const totalLand = matchedProp ? matchedProp.totalLand : '—';
+                const owners = matchedProp ? matchedProp.owners : ['মৌজা রেকর্ডীয় জোত'];
+                const guardian = matchedProp ? matchedProp.guardian : '—';
+
+                return {
+                    dag,
+                    path,
+                    cx,
+                    cy,
+                    mouza: targetMouza,
+                    isDirectSearch,
+                    isMatch,
+                    survey,
+                    khatianNo,
+                    totalLand,
+                    owners,
+                    guardian,
+                    recordCategory: matchedProp?.recordCategory || (survey === 'CS' || survey === 'SA' ? 'সাবেক' : 'হাল')
+                };
+            });
+
+            window.cadastralMapState.plots = plotsData;
+
+            // 3. Render D3 Elements
+            const svg = d3.select(svgEl);
+            svg.selectAll('*').remove();
+
+            // Background & Grid Definition
+            const defs = svg.append('defs');
+            const pattern = defs.append('pattern')
+                .attr('id', 'cadastral-grid')
+                .attr('width', 40)
+                .attr('height', 40)
+                .attr('patternUnits', 'userSpaceOnUse');
+            pattern.append('path')
+                .attr('d', 'M 40 0 L 0 0 0 40')
+                .attr('fill', 'none')
+                .attr('stroke', '#f1f5f9')
+                .attr('stroke-width', 1);
+
+            // Base Background
+            svg.append('rect')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('fill', '#fdfbf7');
+            svg.append('rect')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('fill', 'url(#cadastral-grid)');
+
+            // Outer Cadastral Sheet Boundary
+            svg.append('rect')
+                .attr('x', 24)
+                .attr('y', 24)
+                .attr('width', width - 48)
+                .attr('height', height - 48)
+                .attr('fill', 'none')
+                .attr('stroke', '#065f46')
+                .attr('stroke-width', 2.5)
+                .attr('stroke-dasharray', '8,4');
+
+            // Viewport Group for Pan & Zoom
+            const g = svg.append('g').attr('class', 'cadastral-viewport');
+            window.cadastralMapState.g = g;
+            window.cadastralMapState.svg = svg;
+
+            // D3 Zoom Behavior
+            const zoom = d3.zoom()
+                .scaleExtent([0.6, 7])
+                .on('zoom', (event) => {
+                    window.cadastralMapState.currentTransform = event.transform;
+                    g.attr('transform', event.transform);
+                });
+            window.cadastralMapState.zoom = zoom;
+            svg.call(zoom);
+
+            // Group for parcel polygons
+            const parcelsGroup = g.append('g').attr('class', 'parcels-group');
+
+            // Tooltip Element
+            const tooltip = document.getElementById('cadastral-map-tooltip');
+            const hudDag = document.getElementById('cadastral-hud-dag');
+
+            // Render Each Parcel Polygon
+            parcelsGroup.selectAll('path.parcel-poly')
+                .data(plotsData)
+                .enter()
+                .append('path')
+                .attr('class', d => `parcel-poly parcel-${d.dag} ${d.isDirectSearch ? 'direct-target' : ''}`)
+                .attr('d', d => d.path)
+                .attr('fill', d => {
+                    if (d.isDirectSearch) return '#fef08a'; // bright gold
+                    if (d.isMatch) {
+                        if (d.survey === 'CS' || d.survey === 'SA') return '#fef3c7'; // warm amber
+                        if (d.survey === 'Mutation' || d.recordCategory.includes('রূপান্তর')) return '#ccfbf1'; // cyan
+                        return '#d1fae5'; // emerald
+                    }
+                    return '#f8fafc'; // contextual soft slate
+                })
+                .attr('stroke', d => {
+                    if (d.isDirectSearch) return '#b45309';
+                    if (d.isMatch) {
+                        if (d.survey === 'CS' || d.survey === 'SA') return '#d97706';
+                        return '#059669';
+                    }
+                    return '#cbd5e1';
+                })
+                .attr('stroke-width', d => d.isDirectSearch ? 2.8 : (d.isMatch ? 1.8 : 1))
+                .style('cursor', 'pointer')
+                .style('transition', 'fill 0.15s, stroke 0.15s, stroke-width 0.15s')
+                .on('mouseenter', function(event, d) {
+                    d3.select(this)
+                        .attr('stroke-width', 3)
+                        .attr('stroke', '#047857');
+                    
+                    if (hudDag) {
+                        hudDag.innerHTML = `দাগ নং: <b class="text-amber-300 font-bold">${toBn(d.dag)}</b> (${d.survey}) | খতিয়ান: #${toBn(d.khatianNo)} | জমি: ${d.totalLand !== '—' ? toBn(d.totalLand) + ' একর' : '—'}`;
+                    }
+
+                    if (tooltip) {
+                        tooltip.classList.remove('hidden');
+                        tooltip.innerHTML = `
+                            <div class="flex items-center justify-between gap-2 border-b border-slate-700 pb-1.5 mb-1.5">
+                                <b class="text-amber-400 font-bold text-sm">দাগ #${toBn(d.dag)}</b>
+                                <span class="badge ${d.survey === 'CS'||d.survey==='SA'?'bg-amber-500/20 text-amber-300':'bg-emerald-500/20 text-emerald-300'} font-mono">${d.survey}</span>
+                            </div>
+                            <div class="text-[11px] space-y-0.5">
+                                <div>খতিয়ান: <b class="text-white">#${toBn(d.khatianNo)}</b></div>
+                                <div>মালিক: <b class="text-slate-200">${(d.owners || []).slice(0, 2).join(', ')}</b></div>
+                                <div>জমির পরিমাণ: <b class="text-emerald-400">${d.totalLand !== '—' ? toBn(d.totalLand) + ' একর' : '—'}</b></div>
+                            </div>
+                            <div class="pt-1 text-[10px] text-emerald-300 font-medium">👉 ক্লিক করে বিস্তারিত দেখুন</div>
+                        `;
+                        const rect = container.getBoundingClientRect();
+                        const tipX = Math.min(event.clientX - rect.left + 15, rect.width - 200);
+                        const tipY = Math.min(event.clientY - rect.top + 15, rect.height - 120);
+                        tooltip.style.left = tipX + 'px';
+                        tooltip.style.top = tipY + 'px';
+                    }
+                })
+                .on('mousemove', function(event) {
+                    if (tooltip && !tooltip.classList.contains('hidden')) {
+                        const rect = container.getBoundingClientRect();
+                        const tipX = Math.min(event.clientX - rect.left + 15, rect.width - 200);
+                        const tipY = Math.min(event.clientY - rect.top + 15, rect.height - 120);
+                        tooltip.style.left = tipX + 'px';
+                        tooltip.style.top = tipY + 'px';
+                    }
+                })
+                .on('mouseleave', function(event, d) {
+                    d3.select(this)
+                        .attr('stroke-width', d.isDirectSearch ? 2.8 : (d.isMatch ? 1.8 : 1))
+                        .attr('stroke', d.isDirectSearch ? '#b45309' : (d.isMatch ? (d.survey === 'CS' || d.survey === 'SA' ? '#d97706' : '#059669') : '#cbd5e1'));
+                    if (tooltip) tooltip.classList.add('hidden');
+                })
+                .on('click', function(event, d) {
+                    selectCadastralPlot(d);
+                });
+
+            // Group for parcel centroid text labels (দাগ নম্বর)
+            const labelsGroup = g.append('g').attr('class', 'parcel-labels-group');
+            labelsGroup.selectAll('text.parcel-label')
+                .data(plotsData)
+                .enter()
+                .append('text')
+                .attr('class', 'parcel-label select-none pointer-events-none font-bold')
+                .attr('x', d => d.cx)
+                .attr('y', d => d.cy + 3)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', d => d.isDirectSearch ? '13px' : '10.5px')
+                .attr('fill', d => d.isDirectSearch ? '#78350f' : (d.isMatch ? '#064e3b' : '#64748b'))
+                .text(d => toBn(d.dag));
+
+            // Animated beacon if direct search dag exists
+            const directTarget = plotsData.find(d => d.isDirectSearch);
+            if (directTarget) {
+                const beaconGroup = g.append('g').attr('class', 'beacon-marker');
+                beaconGroup.append('circle')
+                    .attr('cx', directTarget.cx)
+                    .attr('cy', directTarget.cy)
+                    .attr('r', 18)
+                    .attr('fill', 'none')
+                    .attr('stroke', '#f59e0b')
+                    .attr('stroke-width', 2.5)
+                    .attr('opacity', 0.85);
+
+                selectCadastralPlot(directTarget);
+
+                const scale = 2.2;
+                const tx = width / 2 - directTarget.cx * scale;
+                const ty = height / 2 - directTarget.cy * scale;
+                svg.transition()
+                    .duration(850)
+                    .call(zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
+            } else if (plotsData[0]) {
+                const firstMatch = plotsData.find(d => d.isMatch) || plotsData[0];
+                selectCadastralPlot(firstMatch);
+            }
+        }
+
+        function selectCadastralPlot(d) {
+            if (!d) return;
+            window.cadastralMapState.activePlot = d;
+            
+            d3.selectAll('.parcel-poly').attr('stroke', p => {
+                if (p.dag === d.dag) return '#047857';
+                if (p.isDirectSearch) return '#b45309';
+                if (p.isMatch) return (p.survey === 'CS' || p.survey === 'SA') ? '#d97706' : '#059669';
+                return '#cbd5e1';
+            }).attr('stroke-width', p => (p.dag === d.dag) ? 3.2 : (p.isDirectSearch ? 2.8 : (p.isMatch ? 1.8 : 1)));
+
+            const emptyBox = document.getElementById('inspector-empty-state');
+            const activeBox = document.getElementById('inspector-active-state');
+            const badge = document.getElementById('inspector-survey-badge');
+
+            if (emptyBox) emptyBox.classList.add('hidden');
+            if (activeBox) activeBox.classList.remove('hidden');
+
+            if (badge) {
+                const isSabek = (d.survey === 'CS' || d.survey === 'SA');
+                badge.className = `badge ${isSabek ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-emerald-100 text-emerald-900 border border-emerald-300'} font-bold font-mono`;
+                badge.textContent = d.survey + ' জরিপ';
+            }
+
+            let rateInfoHtml = '';
+            const rateData = typeof getMauzaRates === 'function' ? getMauzaRates(d.mouza) : null;
+            if (rateData && rateData.rates) {
+                const landDec = parseBnNum(d.totalLand);
+                const nalRate = rateData.rates.nal || 0;
+                const bariRate = rateData.rates.bari || nalRate;
+                const approxVal = (landDec > 0 && nalRate > 0) ? Math.round(landDec * nalRate) : 0;
+                rateInfoHtml = `
+                    <div class="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-3 space-y-1">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-emerald-950 text-[11px]">সরকারি মৌজা রেট মূল্যায়ন (${rateData.type})</span>
+                            <span class="font-bold font-mono text-emerald-800 text-[11px]">${toBn(approxVal.toLocaleString('en-IN'))} ৳</span>
+                        </div>
+                        <div class="text-[10px] text-slate-500">নাল: ৳${nalRate.toLocaleString('en-IN')} | বাড়ি: ৳${bariRate.toLocaleString('en-IN')} (প্রতি শতক)</div>
+                    </div>
+                `;
+            }
+
+            if (activeBox) {
+                activeBox.innerHTML = `
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-sm">🎯</span>
+                                <span class="font-black text-slate-900 text-base font-mono">দাগ #${toBn(d.dag)}</span>
+                            </div>
+                            <span class="px-2 py-0.5 rounded-lg text-xs font-bold ${d.isMatch ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}">
+                                ${d.isMatch ? '✓ অনুসন্ধানে অন্তর্ভুক্ত' : 'পার্শ্ববর্তী দাগ'}
+                            </span>
+                        </div>
+
+                        <div class="space-y-1.5 text-slate-700 text-xs">
+                            <div class="flex justify-between py-1 border-b border-slate-100">
+                                <span class="text-slate-500">মৌজা:</span>
+                                <b class="text-slate-900 font-semibold">${d.mouza}</b>
+                            </div>
+                            <div class="flex justify-between py-1 border-b border-slate-100">
+                                <span class="text-slate-500">খতিয়ান নম্বর:</span>
+                                <b class="font-mono font-bold text-teal-800">#${toBn(d.khatianNo)}</b>
+                            </div>
+                            <div class="flex justify-between py-1 border-b border-slate-100">
+                                <span class="text-slate-500">জমির পরিমাণ:</span>
+                                <b class="font-mono font-bold text-emerald-700">${d.totalLand !== '—' ? toBn(d.totalLand) + ' একর' : 'অনির্ধারিত'}</b>
+                            </div>
+                            <div class="py-1 border-b border-slate-100">
+                                <span class="text-slate-500 block mb-0.5">মালিকানা:</span>
+                                <b class="text-slate-900 block font-semibold leading-relaxed">${Array.isArray(d.owners) ? d.owners.join(', ') : d.owners}</b>
+                            </div>
+                            <div class="py-1">
+                                <span class="text-slate-500 block mb-0.5">পিতা / অভিভাবক:</span>
+                                <b class="text-slate-800 block">${sanitizeBengaliText(d.guardian)}</b>
+                            </div>
+                        </div>
+                    </div>
+
+                    ${rateInfoHtml}
+
+                    <div class="grid grid-cols-2 gap-2 pt-1">
+                        <button onclick="openHeirAnalysis(encodeURIComponent('${d.mouza}'), '${d.survey}', encodeURIComponent('${d.khatianNo}'))" class="px-3 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold text-xs flex items-center justify-center gap-1.5 transition">
+                            <span>🔍 ওয়ারিশান</span>
+                        </button>
+                        <button onclick="saveKhatianToVault('${d.mouza}', '${d.survey}', '${d.khatianNo}', '${d.dag}', '${(d.owners||[]).join(', ')}')" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 transition">
+                            <span>🔒 লকারে সেভ</span>
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        function focusDagOnCadastralMap(dagNo) {
+            if (!dagNo || dagNo === '—') return;
+            setResultDisplayMode('map');
+            const mapContainer = document.getElementById('view-result-map');
+            if (mapContainer) {
+                mapContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            setTimeout(() => {
+                const state = window.cadastralMapState;
+                if (!state || !state.plots) return;
+                const cleanDag = String(dagNo).trim();
+                const target = state.plots.find(p => String(p.dag) === cleanDag || String(p.dag) === parseBnNum(cleanDag).toString());
+                if (target && state.svg && state.zoom) {
+                    selectCadastralPlot(target);
+                    const width = 900;
+                    const height = 550;
+                    const scale = 2.4;
+                    const tx = width / 2 - target.cx * scale;
+                    const ty = height / 2 - target.cy * scale;
+                    state.svg.transition()
+                        .duration(750)
+                        .call(state.zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
+                    
+                    d3.selectAll('.parcel-poly').attr('stroke-width', d => d.isDirectSearch ? 2.8 : (d.isMatch ? 1.8 : 1));
+                    d3.select(`.parcel-${target.dag}`)
+                        .attr('stroke', '#b45309')
+                        .attr('stroke-width', 3.5)
+                        .attr('fill', '#fef08a');
+                }
+            }, 120);
+        }
+
+        function zoomCadastralMap(factor) {
+            const state = window.cadastralMapState;
+            if (state && state.svg && state.zoom) {
+                state.svg.transition().duration(250).call(state.zoom.scaleBy, factor);
+            }
+        }
+
+        function resetCadastralMapZoom() {
+            const state = window.cadastralMapState;
+            if (state && state.svg && state.zoom) {
+                state.svg.transition().duration(400).call(state.zoom.transform, d3.zoomIdentity);
+            }
+        }
+
+        function toggleCadastralLabels() {
+            const state = window.cadastralMapState;
+            state.showLabels = !state.showLabels;
+            const btn = document.getElementById('btn-toggle-labels');
+            if (btn) {
+                btn.className = state.showLabels 
+                    ? "px-3 py-1.5 rounded-xl bg-white/20 text-white border border-white/25 font-bold transition flex items-center gap-1.5"
+                    : "px-3 py-1.5 rounded-xl bg-white/5 text-slate-400 border border-white/10 font-bold transition flex items-center gap-1.5";
+            }
+            d3.selectAll('.parcel-labels-group')
+                .style('display', state.showLabels ? 'block' : 'none');
+        }
+
+        function filterCadastralMapLayer(layer) {
+            window.cadastralMapState.currentFilter = layer;
+            const btnAll = document.getElementById('map-flt-all');
+            const btnMatched = document.getElementById('map-flt-matched');
+            const btnHaal = document.getElementById('map-flt-haal');
+            const btnSabek = document.getElementById('map-flt-sabek');
+            
+            const activeClass = "px-2.5 py-1 rounded-lg font-bold bg-emerald-700 text-white transition";
+            const inactiveClass = "px-2.5 py-1 rounded-lg font-bold bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 transition";
+
+            if (btnAll) btnAll.className = (layer === 'ALL') ? activeClass : inactiveClass;
+            if (btnMatched) btnMatched.className = (layer === 'MATCHED') ? activeClass : inactiveClass;
+            if (btnHaal) btnHaal.className = (layer === 'HAAL') ? activeClass : inactiveClass;
+            if (btnSabek) btnSabek.className = (layer === 'SABEK') ? activeClass : inactiveClass;
+
+            d3.selectAll('.parcel-poly').style('opacity', d => {
+                if (layer === 'ALL') return 1;
+                if (layer === 'MATCHED') return d.isMatch ? 1 : 0.18;
+                if (layer === 'HAAL') return (d.survey === 'BRS' || d.survey === 'Mutation' || d.recordCategory.includes('হাল')) ? 1 : 0.18;
+                if (layer === 'SABEK') return (d.survey === 'CS' || d.survey === 'SA' || d.recordCategory.includes('সাবেক')) ? 1 : 0.18;
+                return 1;
+            });
+        }
+
+        function downloadCadastralMapPNG() {
+            const container = document.getElementById('cadastral-map-container');
+            if (!container || typeof html2canvas === 'undefined') {
+                if (typeof showPortalToast === 'function') showPortalToast('ম্যাপ ডাউনলোড লাইব্রেরি প্রস্তুত নয়', 'error');
+                return;
+            }
+            if (typeof showPortalToast === 'function') showPortalToast('ক্যাডাস্ট্রাল ম্যাপ ইমেজ প্রস্তুত হচ্ছে...', 'info');
+            html2canvas(container, { scale: 2, backgroundColor: '#fdfbf7' }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `Raipur_Cadastral_Map_${window.cadastralMapState.mouza || 'Mouza'}_${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                if (typeof showPortalToast === 'function') showPortalToast('ক্যাডাস্ট্রাল ম্যাপ সফলভাবে ডাউনলোড হয়েছে!', 'success');
+            }).catch(err => {
+                console.error('Map download error:', err);
+                if (typeof showPortalToast === 'function') showPortalToast('ম্যাপ ডাউনলোড ব্যর্থ হয়েছে', 'error');
+            });
+        }
+
+        function setResultDisplayMode(mode) {
+            window.currentResultDisplayMode = mode;
+            const tableBox = document.getElementById('view-result-table');
+            const cardsBox = document.getElementById('view-result-cards');
+            const mapBox = document.getElementById('view-result-map');
+            const btnTable = document.getElementById('btn-viewmode-table');
+            const btnCards = document.getElementById('btn-viewmode-cards');
+            const btnMap = document.getElementById('btn-viewmode-map');
+
+            const activeBtnClass = "px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-emerald-800 shadow-sm border border-emerald-200 flex items-center gap-1.5 transition";
+            const inactiveBtnClass = "px-3 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition";
+
+            if (btnTable) btnTable.className = (mode === 'table') ? activeBtnClass : inactiveBtnClass;
+            if (btnCards) btnCards.className = (mode === 'cards') ? activeBtnClass : inactiveBtnClass;
+            if (btnMap) btnMap.className = (mode === 'map') ? activeBtnClass : inactiveBtnClass;
+
+            if (tableBox) {
+                if (mode === 'table') tableBox.classList.remove('hidden'); else tableBox.classList.add('hidden');
+            }
+            if (cardsBox) {
+                if (mode === 'cards') cardsBox.classList.remove('hidden'); else cardsBox.classList.add('hidden');
+            }
+            if (mapBox) {
+                if (mode === 'map') {
+                    mapBox.classList.remove('hidden');
+                    initCadastralMapView();
+                } else {
+                    mapBox.classList.add('hidden');
+                }
+            }
+        }
+
+        function setTableFilter(filter) {
+            window.currentTableFilter = filter;
+            window.isReSorting = true;
+            reapplySortAndRender();
+        }
+
+        function reapplySortAndRender() {
+            if (!window.activeSearchData) return;
+            const { mouza, dag, khatian, name, father, sabek, haal, transformed, voters, container } = window.activeSearchData;
+            renderUnifiedMasterResults(mouza, dag, khatian, name, father, sabek, haal, transformed, voters, container);
+        }
+
         function renderUnifiedMasterResults(mouza, dag, khatian, name, father, sabek, haal, transformed, voters, container) {
             const totalLand = sabek.length + haal.length + transformed.length;
             const totalVoters = voters.length;
@@ -2314,6 +2937,70 @@ var RAIPUR_REGISTRY_RATES = window.RAIPUR_REGISTRY_RATES;
                 return;
             }
 
+            // Save active search data for one-click re-sorting without re-querying
+            window.activeSearchData = {
+                mouza: mouza || 'ALL',
+                dag: dag || '',
+                khatian: khatian || '',
+                name: name || '',
+                father: father || '',
+                sabek: [...sabek],
+                haal: [...haal],
+                transformed: [...transformed],
+                voters: [...voters],
+                container
+            };
+
+            // Initialize sort state if unset
+            if (!window.currentPropertySort) {
+                window.currentPropertySort = { field: 'khatianNo', direction: 'asc' };
+            }
+            if (!window.currentResultDisplayMode) {
+                window.currentResultDisplayMode = 'table';
+            }
+            if (!window.currentTableFilter) {
+                window.currentTableFilter = 'ALL';
+            }
+
+            const sortField = window.currentPropertySort.field;
+            const sortDir = window.currentPropertySort.direction;
+
+            // Sort individual arrays
+            const sortedSabek = sortPropertyList(sabek, sortField, sortDir);
+            const sortedHaal = sortPropertyList(haal, sortField, sortDir);
+            const sortedTransformed = sortPropertyList(transformed, sortField, sortDir);
+            const sortedHaalCombined = sortPropertyList([...haal, ...transformed], sortField, sortDir);
+
+            // Combined list for master table view
+            const allProperties = [
+                ...sabek.map(k => ({ ...k, recordCategory: 'সাবেক CS/SA' })),
+                ...haal.map(k => ({ ...k, recordCategory: 'হাল BRS' })),
+                ...transformed.map(k => ({ ...k, recordCategory: 'নামজারি/রূপান্তর' }))
+            ];
+            const sortedAllProperties = sortPropertyList(allProperties, sortField, sortDir);
+
+            // Filter for table view if requested
+            let filteredProperties = sortedAllProperties;
+            if (window.currentTableFilter === 'SABEK') {
+                filteredProperties = sortedSabek.map(k => ({ ...k, recordCategory: 'সাবেক CS/SA' }));
+            } else if (window.currentTableFilter === 'HAAL') {
+                filteredProperties = sortedHaalCombined.map(k => ({ ...k, recordCategory: (k.survey === 'Mutation' || k.isTransformed) ? 'নামজারি/রূপান্তর' : 'হাল BRS' }));
+            }
+
+            // Preserve search state for one-click PDF report export in current sorted order
+            window.lastSearchReportData = {
+                mouza: mouza || 'ALL',
+                dag: dag || '',
+                khatian: khatian || '',
+                name: name || '',
+                father: father || '',
+                sabek: sortedSabek,
+                haal: sortedHaal,
+                transformed: sortedTransformed,
+                voters: voters || [],
+                timestamp: new Date()
+            };
+
             let allNewDagsSet = new Set();
             [...haal, ...transformed].forEach(k => {
                 if (k.dags) k.dags.forEach(d => allNewDagsSet.add(d));
@@ -2332,35 +3019,87 @@ var RAIPUR_REGISTRY_RATES = window.RAIPUR_REGISTRY_RATES;
                         </div>
                     ` : ''}
 
-                    <!-- Result Summary Bar & Section Fast-Filters -->
-                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-wrap items-center justify-between gap-3 sticky top-2 z-20 backdrop-blur-md bg-white/95">
-                        <div class="flex flex-col gap-1 min-w-0">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                                <span class="font-extrabold text-slate-900 text-sm">সমন্বিত ফলাফল</span>
-                                <span class="text-xs text-slate-600">মোট: <b class="text-slate-900">${totalLand + totalVoters}</b></span>
+                    <!-- Result Summary Bar with Sorting & View Controls -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-3 sticky top-2 z-20 backdrop-blur-md bg-white/95">
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <div class="flex flex-col gap-1 min-w-0">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                    <span class="font-extrabold text-slate-900 text-sm">সমন্বিত ফলাফল</span>
+                                    <span class="text-xs text-slate-600">মোট: <b class="text-slate-900">${totalLand + totalVoters}</b></span>
+                                    <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                                        জমি: ${sortedAllProperties.length} টি খতিয়ান
+                                    </span>
+                                </div>
+                                <span class="text-xs text-slate-600 font-medium">
+                                    মৌজা: <b class="text-slate-800">${mouza === 'ALL' ? 'উপজেলাব্যাপী (সকল)' : mouza}</b>
+                                    ${dag ? ' · দাগ: <b class="text-emerald-700 font-mono">' + dag + '</b>' : ''}
+                                    ${khatian ? ' · খতিয়ান: <b class="text-teal-700 font-mono">' + khatian + '</b>' : ''}
+                                    ${name ? ' · নাম: <b class="text-slate-800">' + name + '</b>' : ''}
+                                    ${father ? ' · পিতা: <b class="text-slate-800">' + father + '</b>' : ''}
+                                </span>
                             </div>
-                            <span class="text-xs text-slate-600 font-medium">
-                                মৌজা: <b class="text-slate-800">${mouza === 'ALL' ? 'উপজেলাব্যাপী (সকল)' : mouza}</b>
-                                ${dag ? ' · দাগ: <b class="text-emerald-700 font-mono">' + dag + '</b>' : ''}
-                                ${khatian ? ' · খতিয়ান: <b class="text-teal-700 font-mono">' + khatian + '</b>' : ''}
-                                ${name ? ' · নাম: <b class="text-slate-800">' + name + '</b>' : ''}
-                                ${father ? ' · পিতা: <b class="text-slate-800">' + father + '</b>' : ''}
-                            </span>
-                            <div class="flex items-center gap-1.5 text-[11px] pt-0.5">
-                                <span class="text-slate-500">দ্রুত যান:</span>
-                                <a href="#col-sabek" onclick="filterDisplaySection('SABEK')" class="px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100">সাবেক</a>
-                                <a href="#col-haal" onclick="filterDisplaySection('HAAL')" class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100">হাল</a>
-                                <a href="#col-voter" onclick="filterDisplaySection('VOTER')" class="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-800 border border-indigo-200 hover:bg-indigo-100">ভোটার</a>
+
+                            <!-- View Mode Switcher & PDF Export Action -->
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-2xl border border-slate-200">
+                                    <button onclick="setResultDisplayMode('table')" id="btn-viewmode-table" class="px-3 py-1.5 rounded-xl text-xs font-bold ${window.currentResultDisplayMode === 'table' ? 'bg-white text-emerald-800 shadow-sm border border-emerald-200' : 'text-slate-600 hover:text-slate-900'} flex items-center gap-1.5 transition">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        <span>📋 টেবিল ভিউ</span>
+                                    </button>
+                                    <button onclick="setResultDisplayMode('cards')" id="btn-viewmode-cards" class="px-3 py-1.5 rounded-xl text-xs font-bold ${window.currentResultDisplayMode === 'cards' ? 'bg-white text-emerald-800 shadow-sm border border-emerald-200' : 'text-slate-600 hover:text-slate-900'} flex items-center gap-1.5 transition">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                                        <span>🗂️ কার্ড ভিউ</span>
+                                    </button>
+                                    <button onclick="setResultDisplayMode('map')" id="btn-viewmode-map" class="px-3 py-1.5 rounded-xl text-xs font-bold ${window.currentResultDisplayMode === 'map' ? 'bg-white text-emerald-800 shadow-sm border border-emerald-200' : 'text-slate-600 hover:text-slate-900'} flex items-center gap-1.5 transition">
+                                        <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                                        <span>🗺️ ক্যাডাস্ট্রাল ম্যাপ</span>
+                                    </button>
+                                </div>
+                                
+                                <button onclick="exportCurrentSearchReportPDF()" id="btn-export-pdf" class="px-3.5 py-2 rounded-xl font-bold bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white shadow-sm flex items-center gap-1.5 transition text-xs" title="বর্তমান অনুসন্ধানের সম্পূর্ণ ফলাফল PDF ফাইল হিসেবে ডাউনলোড করুন">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    <span>📄 PDF রিপোর্ট</span>
+                                </button>
                             </div>
                         </div>
-                        
-                        <!-- Fast In-Page Filter Pills -->
-                        <div class="flex items-center gap-1.5 text-xs flex-wrap">
-                            <button onclick="filterDisplaySection('ALL')" id="flt-all" class="px-3 py-1.5 rounded-xl font-bold bg-emerald-700 text-white shadow-sm transition">সবগুলো (${totalLand + totalVoters})</button>
-                            <button onclick="filterDisplaySection('SABEK')" id="flt-sabek" class="px-3 py-1.5 rounded-xl font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">সাবেক CS/SA (${sabek.length})</button>
-                            <button onclick="filterDisplaySection('HAAL')" id="flt-haal" class="px-3 py-1.5 rounded-xl font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">হাল BRS/রূপান্তর (${haal.length + transformed.length})</button>
-                            <button onclick="filterDisplaySection('VOTER')" id="flt-voter" class="px-3 py-1.5 rounded-xl font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">ভোটার ও ওয়ারিশ (${totalVoters})</button>
+
+                        <!-- SORTING CONTROLS TOOLBAR -->
+                        <div class="pt-2.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="font-bold text-slate-600 flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/></svg>
+                                    <span>সাজান (Sort):</span>
+                                </span>
+
+                                <!-- Quick Sort Button: Khatian Number -->
+                                <button onclick="toggleSort('khatianNo')" class="px-3 py-1.5 rounded-xl font-bold border transition flex items-center gap-1.5 ${sortField === 'khatianNo' ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'}" title="খতিয়ান নম্বর অনুযায়ী সাজাতে ক্লিক করুন (ছোট থেকে বড় / বড় থেকে ছোট)">
+                                    <span>খতিয়ান নং</span>
+                                    <span class="font-mono text-xs">${sortField === 'khatianNo' ? (sortDir === 'asc' ? '▲ (১ ➔ ৯)' : '▼ (৯ ➔ ১)') : '⇅'}</span>
+                                </button>
+
+                                <!-- Quick Sort Button: Total Land Area -->
+                                <button onclick="toggleSort('totalLand')" class="px-3 py-1.5 rounded-xl font-bold border transition flex items-center gap-1.5 ${sortField === 'totalLand' ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'}" title="মোট জমির পরিমাণ অনুযায়ী সাজাতে ক্লিক করুন (কম থেকে বেশি / বেশি থেকে কম)">
+                                    <span>মোট জমি</span>
+                                    <span class="font-mono text-xs">${sortField === 'totalLand' ? (sortDir === 'asc' ? '▲ (কম ➔ বেশি)' : '▼ (বেশি ➔ কম)') : '⇅'}</span>
+                                </button>
+
+                                <!-- Direct Sort Dropdown Selector -->
+                                <select onchange="handleSortSelect(this.value)" class="text-xs font-bold bg-slate-50 text-slate-700 border border-slate-200 rounded-xl px-2.5 py-1.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <option value="khatianNo-asc" ${sortField === 'khatianNo' && sortDir === 'asc' ? 'selected' : ''}>খতিয়ান নং: ছোট থেকে বড় (Ascending)</option>
+                                    <option value="khatianNo-desc" ${sortField === 'khatianNo' && sortDir === 'desc' ? 'selected' : ''}>খতিয়ান নং: বড় থেকে ছোট (Descending)</option>
+                                    <option value="totalLand-asc" ${sortField === 'totalLand' && sortDir === 'asc' ? 'selected' : ''}>জমির পরিমাণ: কম থেকে বেশি (Ascending)</option>
+                                    <option value="totalLand-desc" ${sortField === 'totalLand' && sortDir === 'desc' ? 'selected' : ''}>জমির পরিমাণ: বেশি থেকে কম (Descending)</option>
+                                </select>
+                            </div>
+
+                            <!-- Fast In-Page Filter Pills for Cards -->
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <button onclick="filterDisplaySection('ALL')" id="flt-all" class="px-2.5 py-1 rounded-xl font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">সবগুলো (${totalLand + totalVoters})</button>
+                                <button onclick="filterDisplaySection('SABEK')" id="flt-sabek" class="px-2.5 py-1 rounded-xl font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">সাবেক CS/SA (${sabek.length})</button>
+                                <button onclick="filterDisplaySection('HAAL')" id="flt-haal" class="px-2.5 py-1 rounded-xl font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">হাল BRS (${haal.length + transformed.length})</button>
+                                <button onclick="filterDisplaySection('VOTER')" id="flt-voter" class="px-2.5 py-1 rounded-xl font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">ভোটার (${totalVoters})</button>
+                            </div>
                         </div>
                     </div>
 
@@ -2381,123 +3120,418 @@ var RAIPUR_REGISTRY_RATES = window.RAIPUR_REGISTRY_RATES;
                         </div>
                     ` : ''}
 
-                    <!-- 3-PILLAR UNIFIED LAYOUT -->
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-                        <!-- Pillar 1: Sabek Records (CS / SA) -->
-                        <div id="col-sabek" class="lg:col-span-4 space-y-4 scroll-mt-24">
-                            <div class="flex items-center justify-between border-b-2 border-amber-500 pb-2">
-                                <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                                    <span class="w-3 h-3 rounded-full bg-amber-500"></span>
-                                    🏛️ ১. সাবেক রেকর্ড (CS / SA আদি জরিপ)
-                                </h3>
-                                <span class="badge bg-amber-100 text-amber-900 font-bold">${sabek.length} টি খতিয়ান</span>
+                    <!-- 1. FULL INTERACTIVE SORTABLE PROPERTY TABLE VIEW -->
+                    <div id="view-result-table" class="${window.currentResultDisplayMode === 'table' ? 'block' : 'hidden'} space-y-4">
+                        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+                            <!-- Table Sub-Filter & Stats Bar -->
+                            <div class="px-5 py-3.5 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="text-xs font-bold text-slate-500">টেবিল প্রদর্শন:</span>
+                                    <button onclick="setTableFilter('ALL')" id="tbl-flt-all" class="px-3 py-1 rounded-xl font-bold text-xs ${window.currentTableFilter === 'ALL' ? 'bg-emerald-700 text-white shadow-xs' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'} transition">
+                                        সকল রেকর্ড (${sortedAllProperties.length})
+                                    </button>
+                                    <button onclick="setTableFilter('SABEK')" id="tbl-flt-sabek" class="px-3 py-1 rounded-xl font-bold text-xs ${window.currentTableFilter === 'SABEK' ? 'bg-amber-600 text-white shadow-xs' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'} transition">
+                                        সাবেক CS/SA (${sortedSabek.length})
+                                    </button>
+                                    <button onclick="setTableFilter('HAAL')" id="tbl-flt-haal" class="px-3 py-1 rounded-xl font-bold text-xs ${window.currentTableFilter === 'HAAL' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'} transition">
+                                        হাল BRS/রূপান্তর (${sortedHaalCombined.length})
+                                    </button>
+                                </div>
+                                
+                                <div class="flex items-center gap-2 text-xs text-slate-500">
+                                    <span>সর্টিং মোড:</span>
+                                    <span class="font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-lg border border-emerald-200">
+                                        ${sortField === 'khatianNo' ? 'খতিয়ান নং ' + (sortDir === 'asc' ? '▲ (ছোট থেকে বড়)' : '▼ (বড় থেকে ছোট)') : 'জমির পরিমাণ ' + (sortDir === 'asc' ? '▲ (কম থেকে বেশি)' : '▼ (বেশি থেকে কম)')}
+                                    </span>
+                                </div>
                             </div>
 
-                            ${sabek.length === 0 ? `
-                                <div class="bg-slate-50 border border-dashed border-slate-200 rounded-2xl p-6 text-center text-xs text-slate-400">
-                                    সাবেক জরিপের কোনো রেকর্ড পাওয়া যায়নি।
+                            <!-- Responsive Sortable Property Table -->
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs border-collapse">
+                                    <thead>
+                                        <tr class="bg-slate-100/90 text-slate-700 font-extrabold uppercase tracking-wider text-[11px] border-b border-slate-200">
+                                            <th class="p-3.5 text-center w-12">ক্রঃ</th>
+                                            <th class="p-3.5">
+                                                <button onclick="toggleSort('khatianNo')" class="group flex items-center gap-1.5 font-extrabold ${sortField === 'khatianNo' ? 'text-emerald-900 bg-emerald-100/90 px-2.5 py-1 rounded-xl border border-emerald-300' : 'text-slate-700 hover:text-emerald-700 hover:bg-slate-200/60 px-2.5 py-1 rounded-xl'} transition" title="খতিয়ান নম্বর অনুযায়ী সাজাতে ক্লিক করুন">
+                                                    <span>খতিয়ান নং</span>
+                                                    <span class="font-mono text-xs ${sortField === 'khatianNo' ? 'text-emerald-700 font-black' : 'text-slate-400 group-hover:text-emerald-600'}">
+                                                        ${sortField === 'khatianNo' ? (sortDir === 'asc' ? '▲ (Asc)' : '▼ (Desc)') : '⇅'}
+                                                    </span>
+                                                </button>
+                                            </th>
+                                            <th class="p-3.5">জরিপ</th>
+                                            <th class="p-3.5">মৌজা</th>
+                                            <th class="p-3.5">দাগ নম্বরসমূহ</th>
+                                            <th class="p-3.5">রেকর্ডীয় মালিক ও অভিভাবক</th>
+                                            <th class="p-3.5 text-right">
+                                                <button onclick="toggleSort('totalLand')" class="group inline-flex items-center gap-1.5 font-extrabold ml-auto ${sortField === 'totalLand' ? 'text-emerald-900 bg-emerald-100/90 px-2.5 py-1 rounded-xl border border-emerald-300' : 'text-slate-700 hover:text-emerald-700 hover:bg-slate-200/60 px-2.5 py-1 rounded-xl'} transition" title="মোট জমির পরিমাণ অনুযায়ী সাজাতে ক্লিক করুন">
+                                                    <span>মোট জমি (একর)</span>
+                                                    <span class="font-mono text-xs ${sortField === 'totalLand' ? 'text-emerald-700 font-black' : 'text-slate-400 group-hover:text-emerald-600'}">
+                                                        ${sortField === 'totalLand' ? (sortDir === 'asc' ? '▲ (Asc)' : '▼ (Desc)') : '⇅'}
+                                                    </span>
+                                                </button>
+                                            </th>
+                                            <th class="p-3.5 text-center">স্থিতি</th>
+                                            <th class="p-3.5 text-center">অ্যাকশন</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        ${filteredProperties.length === 0 ? `
+                                            <tr>
+                                                <td colspan="9" class="p-8 text-center text-slate-400 text-xs">এই ক্যাটাগরিতে কোনো খতিয়ান রেকর্ড নেই।</td>
+                                            </tr>
+                                        ` : filteredProperties.map((k, idx) => {
+                                            const isSabek = (k.survey === 'CS' || k.survey === 'SA');
+                                            const landVal = parseBnNum(k.totalLand);
+                                            const landStr = k.totalLand && k.totalLand !== '—' ? toBn(k.totalLand) + ' একর' : '—';
+                                            return `
+                                            <tr class="hover:bg-emerald-50/40 transition">
+                                                <td class="p-3.5 text-center font-bold text-slate-500">${toBn(idx + 1)}</td>
+                                                <td class="p-3.5 font-mono font-bold text-slate-900 text-sm">
+                                                    <span class="px-2.5 py-1 rounded-xl ${isSabek ? 'bg-amber-100 text-amber-900 border border-amber-200' : 'bg-emerald-100 text-emerald-900 border border-emerald-200'}">
+                                                        #${k.khatianNo}
+                                                    </span>
+                                                </td>
+                                                <td class="p-3.5 font-bold">
+                                                    <span class="badge ${isSabek ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-emerald-50 text-emerald-800 border border-emerald-200'}">
+                                                        ${k.survey}
+                                                    </span>
+                                                </td>
+                                                <td class="p-3.5 font-bold text-slate-800">${k.mouza}</td>
+                                                <td class="p-3.5 font-mono text-slate-700 max-w-[160px] truncate" title="${(k.dags || []).join(', ')}">
+                                                    ${k.dags && k.dags.length > 0 ? k.dags.slice(0, 5).join(', ') + (k.dags.length > 5 ? '...' : '') : '—'}
+                                                </td>
+                                                <td class="p-3.5">
+                                                    <div class="font-bold text-slate-900">${formatOwners(k.owners)}</div>
+                                                    <div class="text-[11px] text-slate-500">পিতা: ${sanitizeBengaliText(k.guardian)}</div>
+                                                </td>
+                                                <td class="p-3.5 text-right font-mono font-extrabold text-sm ${landVal > 0 ? 'text-emerald-700' : 'text-slate-400'}">
+                                                    ${landStr}
+                                                </td>
+                                                <td class="p-3.5 text-center">
+                                                    <span class="badge ${isSabek ? 'bg-amber-100 text-amber-900' : (k.recordCategory === 'নামজারি/রূপান্তর' ? 'bg-teal-100 text-teal-900' : 'bg-emerald-100 text-emerald-900')}">
+                                                        ${k.recordCategory || (isSabek ? 'সাবেক' : 'হাল')}
+                                                    </span>
+                                                </td>
+                                                <td class="p-3.5 text-center">
+                                                    <div class="flex items-center justify-center gap-1.5">
+                                                        <button onclick="saveKhatianToVault('${k.mouza}', '${k.survey}', '${k.khatianNo}', '${(k.dags||[]).join(', ')}', '${(k.owners||[]).join(', ')}')" title="লকারে সেভ করুন" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
+                                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                                                        </button>
+                                                        <button onclick="focusDagOnCadastralMap('${k.dags && k.dags.length > 0 ? k.dags[0] : ''}')" title="ক্যাডাস্ট্রাল ম্যাপে এই প্লটের সীমানা দেখুন" class="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition text-[11px] font-bold">
+                                                            🗺️
+                                                        </button>
+                                                        <button onclick="openHeirAnalysis(encodeURIComponent('${k.mouza}'), '${k.survey}', encodeURIComponent('${k.khatianNo}'))" title="উত্তরাধিকারী অনুসন্ধান" class="p-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition text-[11px] font-bold">
+                                                            🔍
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            `;
+                                        }).join('')}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="bg-slate-50 font-bold text-slate-700 border-t border-slate-200 text-xs">
+                                            <td colspan="6" class="p-3.5 text-right">তালিকার মোট জমি ও রেকর্ড সংখ্যা:</td>
+                                            <td class="p-3.5 text-right font-mono font-black text-emerald-800 text-sm">
+                                                ${toBn(filteredProperties.reduce((sum, item) => sum + parseBnNum(item.totalLand), 0).toFixed(2))} একর
+                                            </td>
+                                            <td colspan="2" class="p-3.5 text-center text-slate-600">
+                                                মোট <b>${toBn(filteredProperties.length)}</b> টি খতিয়ান
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. 3-PILLAR UNIFIED CARDS LAYOUT (Synchronized with Sort Order) -->
+                    <div id="view-result-cards" class="${window.currentResultDisplayMode === 'cards' ? 'block' : 'hidden'}">
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+                            <!-- Pillar 1: Sabek Records (CS / SA) -->
+                            <div id="col-sabek" class="lg:col-span-4 space-y-4 scroll-mt-24">
+                                <div class="flex items-center justify-between border-b-2 border-amber-500 pb-2">
+                                    <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                                        <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+                                        🏛️ ১. সাবেক রেকর্ড (CS / SA আদি জরিপ)
+                                    </h3>
+                                    <span class="badge bg-amber-100 text-amber-900 font-bold">${sortedSabek.length} টি খতিয়ান</span>
                                 </div>
-                            ` : sabek.map(k => `
-                                <div class="bg-white rounded-2xl border border-amber-200/80 shadow-sm p-4 hover:shadow-md transition">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <span class="badge bg-amber-100 text-amber-900 font-bold font-mono">খতিয়ান #${k.khatianNo} (${k.survey})</span>
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-xs text-slate-500 font-semibold">${k.mouza}</span>
-                                            <button onclick="saveKhatianToVault('${k.mouza}', '${k.survey}', '${k.khatianNo}', '${(k.dags||[]).join(', ')}', '${(k.owners||[]).join(', ')}')" title="লকারে সেভ করুন" class="p-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 transition">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+
+                                ${sortedSabek.length === 0 ? `
+                                    <div class="bg-slate-50 border border-dashed border-slate-200 rounded-2xl p-6 text-center text-xs text-slate-400">
+                                        সাবেক জরিপের কোনো রেকর্ড পাওয়া যায়নি।
+                                    </div>
+                                ` : sortedSabek.map(k => `
+                                    <div class="bg-white rounded-2xl border border-amber-200/80 shadow-sm p-4 hover:shadow-md transition">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="badge bg-amber-100 text-amber-900 font-bold font-mono">খতিয়ান #${k.khatianNo} (${k.survey})</span>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs text-slate-500 font-semibold">${k.mouza}</span>
+                                                <button onclick="saveKhatianToVault('${k.mouza}', '${k.survey}', '${k.khatianNo}', '${(k.dags||[]).join(', ')}', '${(k.owners||[]).join(', ')}')" title="লকারে সেভ করুন" class="p-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 transition">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="text-xs space-y-1">
+                                            <p class="font-bold text-slate-900">মালিক: <span class="text-amber-950 font-semibold">${formatOwners(k.owners)}</span></p>
+                                            <p class="text-slate-600">পিতা: <span class="text-slate-800 font-medium">${sanitizeBengaliText(k.guardian)}</span></p>
+                                            <p class="text-slate-500 pt-1">সাবেক দাগ: <span class="font-mono font-bold text-slate-800">${k.dags && k.dags.length > 0 ? k.dags.join(', ') : '—'}</span></p>
+                                        </div>
+                                        <div class="pt-2.5 mt-2 border-t border-amber-100 flex items-center justify-between gap-1.5 flex-wrap">
+                                            <button onclick="openHeirAnalysis(encodeURIComponent('${k.mouza}'), '${k.survey}', encodeURIComponent('${k.khatianNo}'))" class="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] transition flex items-center gap-1.5 shadow-sm">
+                                                <span>🔍 ওয়ারিশান খুঁজুন</span>
+                                            </button>
+                                            <button onclick="focusDagOnCadastralMap('${k.dags && k.dags.length > 0 ? k.dags[0] : ''}')" class="px-2.5 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 font-bold text-[11px] transition flex items-center gap-1 shadow-2xs" title="ক্যাডাস্ট্রাল ম্যাপে এই খতিয়ানের দাগের সীমানা দেখুন">
+                                                <span>🗺️ ম্যাপে দেখুন</span>
                                             </button>
                                         </div>
                                     </div>
-                                    <div class="text-xs space-y-1">
-                                        <p class="font-bold text-slate-900">মালিক: <span class="text-amber-950 font-semibold">${formatOwners(k.owners)}</span></p>
-                                        <p class="text-slate-600">পিতা: <span class="text-slate-800 font-medium">${sanitizeBengaliText(k.guardian)}</span></p>
-                                        <p class="text-slate-500 pt-1">সাবেক দাগ: <span class="font-mono font-bold text-slate-800">${k.dags && k.dags.length > 0 ? k.dags.join(', ') : '—'}</span></p>
-                                    </div>
-                                    <div class="pt-2.5 mt-2 border-t border-amber-100 flex items-center justify-between">
-                                        <button onclick="openHeirAnalysis(encodeURIComponent('${k.mouza}'), '${k.survey}', encodeURIComponent('${k.khatianNo}'))" class="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] transition flex items-center gap-1.5 shadow-sm">
-                                            <span>🔍 এই খতিয়ানের সম্ভাব্য উত্তরাধিকারী খুঁজুন</span>
-                                        </button>
-                                        <span class="text-[10px] text-slate-400 font-medium">এভিডেন্স বিশ্লেষণ</span>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-
-                        <!-- Pillar 2: Haal Modern Records & Transformation (BRS / Mutation) -->
-                        <div id="col-haal" class="lg:col-span-4 space-y-4 scroll-mt-24">
-                            <div class="flex items-center justify-between border-b-2 border-emerald-500 pb-2">
-                                <div>
-                                    <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                                        <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
-                                        🌿 ২. হাল আধুনিক রূপান্তর (BRS ও নামজারি)
-                                    </h3>
-                                    <p class="text-[10px] text-slate-500 mt-0.5">মালিকানা ও ওয়ারিশ সূত্রের মিল (সম্ভাব্য রূপান্তর)</p>
-                                </div>
-                                <span class="badge bg-emerald-100 text-emerald-900 font-bold">${haal.length + transformed.length} টি খতিয়ান</span>
+                                `).join('')}
                             </div>
 
-                            ${haal.length + transformed.length === 0 ? `
-                                <div class="bg-slate-50 border border-dashed border-slate-200 rounded-2xl p-6 text-center text-xs text-slate-400">
-                                    হাল জরিপের কোনো রেকর্ড পাওয়া যায়নি।
+                            <!-- Pillar 2: Haal Modern Records & Transformation (BRS / Mutation) -->
+                            <div id="col-haal" class="lg:col-span-4 space-y-4 scroll-mt-24">
+                                <div class="flex items-center justify-between border-b-2 border-emerald-500 pb-2">
+                                    <div>
+                                        <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                                            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                                            🌿 ২. হাল আধুনিক রূপান্তর (BRS ও নামজারি)
+                                        </h3>
+                                        <p class="text-[10px] text-slate-500 mt-0.5">মালিকানা ও ওয়ারিশ সূত্রের মিল (সম্ভাব্য রূপান্তর)</p>
+                                    </div>
+                                    <span class="badge bg-emerald-100 text-emerald-900 font-bold">${sortedHaalCombined.length} টি খতিয়ান</span>
                                 </div>
-                            ` : [...haal, ...transformed].map(k => `
-                                <div class="bg-white rounded-2xl border border-emerald-200 shadow-sm p-4 hover:shadow-md transition">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <span class="badge bg-emerald-100 text-emerald-900 font-bold font-mono">হাল খতিয়ান #${k.khatianNo} (${k.survey})</span>
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-xs text-emerald-700 font-semibold">${k.totalLand && k.totalLand !== '—' ? 'জমি: ' + k.totalLand + ' একর' : k.mouza}</span>
-                                            <button onclick="saveKhatianToVault('${k.mouza}', '${k.survey}', '${k.khatianNo}', '${(k.dags||[]).join(', ')}', '${(k.owners||[]).join(', ')}')" title="লকারে সেভ করুন" class="p-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+
+                                ${sortedHaalCombined.length === 0 ? `
+                                    <div class="bg-slate-50 border border-dashed border-slate-200 rounded-2xl p-6 text-center text-xs text-slate-400">
+                                        হাল জরিপের কোনো রেকর্ড পাওয়া যায়নি।
+                                    </div>
+                                ` : sortedHaalCombined.map(k => `
+                                    <div class="bg-white rounded-2xl border border-emerald-200 shadow-sm p-4 hover:shadow-md transition">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="badge bg-emerald-100 text-emerald-900 font-bold font-mono">হাল খতিয়ান #${k.khatianNo} (${k.survey})</span>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs text-emerald-700 font-semibold">${k.totalLand && k.totalLand !== '—' ? 'জমি: ' + k.totalLand + ' একর' : k.mouza}</span>
+                                                <button onclick="saveKhatianToVault('${k.mouza}', '${k.survey}', '${k.khatianNo}', '${(k.dags||[]).join(', ')}', '${(k.owners||[]).join(', ')}')" title="লকারে সেভ করুন" class="p-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="text-xs space-y-1">
+                                            <p class="font-bold text-slate-900">বর্তমান মালিক: <span class="text-emerald-950 font-semibold">${formatOwners(k.owners)}</span></p>
+                                            <p class="text-slate-600">পিতা (পূর্বপুরুষ): <span class="text-indigo-900 font-semibold">${sanitizeBengaliText(k.guardian)}</span></p>
+                                            <p class="text-slate-600 pt-1">হাল দাগসমূহ: <span class="font-mono font-bold text-emerald-800">${k.dags && k.dags.length > 0 ? k.dags.slice(0, 15).join(', ') + (k.dags.length > 15 ? '...' : '') : '—'}</span></p>
+                                        </div>
+                                        <div class="pt-2.5 mt-2 border-t border-emerald-100 flex items-center justify-between gap-1.5 flex-wrap">
+                                            <button onclick="openHeirAnalysis(encodeURIComponent('${k.mouza}'), '${k.survey}', encodeURIComponent('${k.khatianNo}'))" class="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] transition flex items-center gap-1.5 shadow-sm">
+                                                <span>🔍 ওয়ারিশান খুঁজুন</span>
+                                            </button>
+                                            <button onclick="focusDagOnCadastralMap('${k.dags && k.dags.length > 0 ? k.dags[0] : ''}')" class="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-[11px] transition flex items-center gap-1 shadow-2xs" title="ক্যাডাস্ট্রাল ম্যাপে এই খতিয়ানের দাগের সীমানা দেখুন">
+                                                <span>🗺️ ম্যাপে দেখুন</span>
                                             </button>
                                         </div>
                                     </div>
-                                    <div class="text-xs space-y-1">
-                                        <p class="font-bold text-slate-900">বর্তমান মালিক: <span class="text-emerald-950 font-semibold">${formatOwners(k.owners)}</span></p>
-                                        <p class="text-slate-600">পিতা (পূর্বপুরুষ): <span class="text-indigo-900 font-semibold">${sanitizeBengaliText(k.guardian)}</span></p>
-                                        <p class="text-slate-600 pt-1">হাল দাগসমূহ: <span class="font-mono font-bold text-emerald-800">${k.dags && k.dags.length > 0 ? k.dags.slice(0, 15).join(', ') + (k.dags.length > 15 ? '...' : '') : '—'}</span></p>
-                                    </div>
-                                    <div class="pt-2.5 mt-2 border-t border-emerald-100 flex items-center justify-between">
-                                        <button onclick="openHeirAnalysis(encodeURIComponent('${k.mouza}'), '${k.survey}', encodeURIComponent('${k.khatianNo}'))" class="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] transition flex items-center gap-1.5 shadow-sm">
-                                            <span>🔍 এই খতিয়ানের সম্ভাব্য উত্তরাধিকারী খুঁজুন</span>
-                                        </button>
-                                        <span class="text-[10px] text-slate-400 font-medium">এভিডেন্স বিশ্লেষণ</span>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
+                                `).join('')}
+                            </div>
 
-                        <!-- Pillar 3: Voter & Heir Cross-Match (Contextual / On-Demand) -->
-                        <div id="col-voter" class="lg:col-span-4 space-y-4 scroll-mt-24">
-                            <div class="flex items-center justify-between border-b-2 border-indigo-500 pb-2">
-                                <div>
-                                    <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                                        <span class="w-3 h-3 rounded-full bg-indigo-500"></span>
-                                        🗳️ ৩. নির্দিষ্ট ওয়ারিশান অনুসন্ধান
+                            <!-- Pillar 3: Voter & Heir Cross-Match (Contextual / On-Demand) -->
+                            <div id="col-voter" class="lg:col-span-4 space-y-4 scroll-mt-24">
+                                <div class="flex items-center justify-between border-b-2 border-indigo-500 pb-2">
+                                    <div>
+                                        <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                                            <span class="w-3 h-3 rounded-full bg-indigo-500"></span>
+                                            🗳️ ৩. নির্দিষ্ট ওয়ারিশান অনুসন্ধান
+                                        </h3>
+                                        <p class="text-[10px] text-slate-500 mt-0.5">খতিয়ান সিলেক্ট করে সুনির্দিষ্ট মিল যাচাই</p>
+                                    </div>
+                                    <span id="voter-badge-count" class="badge bg-indigo-100 text-indigo-900 font-bold">${voters.length > 0 ? voters.length + ' জন' : 'প্রস্তুত'}</span>
+                                </div>
+
+                                <div id="heir-inspector-panel">
+                                    ${voters.length === 0 ? `
+                                        <div class="bg-indigo-50/70 border border-dashed border-indigo-200 rounded-2xl p-5 text-center text-xs text-slate-600 space-y-2">
+                                            <div class="w-10 h-10 mx-auto rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 text-lg">🧬</div>
+                                            <p class="font-bold text-slate-800 text-xs">সুনির্দিষ্ট খতিয়ানের ওয়ারিশান খুঁজুন</p>
+                                            <p class="text-[11px] text-slate-500 leading-relaxed">যেকোনো সাবেক বা হাল খতিয়ানের নিচে থাকা <span class="inline-block px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-900 font-bold">"🔍 এই খতিয়ানের ওয়ারিশান খুঁজুন"</span> বাটনে ক্লিক করুন।</p>
+                                            <p class="text-[10px] text-amber-700 bg-amber-50 p-2 rounded-xl border border-amber-200">অযথা হাজার হাজার নাম না দেখিয়ে শুধুমাত্র ওই খতিয়ানের মালিক/পিতার সাথে মিলিয়ে সম্ভাব্য ৩-৫ জন ফিল্টার করে দেখানো হবে।</p>
+                                        </div>
+                                    ` : renderHeirCards(voters)}
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- 3. INTERACTIVE CADASTRAL MOUZA MAP & PARCEL BOUNDARY VIEWER (D3.js) -->
+                    <div id="view-result-map" class="${window.currentResultDisplayMode === 'map' ? 'block' : 'hidden'} space-y-4">
+                        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+                            <!-- Map Header & Stats Bar -->
+                            <div class="px-5 py-4 bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 text-white flex flex-wrap items-center justify-between gap-4">
+                                <div class="space-y-1">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold">
+                                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                            <span>ইন্টারেক্টিভ ক্যাডাস্ট্রাল মৌজা সীমানা ও দাগ নকশা (D3 Cadastre Engine)</span>
+                                        </span>
+                                        <span id="cadastral-sheet-tag" class="text-xs text-slate-300 font-mono">মৌজা: ${mouza === 'ALL' ? 'উপজেলা সার্বিক' : mouza}</span>
+                                    </div>
+                                    <h3 class="text-base font-extrabold text-white flex items-center gap-2">
+                                        <span>মৌজা নকশা শিট ও দাগ বাউন্ডারি ভিজ্যুয়ালাইজার</span>
+                                        <span class="text-xs font-medium text-slate-300 font-mono">(${sortedAllProperties.length} টি খতিয়ানের সংশ্লিষ্ট দাগ)</span>
                                     </h3>
-                                    <p class="text-[10px] text-slate-500 mt-0.5">খতিয়ান সিলেক্ট করে সুনির্দিষ্ট মিল যাচাই</p>
                                 </div>
-                                <span id="voter-badge-count" class="badge bg-indigo-100 text-indigo-900 font-bold">${voters.length > 0 ? voters.length + ' জন' : 'প্রস্তুত'}</span>
+
+                                <!-- Zoom & View Tools -->
+                                <div class="flex items-center gap-2 flex-wrap text-xs">
+                                    <div class="flex items-center gap-1 bg-white/10 p-1 rounded-xl border border-white/15 backdrop-blur-sm">
+                                        <button onclick="zoomCadastralMap(1.3)" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold transition" title="বড় করুন (Zoom In)">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                        </button>
+                                        <button onclick="zoomCadastralMap(0.7)" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold transition" title="ছোট করুন (Zoom Out)">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+                                        </button>
+                                        <button onclick="resetCadastralMapZoom()" class="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold transition" title="স্বাভাবিক ভিউ (Reset Zoom)">
+                                            <span>⟲ রিসেট</span>
+                                        </button>
+                                        ${dag ? `
+                                        <button onclick="focusDagOnCadastralMap('${dag}')" class="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold transition flex items-center gap-1 shadow-sm" title="অনুসন্ধানকৃত দাগে ফোকাস করুন">
+                                            <span>🎯 দাগ #${dag}</span>
+                                        </button>
+                                        ` : ''}
+                                    </div>
+
+                                    <button onclick="toggleCadastralLabels()" id="btn-toggle-labels" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 border border-white/15 font-bold transition flex items-center gap-1.5">
+                                        <span>🏷️ দাগ নং</span>
+                                    </button>
+                                    <button onclick="downloadCadastralMapPNG()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition flex items-center gap-1.5 shadow-sm">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                        <span>ম্যাপ ডাউনলোড</span>
+                                    </button>
+                                </div>
                             </div>
 
-                            <div id="heir-inspector-panel">
-                                ${voters.length === 0 ? `
-                                    <div class="bg-indigo-50/70 border border-dashed border-indigo-200 rounded-2xl p-5 text-center text-xs text-slate-600 space-y-2">
-                                        <div class="w-10 h-10 mx-auto rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 text-lg">🧬</div>
-                                        <p class="font-bold text-slate-800 text-xs">সুনির্দিষ্ট খতিয়ানের ওয়ারিশান খুঁজুন</p>
-                                        <p class="text-[11px] text-slate-500 leading-relaxed">যেকোনো সাবেক বা হাল খতিয়ানের নিচে থাকা <span class="inline-block px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-900 font-bold">"🔍 এই খতিয়ানের ওয়ারিশান খুঁজুন"</span> বাটনে ক্লিক করুন।</p>
-                                        <p class="text-[10px] text-amber-700 bg-amber-50 p-2 rounded-xl border border-amber-200">অযথা হাজার হাজার নাম না দেখিয়ে শুধুমাত্র ওই খতিয়ানের মালিক/পিতার সাথে মিলিয়ে সম্ভাব্য ৩-৫ জন ফিল্টার করে দেখানো হবে।</p>
+                            <!-- Filter Sub-bar & Legend -->
+                            <div class="px-5 py-2.5 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="font-bold text-slate-600">ম্যাপ ফিল্টার:</span>
+                                    <button onclick="filterCadastralMapLayer('ALL')" id="map-flt-all" class="px-2.5 py-1 rounded-lg font-bold bg-emerald-700 text-white transition">সকল দাগ</button>
+                                    <button onclick="filterCadastralMapLayer('MATCHED')" id="map-flt-matched" class="px-2.5 py-1 rounded-lg font-bold bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 transition">ফলাফলভুক্ত দাগ</button>
+                                    <button onclick="filterCadastralMapLayer('HAAL')" id="map-flt-haal" class="px-2.5 py-1 rounded-lg font-bold bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 transition">হাল BRS দাগ</button>
+                                    <button onclick="filterCadastralMapLayer('SABEK')" id="map-flt-sabek" class="px-2.5 py-1 rounded-lg font-bold bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 transition">সাবেক CS/SA দাগ</button>
+                                </div>
+
+                                <div class="flex items-center gap-3 flex-wrap text-[11px] text-slate-600 font-semibold">
+                                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-amber-400 border border-amber-600 shadow-2xs"></span> অনুসন্ধানকৃত দাগ</span>
+                                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-400 border border-emerald-600 shadow-2xs"></span> ফলাফলভুক্ত হাল BRS</span>
+                                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-amber-200 border border-amber-500 shadow-2xs"></span> সাবেক CS/SA</span>
+                                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-teal-200 border border-teal-500 shadow-2xs"></span> নামজারি/রূপান্তর</span>
+                                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-slate-100 border border-slate-300"></span> পার্শ্ববর্তী দাগসমূহ</span>
+                                </div>
+                            </div>
+
+                            <!-- Main Map Area: SVG Canvas (col-8) + Parcel Inspector Sidebar (col-4) -->
+                            <div class="grid grid-cols-1 lg:grid-cols-12 min-h-[520px]">
+                                <!-- Interactive D3 Cadastral SVG Container -->
+                                <div class="lg:col-span-8 relative bg-[#fdfbf7] overflow-hidden border-b lg:border-b-0 lg:border-r border-slate-200 select-none cursor-grab active:cursor-grabbing" id="cadastral-map-container">
+                                    <!-- North Compass Rose & Scale Indicator -->
+                                    <div class="absolute top-3 left-3 z-10 pointer-events-none bg-white/90 backdrop-blur-xs p-2 rounded-xl border border-slate-200/80 shadow-xs flex items-center gap-2">
+                                        <div class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center font-serif font-black text-emerald-800 text-xs border border-slate-300">
+                                            <span>↑ উ</span>
+                                        </div>
+                                        <div class="text-[10px] text-slate-600 font-mono leading-tight">
+                                            <div><b>নকশা শিট: ১:১৬</b></div>
+                                            <div class="text-[9px] text-slate-400">রায়পুর উপজেলা</div>
+                                        </div>
                                     </div>
-                                ` : renderHeirCards(voters)}
+
+                                    <!-- Floating Coordinates / Mouseover HUD -->
+                                    <div id="cadastral-map-hud" class="absolute bottom-3 left-3 z-10 bg-slate-900/80 backdrop-blur-xs text-white text-[11px] font-mono px-3 py-1.5 rounded-xl shadow-md pointer-events-none">
+                                        <span>মৌজা: <b class="text-emerald-300">${mouza === 'ALL' ? 'মধুপুর (মানদণ্ড)' : mouza}</b></span>
+                                        <span class="mx-1 text-slate-500">|</span>
+                                        <span id="cadastral-hud-dag">যেকোনো দাগে মাউস নিন বা ক্লিক করুন</span>
+                                    </div>
+
+                                    <!-- D3 Cadastral SVG Element -->
+                                    <svg id="cadastral-map-svg" class="w-full h-[520px] block" viewBox="0 0 900 550" preserveAspectRatio="xMidYMid meet"></svg>
+
+                                    <!-- Floating Tooltip Element -->
+                                    <div id="cadastral-map-tooltip" class="absolute hidden z-30 pointer-events-none bg-slate-950/90 text-white p-3 rounded-2xl shadow-xl text-xs space-y-1 backdrop-blur-md border border-slate-700/80 max-w-xs transition-opacity duration-150"></div>
+                                </div>
+
+                                <!-- Parcel Inspector Sidebar (Right Side) -->
+                                <div class="lg:col-span-4 p-5 bg-slate-50/60 flex flex-col justify-between" id="cadastral-inspector-panel">
+                                    <div id="inspector-content" class="space-y-4">
+                                        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+                                            <div class="flex items-center gap-2">
+                                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+                                                <h4 class="font-bold text-slate-900 text-sm">দাগ বিশদ বিবরণী (Parcel Inspector)</h4>
+                                            </div>
+                                            <span id="inspector-survey-badge" class="badge bg-slate-200 text-slate-700 font-bold">সিলেক্ট করুন</span>
+                                        </div>
+
+                                        <div id="inspector-empty-state" class="py-12 text-center text-slate-400 space-y-2">
+                                            <div class="w-12 h-12 mx-auto rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-xl">
+                                                🗺️
+                                            </div>
+                                            <p class="font-bold text-slate-700 text-xs">নকশার যেকোনো দাগে ক্লিক করুন</p>
+                                            <p class="text-[11px] text-slate-500 leading-relaxed max-w-xs mx-auto">
+                                                দাগের সীমানা, সংশ্লিষ্ট খতিয়ান, জমির পরিমাণ, রেকর্ডীয় মালিক এবং সাব-রেজিস্ট্রি অফিসের সরকারি মৌজা মূল্য এখানে প্রদর্শিত হবে।
+                                            </p>
+                                        </div>
+
+                                        <div id="inspector-active-state" class="hidden space-y-3.5 text-xs">
+                                            <!-- Populated dynamically by selectCadastralPlot -->
+                                        </div>
+                                    </div>
+
+                                    <!-- Inspector Quick Action Footer -->
+                                    <div class="pt-4 border-t border-slate-200 mt-4 flex items-center justify-between gap-2">
+                                        <span class="text-[10px] text-slate-500">ডিজিটাল ক্যাডাস্ট্রাল বাউন্ডারি</span>
+                                        <button onclick="exportCurrentSearchReportPDF()" class="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1 transition">
+                                            <span>📄 সম্পূর্ণ PDF রিপোর্ট</span>
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                    </div>
 
+                    <!-- Complete Cadastral & Citizen Official Report Banner -->
+                    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 text-white rounded-3xl p-6 flex flex-wrap items-center justify-between gap-4 shadow-xl border border-slate-700/80">
+                        <div class="space-y-1.5 max-w-xl">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 text-xs font-bold">
+                                <span>📄</span>
+                                <span>অফিসিয়াল সার্টিফাইড ক্যাডাস্ট্রাল ও নাগরিক রিপোর্ট</span>
+                            </div>
+                            <h4 class="text-base sm:text-lg font-extrabold text-white">অনুসন্ধানকৃত ভূমির পূর্ণাঙ্গ তফসিল ও নাগরিক প্রোফাইল PDF ডাউনলোড</h4>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                এই অনুসন্ধানের সকল সাবেক CS/SA, হাল BRS, নামজারি দাগ-খতিয়ান, নাগরিক ও মালিক পরিচিতি এবং রায়পুর সাব-রেজিস্ট্রি অফিসের সরকারি মৌজা রেটসহ প্রস্তুতকৃত অফিসিয়াল A4 ফরম্যাটেড PDF রিপোর্ট সরাসরি ডাউনলোড করুন।
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2.5 flex-wrap">
+                            <button onclick="exportCurrentSearchReportPDF()" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-extrabold text-xs shadow-lg shadow-rose-900/40 flex items-center gap-2 transition transform active:scale-95">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                <span>ডাউনলোড PDF রিপোর্ট</span>
+                            </button>
+                            <button onclick="window.print()" class="px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-slate-200 border border-white/15 font-bold text-xs flex items-center gap-2 transition">
+                                <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                                <span>প্রিন্ট ভিউ</span>
+                            </button>
+                        </div>
                     </div>
                 </div>`;
 
             container.innerHTML = html;
             setSearchLoading(false);
-            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (!window.isReSorting) {
+                container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            window.isReSorting = false;
         }
 
         // ================= SPECIFIC KHATIAN-LINKED HEIR INSPECTOR =================
@@ -2795,13 +3829,16 @@ var RAIPUR_REGISTRY_RATES = window.RAIPUR_REGISTRY_RATES;
                                     <p class="text-xs text-emerald-700 font-mono font-bold pt-1">ভোটার নং: ${v.voterNo}</p>
                                 </div>
                             </div>
-                            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2">
-                                <button onclick="saveVoterToVault('${v.voterNo}', '${(v.name||'').replace(/'/g, "\\'")}', '${(v.father||'').replace(/'/g, "\\'")}', '${(v.mother||'').replace(/'/g, "\\'")}', '${(v.ward||'').replace(/'/g, "\\'")}', '${(v.address||'').replace(/'/g, "\\'")}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs py-2 px-2.5 rounded-xl border border-indigo-200 transition flex items-center justify-center gap-1">
+                            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1.5 flex-wrap">
+                                <button onclick="saveVoterToVault('${v.voterNo}', '${(v.name||'').replace(/'/g, "\\'")}', '${(v.father||'').replace(/'/g, "\\'")}', '${(v.mother||'').replace(/'/g, "\\'")}', '${(v.ward||'').replace(/'/g, "\\'")}', '${(v.address||'').replace(/'/g, "\\'")}')" class="flex-1 min-w-[70px] bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs py-2 px-2.5 rounded-xl border border-indigo-200 transition flex items-center justify-center gap-1">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
                                     <span>সেভ</span>
                                 </button>
                                 <button onclick="printCitizenSlip('${v.voterNo}', '${(v.name||'').replace(/'/g, "\\'")}', '${(v.father||'').replace(/'/g, "\\'")}', '${(v.mother||'').replace(/'/g, "\\'")}', '${(v.gender||'').replace(/'/g, "\\'")}', '${(v.ward||'').replace(/'/g, "\\'")}', '${(v.address||'').replace(/'/g, "\\'")}')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs py-2 px-2.5 rounded-xl border border-slate-300 transition flex items-center gap-1" title="নাগরিক পরিচিতি স্লিপ প্রিন্ট">
                                     <span>🖨️ স্লিপ</span>
+                                </button>
+                                <button onclick="exportCitizenSlipToPDF({ voterNo: '${v.voterNo}', name: '${(v.name||'').replace(/'/g, "\\'")}', father: '${(v.father||'').replace(/'/g, "\\'")}', mother: '${(v.mother||'').replace(/'/g, "\\'")}', gender: '${(v.gender||'').replace(/'/g, "\\'")}', ward: '${(v.ward||'').replace(/'/g, "\\'")}', address: '${(v.address||'').replace(/'/g, "\\'")}' })" class="bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs py-2 px-2.5 rounded-xl border border-rose-200 transition flex items-center gap-1" title="নাগরিক প্রোফাইল ও ভূমির PDF রিপোর্ট ডাউনলোড">
+                                    <span>📄 PDF</span>
                                 </button>
                                 <button onclick="searchLandForPerson('${(v.name||'').replace(/'/g, "\\'")}', '${(v.father||'').replace(/'/g, "\\'")}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs py-2 px-2.5 rounded-xl border border-emerald-200 transition flex items-center gap-1" title="এই ব্যক্তির জমির রেকর্ড খুঁজুন">
                                     <span>জমি ➔</span>
@@ -2815,6 +3852,16 @@ var RAIPUR_REGISTRY_RATES = window.RAIPUR_REGISTRY_RATES;
 
         
         function printCitizenSlip(voterNo, name, father, mother, gender, ward, address) {
+            window.currentActiveCitizen = {
+                voterNo: voterNo || '—',
+                name: name || '—',
+                father: father || '—',
+                mother: mother || '—',
+                gender: gender || 'নাগরিক',
+                ward: ward || 'রায়পুর উপজেলা',
+                address: address || 'রায়পুর, লক্ষ্মীপুর'
+            };
+
             document.getElementById('slip-voter-no').textContent = voterNo || '—';
             document.getElementById('slip-name').textContent = name || '—';
             document.getElementById('slip-father').textContent = father || '—';
@@ -3043,6 +4090,19 @@ var RAIPUR_REGISTRY_RATES = window.RAIPUR_REGISTRY_RATES;
                 </div>
             </div>
         </div>
+
+        <!-- Vault Footer with logged-in user profile & signout -->
+        <div id="vault-footer" class="p-4 bg-slate-50 border-t border-slate-200 hidden flex items-center justify-between">
+            <div class="text-xs flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-slate-500">লগইন আইডি:</span>
+                <span id="vault-user-name" class="font-extrabold text-slate-800"></span>
+            </div>
+            <button onclick="logoutUser()" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition flex items-center gap-1.5 shadow-2xs">
+                <svg class="w-3.5 h-3.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                <span>সাইন-আউট</span>
+            </button>
+        </div>
     </div>
 
     <!-- ================= ADMIN APPROVAL CONSOLE ================= -->
@@ -3216,16 +4276,28 @@ var RAIPUR_REGISTRY_RATES = window.RAIPUR_REGISTRY_RATES;
         }
 
         function logoutUser() {
+            if (currentUser) {
+                const name = currentUser.name || 'ব্যবহারকারী';
+                if (!confirm(name + ', আপনি কি নিশ্চিতভাবে লগআউট করতে চান?')) {
+                    return;
+                }
+            }
             currentUser = null;
             localStorage.removeItem('raipur_portal_user');
             localStorage.removeItem('auth_token');
             applyUserPermissions();
+            if (typeof showPortalToast === 'function') {
+                showPortalToast('সফলভাবে সাইন-আউট সম্পন্ন হয়েছে। আপনি এখন গেস্ট মোডে আছেন।', 'info');
+            }
         }
 
         // Apply Role-Based Cost Masking and UI Updates
         function applyUserPermissions() {
             const labelUser = document.getElementById('label-user-state');
             const triggerBtn = document.getElementById('btn-auth-trigger');
+            const logoutBtn = document.getElementById('btn-logout');
+            const vaultFooter = document.getElementById('vault-footer');
+            const vaultUserName = document.getElementById('vault-user-name');
             const proBadge = document.getElementById('badge-pro-writer');
             const detailsBox = document.getElementById('breakdown-details');
             const treasuryBox = document.getElementById('treasury-challan-box');
@@ -3234,6 +4306,8 @@ var RAIPUR_REGISTRY_RATES = window.RAIPUR_REGISTRY_RATES;
             if (!currentUser) {
                 labelUser.textContent = "লগইন / সাইন-আপ";
                 triggerBtn.onclick = toggleAuthModal;
+                if (logoutBtn) logoutBtn.classList.add('hidden');
+                if (vaultFooter) vaultFooter.classList.add('hidden');
                 if (proBadge) proBadge.classList.add('hidden');
                 // Mask detailed breakdowns for guests & common users (only show estimated total)
                 if (detailsBox) detailsBox.style.display = 'none';
@@ -3246,6 +4320,16 @@ var RAIPUR_REGISTRY_RATES = window.RAIPUR_REGISTRY_RATES;
             const isAdmin = (currentUser.role === 'admin');
 
             labelUser.textContent = currentUser.name.split(' ')[0] + (isAdmin ? ' (এডমিন)' : (isWriter ? ' (মুহুরি)' : ' (নাগরিক)'));
+            
+            // Show dedicated signout button in top header
+            if (logoutBtn) logoutBtn.classList.remove('hidden');
+
+            // Show vault footer with user name
+            if (vaultFooter) {
+                vaultFooter.classList.remove('hidden');
+                if (vaultUserName) vaultUserName.textContent = currentUser.name;
+            }
+
             triggerBtn.onclick = () => {
                 if (isAdmin) {
                     toggleAdminModal();
@@ -3322,7 +4406,7 @@ var RAIPUR_REGISTRY_RATES = window.RAIPUR_REGISTRY_RATES;
         // Vault: Save Khatian (Dual Online Cloud + Local Storage Fallback)
         async function saveKhatianToVault(mouza, survey, khatianNo, dags, owners) {
             if (!currentUser) {
-                alert('রেকর্ডটি আপনার লকারে সংরক্ষণ করতে প্রথমে লগইন করুন।');
+                showPortalToast('রেকর্ডটি লকারে সংরক্ষণ করতে প্রথমে লগইন করুন।', 'warning');
                 toggleAuthModal();
                 return;
             }
@@ -3349,13 +4433,13 @@ var RAIPUR_REGISTRY_RATES = window.RAIPUR_REGISTRY_RATES;
             } catch (err) {
                 console.log('Saved to local vault (offline fallback)');
             }
-            alert('খতিয়ানটি সফলভাবে আপনার পারসোনাল লকারে সংরক্ষিত হয়েছে!');
+            showPortalToast('খতিয়ানটি সফলভাবে আপনার পারসোনাল লকারে সংরক্ষিত হয়েছে!', 'success');
         }
 
         // Vault: Save Voter Card (Dual Online Cloud + Local Storage Fallback)
         async function saveVoterToVault(voterNo, name, father, mother, ward, address) {
             if (!currentUser) {
-                alert('ভোটার কার্ডটি আপনার লকারে সংরক্ষণ করতে প্রথমে লগইন করুন।');
+                showPortalToast('ভোটার কার্ডটি লকারে সংরক্ষণ করতে প্রথমে লগইন করুন।', 'warning');
                 toggleAuthModal();
                 return;
             }
@@ -3380,7 +4464,7 @@ var RAIPUR_REGISTRY_RATES = window.RAIPUR_REGISTRY_RATES;
             } catch (err) {
                 console.log('Saved to local vault (offline fallback)');
             }
-            alert('ভোটার কার্ডটি সফলভাবে আপনার পারসোনাল লকারে সংরক্ষিত হয়েছে!');
+            showPortalToast('ভোটার কার্ডটি সফলভাবে আপনার পারসোনাল লকারে সংরক্ষিত হয়েছে!', 'success');
         }
 
         // Vault: Load user records
@@ -3491,12 +4575,579 @@ var RAIPUR_REGISTRY_RATES = window.RAIPUR_REGISTRY_RATES;
                     <span>Raipur Smart Portal</span>
                 </div>
             </div>
-            <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2">
-                <button onclick="closeCitizenSlipModal()" class="px-4 py-2 rounded-xl bg-white border border-slate-300 text-slate-700 font-bold text-xs hover:bg-slate-100">বন্ধ করুন</button>
-                <button onclick="window.print()" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs">প্রিন্ট / এক্সপোর্ট</button>
-            </div>
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2 flex-wrap">
+                <button onclick="closeCitizenSlipModal()" class="px-4 py-2 rounded-xl bg-white border border-slate-300 text-slate-700 font-bold text-xs hover:bg-slate-100 transition">বন্ধ করুন</button>
+                <button onclick="exportCitizenSlipToPDF()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-md transition">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <span>📄 পিডিএফ ডাউনলোড (PDF)</span>
         </div>
     </div>
     
+    <!-- PDF Generation Progress Modal -->
+    <div id="modal-pdf-generating" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl border border-slate-200 space-y-4">
+            <div class="relative w-16 h-16 mx-auto">
+                <div class="w-16 h-16 rounded-full border-4 border-slate-100 border-t-rose-600 animate-spin"></div>
+                <div class="absolute inset-0 flex items-center justify-center text-xl">📄</div>
+            </div>
+            <div>
+                <h4 class="font-extrabold text-slate-900 text-base" id="pdf-progress-title">পিডিএফ প্রতিবেদন প্রস্তুত হচ্ছে...</h4>
+                <p class="text-xs text-slate-500 mt-1" id="pdf-progress-desc">উচ্চমানের বাংলা ফন্ট ও জমির তফসিল প্রসেসিং চলছে। অনুগ্রহ করে কয়েক সেকেন্ড অপেক্ষা করুন।</p>
+            </div>
+            <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-gradient-to-r from-red-600 to-rose-500 h-full w-full animate-pulse"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Toast Notification Container -->
+    <div id="portal-toast-container" class="fixed bottom-5 right-5 z-[110] flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+
+    <!-- PDF EXPORT CONTROLLER ENGINE SCRIPT -->
+    <script>
+    // Bengali Digits Helper
+    function toBn(num) {
+        if (num === null || num === undefined) return '';
+        const bn = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+        return String(num).replace(/[0-9]/g, d => bn[d]);
+    }
+
+    // Portal Toast Notification
+    function showPortalToast(message, type = 'success') {
+        const container = document.getElementById('portal-toast-container');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = `pointer-events-auto transform transition-all duration-300 ease-out translate-y-4 opacity-0 p-4 rounded-2xl shadow-xl border flex items-center gap-3 text-xs font-bold ${
+            type === 'success' ? 'bg-slate-900 text-emerald-300 border-emerald-500/40 shadow-emerald-950/20' :
+            type === 'info' ? 'bg-slate-900 text-cyan-300 border-cyan-500/40 shadow-cyan-950/20' :
+            type === 'warning' ? 'bg-amber-950 text-amber-200 border-amber-500/40 shadow-amber-950/20' :
+            'bg-rose-950 text-rose-200 border-rose-500/40 shadow-rose-950/20'
+        }`;
+
+        const icon = type === 'success' ? '✓' : type === 'info' ? 'ℹ' : type === 'warning' ? '⚠' : '✕';
+        toast.innerHTML = `
+            <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black shrink-0 ${
+                type === 'success' ? 'bg-emerald-500/20 text-emerald-400' :
+                type === 'info' ? 'bg-cyan-500/20 text-cyan-400' :
+                type === 'warning' ? 'bg-amber-500/20 text-amber-400' :
+                'bg-rose-500/20 text-rose-400'
+            }">${icon}</span>
+            <span class="flex-1 leading-snug">${message}</span>
+        `;
+
+        container.appendChild(toast);
+        requestAnimationFrame(() => {
+            toast.classList.remove('translate-y-4', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+        });
+
+        setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-2');
+            setTimeout(() => toast.remove(), 300);
+        }, 3500);
+    }
+
+    // Show/Hide PDF Progress Modal
+    function showPdfGeneratingModal(show, text = 'পিডিএফ প্রতিবেদন প্রস্তুত হচ্ছে...') {
+        const modal = document.getElementById('modal-pdf-generating');
+        const desc = document.getElementById('pdf-progress-desc');
+        if (!modal) return;
+        if (show) {
+            if (desc && text) desc.textContent = text;
+            modal.classList.remove('hidden');
+        } else {
+            modal.classList.add('hidden');
+        }
+    }
+
+    // Format registry rate currency in BDT
+    function formatTaka(amount) {
+        if (!amount && amount !== 0) return '—';
+        return toBn(Number(amount).toLocaleString('en-IN')) + ' ৳';
+    }
+
+    // Get Mauza registry rates from RAIPUR_REGISTRY_RATES
+    function getMauzaRates(mouza) {
+        if (!window.RAIPUR_REGISTRY_RATES) return null;
+        const muni = window.RAIPUR_REGISTRY_RATES.municipality || {};
+        const unions = window.RAIPUR_REGISTRY_RATES.unions || {};
+        
+        if (mouza) {
+            const clean = mouza.replace(/\s*\(.*?\)/g, '').trim();
+            if (muni[mouza]) return { type: 'পৌরসভা', rates: muni[mouza] };
+            if (muni[clean]) return { type: 'পৌরসভা', rates: muni[clean] };
+            if (unions[mouza]) return { type: 'ইউনিয়ন', rates: unions[mouza] };
+            if (unions[clean]) return { type: 'ইউনিয়ন', rates: unions[clean] };
+            if (unions[clean + ' (ইউনিয়ন)']) return { type: 'ইউনিয়ন', rates: unions[clean + ' (ইউনিয়ন)'] };
+            if (clean === 'পূর্ব্বলাছ' && (muni['পূর্বলাছ'] || unions['পূর্বলাছ'])) {
+                return { type: 'পৌরসভা', rates: muni['পূর্বলাছ'] || unions['পূর্বলাছ'] };
+            }
+        }
+
+        // Fallback to Denayetpur standard rate
+        if (muni['দেনায়েতপুর']) return { type: 'পৌরসভা (মানদণ্ড)', rates: muni['দেনায়েতপুর'] };
+        return null;
+    }
+
+    // Build Formatted PDF Report HTML Content
+    function buildReportHtmlContent(options) {
+        const {
+            citizen,
+            khatians = [],
+            searchParams = {},
+            reportTitle = 'নাগরিক প্রোফাইল ও জমি সংক্রান্ত অনুসন্ধান প্রতিবেদন',
+            refNo = 'RPR-CAD-' + Math.floor(100000 + Math.random() * 900000)
+        } = options;
+
+        const now = new Date();
+        const dateBn = now.toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' });
+        const timeBn = now.toLocaleTimeString('bn-BD');
+
+        // Current user or operator info
+        const operatorName = currentUser ? currentUser.name : 'ডিজিটাল নাগরিক অনুসন্ধানকারী';
+        const operatorRole = currentUser ? (
+            currentUser.role === 'admin' ? 'সিস্টেম এডমিন' :
+            currentUser.role === 'deed_writer' ? `লাইসেন্সধারী দলিল লেখক (সনদ নং: ${currentUser.association_license_no || 'রেজিস্টার্ড'})` :
+            'নিবন্ধিত নাগরিক'
+        ) : 'সাধারণ ব্যবহারকারী (পাবলিক যাচাই)';
+
+        // Mauza rates
+        const targetMouza = searchParams.mouza && searchParams.mouza !== 'ALL' ? searchParams.mouza : (khatians[0]?.mouza || 'দেনায়েতপুর');
+        const rateInfo = getMauzaRates(targetMouza);
+
+        // Calculate total land
+        let totalAcres = 0;
+        khatians.forEach(k => {
+            const val = parseFloat(k.totalLand);
+            if (!isNaN(val)) totalAcres += val;
+        });
+
+        return `
+        <div style="width: 800px; padding: 36px 42px; background: #ffffff; color: #0f172a; font-family: 'Hind Siliguri', sans-serif; box-sizing: border-box; font-size: 13px; line-height: 1.5;">
+            
+            <!-- GOVT HEADER & LOGO BANNER -->
+            <div style="border-bottom: 2.5px solid #047857; padding-bottom: 16px; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <div style="width: 52px; height: 52px; border-radius: 50%; background: #047857; color: white; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                            🏛️
+                        </div>
+                        <div>
+                            <div style="font-size: 17px; font-weight: 800; color: #064e3b; letter-spacing: -0.2px;">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</div>
+                            <div style="font-size: 13px; font-weight: 700; color: #0f172a;">রায়পুর উপজেলা ভূমি ও নাগরিক ওয়ান-স্টপ মিনি-ম্যাপিং পোর্টাল</div>
+                            <div style="font-size: 11px; color: #64748b; font-weight: 500;">উপজেলা ভূমি প্রশাসন, সাব-রেজিস্ট্রি দলিল লিংকার ও নাগরিক ডাটাবেজ · রায়পুর, লক্ষ্মীপুর</div>
+                        </div>
+                    </div>
+                    <div style="text-align: right; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 8px 14px; border-radius: 14px;">
+                        <div style="font-size: 10px; font-weight: 800; color: #166534; text-transform: uppercase;">সার্টিফাইড রেকর্ড নং</div>
+                        <div style="font-family: monospace; font-size: 13px; font-weight: 800; color: #047857;">${refNo}</div>
+                        <div style="font-size: 10px; color: #64748b; margin-top: 2px;">তারিখ: ${dateBn}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REPORT TITLE & METADATA -->
+            <div style="background: linear-gradient(135deg, #0f172a, #1e293b); color: #ffffff; padding: 14px 18px; border-radius: 14px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <div style="font-size: 15px; font-weight: 800; color: #34d399;">${reportTitle}</div>
+                    <div style="font-size: 11px; color: #cbd5e1; margin-top: 2px;">
+                        প্রস্তুতকারী: <b style="color: #ffffff;">${operatorName}</b> (${operatorRole}) · প্রিন্ট সময়: ${timeBn}
+                    </div>
+                </div>
+                <div style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #a7f3d0; padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700;">
+                    ✓ অফিসিয়াল ভেরিফাইড
+                </div>
+            </div>
+
+            <!-- SEARCH CRITERIA INFO BAR -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px 16px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px;">
+                <div><span style="color: #64748b;">মৌজা:</span> <b style="color: #0f172a;">${searchParams.mouza === 'ALL' || !searchParams.mouza ? 'উপজেলাব্যাপী (সকল)' : searchParams.mouza}</b></div>
+                ${searchParams.dag ? `<div><span style="color: #64748b;">দাগ নং:</span> <b style="color: #047857; font-family: monospace;">${toBn(searchParams.dag)}</b></div>` : ''}
+                ${searchParams.khatian ? `<div><span style="color: #64748b;">খতিয়ান নং:</span> <b style="color: #0f766e; font-family: monospace;">${toBn(searchParams.khatian)}</b></div>` : ''}
+                ${searchParams.name ? `<div><span style="color: #64748b;">মালিক/নাগরিক:</span> <b style="color: #0f172a;">${searchParams.name}</b></div>` : ''}
+                ${searchParams.father ? `<div><span style="color: #64748b;">পিতা/স্বামী:</span> <b style="color: #0f172a;">${searchParams.father}</b></div>` : ''}
+                <div><span style="color: #64748b;">মোট অন্তর্ভুক্ত খতিয়ান:</span> <b style="color: #047857;">${toBn(khatians.length)} টি</b></div>
+            </div>
+
+            <!-- SECTION 1: CITIZEN PROFILE DOSSIER -->
+            ${citizen ? `
+            <div style="margin-bottom: 22px; border: 1.5px solid #cbd5e1; border-radius: 14px; overflow: hidden; background: #ffffff;">
+                <div style="background: #f1f5f9; padding: 10px 16px; border-bottom: 1.5px solid #cbd5e1; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 14px;">👤</span>
+                        <span style="font-weight: 800; font-size: 13px; color: #0f172a;">১. নাগরিক পরিচিতি ও ভোটার প্রোফাইল (Citizen Profile Dossier)</span>
+                    </div>
+                    <span style="font-size: 11px; font-weight: 700; color: #4338ca; background: #e0e7ff; padding: 2px 8px; border-radius: 9999px;">
+                        রায়পুর উপজেলা ডেটাবেজ ভেরিফাইড
+                    </span>
+                </div>
+                <div style="padding: 14px 16px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; font-size: 12px;">
+                    <div style="background: #f8fafc; padding: 8px 12px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                        <div style="font-size: 10px; color: #64748b; font-weight: 600;">নাগরিকের নাম</div>
+                        <div style="font-size: 14px; font-weight: 800; color: #0f172a; margin-top: 1px;">${citizen.name || '—'}</div>
+                    </div>
+                    <div style="background: #f8fafc; padding: 8px 12px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                        <div style="font-size: 10px; color: #64748b; font-weight: 600;">ভোটার / এনআইডি নম্বর</div>
+                        <div style="font-size: 14px; font-weight: 800; color: #047857; font-family: monospace; margin-top: 1px;">${citizen.voterNo || citizen.voter_no || '—'}</div>
+                    </div>
+                    <div style="background: #f8fafc; padding: 8px 12px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                        <div style="font-size: 10px; color: #64748b; font-weight: 600;">পিতা / অভিভাবক</div>
+                        <div style="font-size: 12px; font-weight: 700; color: #334155; margin-top: 1px;">${citizen.father || '—'}</div>
+                    </div>
+                    <div style="background: #f8fafc; padding: 8px 12px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                        <div style="font-size: 10px; color: #64748b; font-weight: 600;">মাতা</div>
+                        <div style="font-size: 12px; font-weight: 700; color: #334155; margin-top: 1px;">${citizen.mother || '—'}</div>
+                    </div>
+                    <div style="background: #f8fafc; padding: 8px 12px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                        <div style="font-size: 10px; color: #64748b; font-weight: 600;">লিঙ্গ ও পরিচয়</div>
+                        <div style="font-size: 12px; font-weight: 700; color: #334155; margin-top: 1px;">${citizen.gender || 'নাগরিক'}</div>
+                    </div>
+                    <div style="background: #f8fafc; padding: 8px 12px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                        <div style="font-size: 10px; color: #64748b; font-weight: 600;">ওয়ার্ড / এলাকা</div>
+                        <div style="font-size: 12px; font-weight: 700; color: #334155; margin-top: 1px;">${citizen.ward || 'রায়পুর উপজেলা'}</div>
+                    </div>
+                    <div style="background: #f8fafc; padding: 8px 12px; border-radius: 10px; border: 1px solid #e2e8f0; grid-column: span 2;">
+                        <div style="font-size: 10px; color: #64748b; font-weight: 600;">স্থায়ী / বর্তমান ঠিকানা</div>
+                        <div style="font-size: 12px; font-weight: 700; color: #334155; margin-top: 1px;">${citizen.address || 'রায়পুর, লক্ষ্মীপুর'}</div>
+                    </div>
+                </div>
+            </div>
+            ` : ''}
+
+            <!-- SECTION 2: PROPERTY & KHATIAN DETAILS TABLE -->
+            <div style="margin-bottom: 22px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 14px;">📜</span>
+                        <span style="font-weight: 800; font-size: 13px; color: #0f172a;">২. খতিয়ান ও ভূমির বিস্তারিত তফসিল (Property & Cadastre Details Table)</span>
+                    </div>
+                    <span style="font-size: 11px; font-weight: 700; color: #047857; background: #dcfce7; padding: 2px 8px; border-radius: 9999px;">
+                        মোট জমি: ${totalAcres > 0 ? toBn(totalAcres.toFixed(2)) + ' একর' : toBn(khatians.length) + 'টি খতিয়ান'}
+                    </span>
+                </div>
+
+                ${khatians.length === 0 ? `
+                    <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 20px; text-align: center; color: #64748b; font-size: 12px;">
+                        বর্তমান অনুসন্ধানে কোনো খতিয়ান রেকর্ড মেলেনি বা নির্বাচিত হয়নি।
+                    </div>
+                ` : `
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11.5px; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden;">
+                        <thead>
+                            <tr style="background: #064e3b; color: #ffffff; text-align: left;">
+                                <th style="padding: 8px 10px; border: 1px solid #047857; width: 35px; text-align: center;">ক্রঃ</th>
+                                <th style="padding: 8px 10px; border: 1px solid #047857; width: 90px;">মৌজা</th>
+                                <th style="padding: 8px 10px; border: 1px solid #047857; width: 85px;">জরিপ / খতিয়ান</th>
+                                <th style="padding: 8px 10px; border: 1px solid #047857; width: 110px;">দাগ নম্বরসমূহ</th>
+                                <th style="padding: 8px 10px; border: 1px solid #047857;">রেকর্ডীয় মালিক ও পিতা/অভিভাবক</th>
+                                <th style="padding: 8px 10px; border: 1px solid #047857; width: 75px; text-align: right;">পরিমাণ</th>
+                                <th style="padding: 8px 10px; border: 1px solid #047857; width: 80px; text-align: center;">স্থিতি</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${khatians.map((k, idx) => {
+                                const isSabek = (k.survey === 'CS' || k.survey === 'SA');
+                                const bg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+                                const dagsText = k.dags && k.dags.length > 0 ? k.dags.slice(0, 8).map(toBn).join(', ') + (k.dags.length > 8 ? '...' : '') : '—';
+                                const ownersText = Array.isArray(k.owners) ? k.owners.join(', ') : (k.owners || '—');
+                                const guardianText = k.guardian || '—';
+                                const landText = k.totalLand && k.totalLand !== '—' ? toBn(k.totalLand) + ' একর' : '—';
+                                return `
+                                <tr style="background: ${bg};">
+                                    <td style="padding: 7px 10px; border: 1px solid #e2e8f0; text-align: center; font-weight: 700; color: #64748b;">${toBn(idx + 1)}</td>
+                                    <td style="padding: 7px 10px; border: 1px solid #e2e8f0; font-weight: 700; color: #0f172a;">${k.mouza || '—'}</td>
+                                    <td style="padding: 7px 10px; border: 1px solid #e2e8f0;">
+                                        <b style="color: ${isSabek ? '#b45309' : '#047857'};">${k.survey || 'জরিপ'}</b>
+                                        <div style="font-family: monospace; font-weight: 700; color: #0f172a;">খতিয়ান #${toBn(k.khatianNo)}</div>
+                                    </td>
+                                    <td style="padding: 7px 10px; border: 1px solid #e2e8f0; font-family: monospace; color: #0f172a; font-weight: 600;">
+                                        ${dagsText}
+                                    </td>
+                                    <td style="padding: 7px 10px; border: 1px solid #e2e8f0;">
+                                        <div style="font-weight: 700; color: #0f172a;">${ownersText}</div>
+                                        <div style="font-size: 10.5px; color: #64748b; margin-top: 1px;">পিতা: ${guardianText}</div>
+                                    </td>
+                                    <td style="padding: 7px 10px; border: 1px solid #e2e8f0; text-align: right; font-weight: 700; color: #047857;">
+                                        ${landText}
+                                    </td>
+                                    <td style="padding: 7px 10px; border: 1px solid #e2e8f0; text-align: center;">
+                                        <span style="display: inline-block; padding: 2px 6px; border-radius: 9999px; font-size: 10px; font-weight: 700; ${
+                                            isSabek ? 'background: #fef3c7; color: #92400e;' : 'background: #dcfce7; color: #166534;'
+                                        }">
+                                            ${isSabek ? 'সাবেক রেকর্ড' : 'হাল রূপান্তর'}
+                                        </span>
+                                    </td>
+                                </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                        <tfoot>
+                            <tr style="background: #f1f5f9; font-weight: 700; border-top: 2px solid #cbd5e1;">
+                                <td colspan="5" style="padding: 8px 10px; text-align: right; color: #334155;">মোট রেকর্ডীয় খতিয়ান সংখ্যা ও সারসংক্ষেপ:</td>
+                                <td style="padding: 8px 10px; text-align: right; color: #047857; font-size: 12px;">${totalAcres > 0 ? toBn(totalAcres.toFixed(2)) + ' একর' : '—'}</td>
+                                <td style="padding: 8px 10px; text-align: center; color: #047857;">${toBn(khatians.length)} টি খতিয়ান</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                `}
+            </div>
+
+            <!-- SECTION 3: OFFICIAL SUB-REGISTRY VALUATION RATES -->
+            ${rateInfo && rateInfo.rates ? `
+            <div style="margin-bottom: 22px; border: 1.5px solid #cbd5e1; border-radius: 14px; overflow: hidden; background: #ffffff;">
+                <div style="background: #f8fafc; padding: 9px 16px; border-bottom: 1.5px solid #cbd5e1; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 14px;">🏷️</span>
+                        <span style="font-weight: 800; font-size: 13px; color: #0f172a;">৩. সরকারি রেজিস্ট্রি ও বাজার মূল্যায়ন হার (${targetMouza} মৌজা - রায়পুর সাব-রেজিস্ট্রি অফিস)</span>
+                    </div>
+                    <span style="font-size: 10.5px; font-weight: 700; color: #64748b;">অর্থবছর: ২০২৪-২০২৫ সরকারি গ্যাজেট</span>
+                </div>
+                <div style="padding: 12px 16px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: center;">
+                        <thead>
+                            <tr style="background: #e2e8f0; color: #1e293b;">
+                                <th style="padding: 6px; border: 1px solid #cbd5e1;">শ্রেণি: নাল</th>
+                                <th style="padding: 6px; border: 1px solid #cbd5e1;">বাড়ি</th>
+                                <th style="padding: 6px; border: 1px solid #cbd5e1;">বাগান</th>
+                                <th style="padding: 6px; border: 1px solid #cbd5e1;">ভিটি</th>
+                                <th style="padding: 6px; border: 1px solid #cbd5e1;">পুকুর</th>
+                                <th style="padding: 6px; border: 1px solid #cbd5e1;">ডোবা / পতিত</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="font-weight: 700; color: #047857; background: #fdfdfd;">
+                                <td style="padding: 7px; border: 1px solid #cbd5e1;">${formatTaka(rateInfo.rates.nal)}</td>
+                                <td style="padding: 7px; border: 1px solid #cbd5e1;">${formatTaka(rateInfo.rates.bari)}</td>
+                                <td style="padding: 7px; border: 1px solid #cbd5e1;">${formatTaka(rateInfo.rates.bagan)}</td>
+                                <td style="padding: 7px; border: 1px solid #cbd5e1;">${formatTaka(rateInfo.rates.viti)}</td>
+                                <td style="padding: 7px; border: 1px solid #cbd5e1;">${formatTaka(rateInfo.rates.pukur)}</td>
+                                <td style="padding: 7px; border: 1px solid #cbd5e1;">${formatTaka(rateInfo.rates.doba || rateInfo.rates.potit)}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="font-size: 10px; color: #64748b; margin-top: 6px;">
+                        * উক্ত হার প্রতি শতাংশ (Decimal) জমির সরকারি নির্ধারিত সর্বনিম্ন দলিল রেজিস্ট্রি মূল্য। রায়পুর সাব-রেজিস্ট্রি অফিসে দলিল সম্পাদন ও হস্তান্তরে বাধ্যতামূলকভাবে প্রযোজ্য।
+                    </div>
+                </div>
+            </div>
+            ` : ''}
+
+            <!-- SECTION 4: DISCLAIMER, ATTESTATION & SIGNATURE BLOCKS -->
+            <div style="margin-top: 24px; border-top: 1.5px solid #e2e8f0; padding-top: 16px;">
+                <div style="background: #fffbeb; border: 1px solid #fef3c7; border-radius: 10px; padding: 10px 14px; font-size: 10.5px; color: #92400e; margin-bottom: 24px;">
+                    <b>আইনি তথ্য ও ঘোষণা:</b> এই প্রতিবেদনটি রায়পুর উপজেলা ডিজিটাল ভূমি ডাটাবেজ, সাবেক CS/SA রেকর্ড, হাল BRS রূপান্তর ও স্মার্ট নাগরিক ভোটার তালিকার অ্যালগরিদমিক সমন্বয়ে প্রস্তুতকৃত। সাব-রেজিস্ট্রি দলিল লিংকার, নামজারি আবেদন এবং নাগরিক তথ্য সহায়তায় এটি রেফারেন্স হিসেবে ব্যবহারযোগ্য।
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; padding: 0 20px; font-size: 11px;">
+                    <div style="text-align: center; width: 220px;">
+                        <div style="height: 38px;"></div>
+                        <div style="border-top: 1.5px dashed #64748b; padding-top: 6px;">
+                            <b style="color: #0f172a;">${operatorName}</b>
+                            <div style="color: #64748b; font-size: 10px;">প্রস্তুতকারী (দলিল লেখক / অনুসন্ধানকারী)</div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; padding: 8px 16px; border: 1.5px solid #bbf7d0; background: #f0fdf4; border-radius: 14px;">
+                        <div style="font-size: 18px;">🏛️</div>
+                        <div style="font-size: 9.5px; font-weight: 800; color: #166534; text-transform: uppercase; margin-top: 2px;">ডিজিটাল ভেরিফিকেশন সিল</div>
+                        <div style="font-size: 9px; color: #64748b;">রায়পুর ভূমি প্রশাসন বাতায়ন</div>
+                    </div>
+
+                    <div style="text-align: center; width: 220px;">
+                        <div style="height: 38px;"></div>
+                        <div style="border-top: 1.5px dashed #64748b; padding-top: 6px;">
+                            <b style="color: #0f172a;">যাচাইকারী কর্মকর্তা / সার্ভেয়ার</b>
+                            <div style="color: #64748b; font-size: 10px;">রায়পুর উপজেলা ভূমি প্রশাসন</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        `;
+    }
+
+    // Core PDF Generation Pipeline using html2canvas & jsPDF
+    async function generateFormattedPdfReport(options) {
+        showPdfGeneratingModal(true, 'বাংলা ফন্ট ও পৃষ্ঠার গ্রাফিক্স রেন্ডার করা হচ্ছে...');
+
+        try {
+            // Check libraries
+            if (typeof html2canvas === 'undefined') {
+                throw new Error('html2canvas লাইব্রেরি লোড হয়নি। দয়া করে ইন্টারনেট সংযোগ পরীক্ষা করুন।');
+            }
+            const jspdfModule = window.jspdf || window;
+            const jsPDF = jspdfModule.jsPDF || window.jsPDF;
+            if (typeof jsPDF === 'undefined') {
+                throw new Error('jsPDF লাইব্রেরি লোড হয়নি। দয়া করে ইন্টারনেট সংযোগ পরীক্ষা করুন।');
+            }
+
+            // Create off-screen container
+            const container = document.createElement('div');
+            container.id = 'temp-pdf-render-box';
+            container.style.position = 'fixed';
+            container.style.left = '-9999px';
+            container.style.top = '0';
+            container.style.zIndex = '-100';
+            container.style.width = '800px';
+            container.innerHTML = buildReportHtmlContent(options);
+
+            document.body.appendChild(container);
+
+            // Wait brief moment for fonts and layouts to settle
+            await new Promise(resolve => setTimeout(resolve, 200));
+
+            showPdfGeneratingModal(true, 'A4 পিডিএফ ফাইল এনকোডিং চলছে...');
+
+            // High-DPI canvas capture
+            const canvas = await html2canvas(container, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff'
+            });
+
+            // Clean up temporary DOM container
+            container.remove();
+
+            // Create A4 PDF in portrait format (210mm x 297mm)
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pageWidth = 210;
+            const pageHeight = 297;
+            const imgWidth = pageWidth;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            const pageCanvasHeight = (canvas.width * pageHeight) / pageWidth;
+            let heightLeft = imgHeight;
+            let position = 0;
+
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+            // First Page
+            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+            heightLeft -= pageHeight;
+
+            // Multi-page slicing if content exceeds 1 page
+            while (heightLeft > 0) {
+                position = heightLeft - imgHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+                heightLeft -= pageHeight;
+            }
+
+            // Save PDF
+            const filename = options.filename || `Raipur_Land_Report_${Date.now()}.pdf`;
+            pdf.save(filename);
+
+            showPdfGeneratingModal(false);
+            showPortalToast('পিডিএফ প্রতিবেদন সফলভাবে ডাউনলোড সম্পন্ন হয়েছে!', 'success');
+
+        } catch (err) {
+            console.error('PDF Generation Error:', err);
+            showPdfGeneratingModal(false);
+            showPortalToast('পিডিএফ তৈরিতে ত্রুটি: ' + (err.message || 'অপ্রত্যাশিত সমস্যা'), 'error');
+        }
+    }
+
+    // Trigger PDF Export from Current Search Results
+    function exportCurrentSearchReportPDF() {
+        const searchState = window.lastSearchReportData || {};
+        const mouza = searchState.mouza || document.getElementById('u-mouza')?.value || 'ALL';
+        const dag = searchState.dag || document.getElementById('u-dag')?.value || '';
+        const khatian = searchState.khatian || document.getElementById('u-khatian')?.value || '';
+        const name = searchState.name || document.getElementById('u-name')?.value || '';
+        const father = searchState.father || document.getElementById('u-father')?.value || '';
+
+        // Combine all matching khatians
+        let khatians = [];
+        if (searchState.sabek && searchState.sabek.length > 0) khatians.push(...searchState.sabek);
+        if (searchState.haal && searchState.haal.length > 0) khatians.push(...searchState.haal);
+        if (searchState.transformed && searchState.transformed.length > 0) {
+            searchState.transformed.forEach(tk => {
+                if (!khatians.some(k => k.khatianNo === tk.khatianNo && k.survey === tk.survey)) {
+                    khatians.push(tk);
+                }
+            });
+        }
+
+        // Check if citizen profile is identified or searched
+        let citizen = window.currentActiveCitizen || null;
+        if (!citizen && (name || father) && typeof DATABASE !== 'undefined' && DATABASE.voters) {
+            const vMatch = DATABASE.voters.find(v => {
+                const nameOk = !name || (v.name && v.name.includes(name));
+                const fatherOk = !father || (v.father && v.father.includes(father));
+                return nameOk && fatherOk;
+            });
+            if (vMatch) {
+                citizen = {
+                    voterNo: vMatch.voterNo || vMatch.voter_no,
+                    name: vMatch.name,
+                    father: vMatch.father,
+                    mother: vMatch.mother,
+                    gender: vMatch.gender || 'নাগরিক',
+                    ward: vMatch.ward || (mouza !== 'ALL' ? mouza : 'রায়পুর উপজেলা'),
+                    address: vMatch.address || (mouza !== 'ALL' ? mouza + ', রায়পুর' : 'রায়পুর, লক্ষ্মীপুর')
+                };
+            }
+        }
+
+        // If no khatians found from searchState, check if any in DATABASE match current filters
+        if (khatians.length === 0 && typeof DATABASE !== 'undefined' && DATABASE.khatians) {
+            khatians = DATABASE.khatians.filter(k => {
+                if (mouza && mouza !== 'ALL' && k.mouza !== mouza) return false;
+                if (dag && (!k.dags || !k.dags.includes(dag))) return false;
+                if (khatian && String(k.khatianNo) !== String(khatian)) return false;
+                if (name && (!k.owners || !k.owners.some(o => o.includes(name)))) return false;
+                if (father && (!k.guardian || !k.guardian.includes(father))) return false;
+                return true;
+            }).slice(0, 30);
+        }
+
+        const safeMouza = mouza === 'ALL' ? 'Raipur_Upazila' : mouza.replace(/\s+/g, '_');
+        const filename = `Raipur_Land_Report_${safeMouza}_${khatian || dag || 'All'}.pdf`;
+
+        generateFormattedPdfReport({
+            citizen,
+            khatians,
+            searchParams: { mouza, dag, khatian, name, father },
+            reportTitle: 'নাগরিক প্রোফাইল ও জমি সংক্রান্ত সমন্বিত অনুসন্ধান প্রতিবেদন',
+            filename
+        });
+    }
+
+    // Trigger PDF Export for a Specific Citizen
+    function exportCitizenSlipToPDF(customCitizen) {
+        const citizen = customCitizen || window.currentActiveCitizen;
+        if (!citizen) {
+            showPortalToast('নাগরিক প্রোফাইল নির্বাচন করা নেই।', 'warning');
+            return;
+        }
+
+        // Find any land records owned by this citizen or their guardian in Raipur
+        let matchingKhatians = [];
+        if (typeof DATABASE !== 'undefined' && DATABASE.khatians) {
+            matchingKhatians = DATABASE.khatians.filter(k => {
+                const ownerMatch = citizen.name && k.owners && k.owners.some(o => o.includes(citizen.name) || citizen.name.includes(o));
+                const guardianMatch = citizen.father && k.guardian && (k.guardian.includes(citizen.father) || citizen.father.includes(k.guardian));
+                return ownerMatch || guardianMatch;
+            }).slice(0, 20);
+        }
+
+        const safeName = (citizen.name || 'Citizen').replace(/\s+/g, '_');
+        const filename = `Raipur_Citizen_Report_${safeName}_${citizen.voterNo || 'Dossier'}.pdf`;
+
+        generateFormattedPdfReport({
+            citizen,
+            khatians: matchingKhatians,
+            searchParams: {
+                mouza: citizen.ward || 'রায়পুর',
+                name: citizen.name,
+                father: citizen.father
+            },
+            reportTitle: 'নাগরিক পরিচিতি ও ভূমির বিবরণী প্রতিবেদন (Citizen Dossier)',
+            filename
+        });
+    }
+    </script>
 </body>
 </html>
