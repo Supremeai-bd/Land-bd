@@ -28,6 +28,9 @@
 !/.env.example
 !/README.md
 !/requirements.txt
+!/package.json
+!/package-lock.json
+!/index.html
 !/CREATE_BRANCH_AND_PR.bat
 !/DEPLOY_TO_CLOUD.bat
 !/RUN_LOCAL_PORTAL.bat

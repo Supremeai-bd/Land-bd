@@ -1,0 +1,17 @@
+{
+  "name": "raipur-smart-land-portal",
+  "version": "1.0.0",
+  "description": "Raipur Smart Land Cadastre & Citizen Intelligence Hub",
+  "scripts": {
+    "dev": "vite 01_LIVE_SMART_PORTAL_APP --port 3000 --open",
+    "build": "vite build 01_LIVE_SMART_PORTAL_APP",
+    "preview": "vite preview 01_LIVE_SMART_PORTAL_APP",
+    "start": "serve 01_LIVE_SMART_PORTAL_APP -l 3000"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
+  },
+  "dependencies": {
+    "serve": "^14.2.4"
+  }
+}
